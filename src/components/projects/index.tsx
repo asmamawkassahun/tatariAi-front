@@ -10,7 +10,7 @@ import ProjectCard from "./ProjectCard";
 const Projects = () => {
   return (
     <section className="bg-background container mx-auto rounded-[1.25rem]">
-      <div className="flex flex-col space-y-5 py-5 px-4 md:px-20">
+      <div className="flex flex-col space-y-5 py-5 px-2 md:px-20">
         <div className="space-y-3 md:space-y-4">
           <div className="space-y-4">
             <h2 className="text-primary text-[1.375rem] font-medium leading-9">
@@ -47,7 +47,7 @@ const Projects = () => {
                   <div className="relative lg:hidden">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="flex w-[7.375rem] items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <button className="flex w-[7.375rem] justify-between items-center gap-2 px-2 py-1 bg-[#FFFFFF01] border border-footer-border rounded-lg text-13 text-primary">
                           Discover
                           <ChevronDown className="w-4 h-4" />
                         </button>
