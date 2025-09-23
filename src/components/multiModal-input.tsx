@@ -577,7 +577,7 @@ import {
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
 
-import { ArrowUpIcon, PaperclipIcon, StopIcon, SupabaseIcon, WorldIcon } from './icons';
+import { ArrowUpIcon, PaperclipIcon, SoundIcon, StopIcon, SupabaseIcon, WorldIcon } from './icons';
 import { PreviewAttachment } from './preview-attachment';
 // import { SuggestedActions } from './suggested-actions';
 import {
@@ -662,7 +662,7 @@ function PureMultimodalInput({
       const domValue = textareaRef.current.value;
       // Prefer DOM value over localStorage to handle hydration
       const finalValue = domValue || localStorageInput || '';
-    //   setInput(finalValue!);
+      //   setInput(finalValue!);
       adjustHeight();
     }
     // Only run once after hydration
@@ -721,6 +721,8 @@ function PureMultimodalInput({
   const uploadFile = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
+
+    console.log("Uploading file:", formData);
 
     try {
       const response = await fetch('/api/files/upload', {
@@ -826,7 +828,7 @@ function PureMultimodalInput({
       />
 
       <PromptInput
-        className="bg-red-500 rounded-3xl border border-gray-300 shadow-none transition-all duration-200 dark:bg-sidebar dark:border-sidebar-border hover:ring-1 hover:ring-primary/30 focus-within:ring-1 focus-within:ring-primary/50"
+        className="bg-accent rounded-[1.75rem] border border-primary/20 shadow-[0px_8px_10px_-6px_#0000001A] transition-all duration-200 dark:bg-sidebar dark:border-sidebar-border p-3"
         onSubmit={(event) => {
           event.preventDefault();
           if (status !== 'ready') {
@@ -879,12 +881,12 @@ function PureMultimodalInput({
           minHeight={72}
           maxHeight={200}
           disableAutoResize={true}
-          className="text-base resize-none py-4 px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] bg-transparent !border-0 !border-none outline-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+          className="text-sm md:text-base resize-none py-4 px-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] bg-transparent !border-0 !border-none outline-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
           rows={1}
           autoFocus
         />
-        <PromptInputToolbar className="px-4 py-2 !border-t-0 !border-top-0 shadow-none dark:!border-transparent dark:border-0">
-          <PromptInputTools className="gap-2">
+        <PromptInputToolbar className="px- py-2 !border-t-0 !border-top-0 shadow-none dark:!border-transparent dark:border-0">
+          <PromptInputTools className="gap-1">
             <AttachmentsButton fileInputRef={fileInputRef} status={status} />
             <AttachmentsButton2 fileInputRef={fileInputRef} status={status} /> {/* Second attachments button */}
             <VisibilityButton selectedVisibilityType={selectedVisibilityType} /> {/* New button for visibility */}
@@ -922,7 +924,7 @@ function PureAttachmentsButton({
   return (
     <Button
       data-testid="attachments-button"
-      className="rounded-full rounded-bl-lg p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+      className=" !rounded-full bg-accent border border-footer-border w-9 h-9 text-secondary hover:text-secondary/50 cursor-pointer "
       onClick={(event) => {
         event.preventDefault();
         fileInputRef.current?.click();
@@ -941,11 +943,11 @@ const AttachmentsButton = memo(PureAttachmentsButton);
 function PureVisibilityButton({ selectedVisibilityType }: { selectedVisibilityType: VisibilityType }) {
   return (
     <Button
-      className="rounded-full p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+      className="rounded-full border border-footer-border hover:text-none text-secondary hover:text-secondary/50 cursor-pointer"
       variant="ghost"
     >
-      <WorldIcon  size={14} /> {/* Assuming GlobeIcon is available or replace with appropriate icon */}
-      <span className="ml-1 text-xs">Public</span> {/* Matches the "Public" label in the image */}
+      <WorldIcon size={14} /> {/* Assuming GlobeIcon is available or replace with appropriate icon */}
+      <span className="hidden md:flex ml-1 text-xs">Public</span> {/* Matches the "Public" label in the image */}
     </Button>
   );
 }
@@ -963,7 +965,7 @@ function PureAttachmentsButton2({
   return (
     <Button
       data-testid="attachments-button"
-      className="rounded-full rounded-bl-lg p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+      className="rounded-full border border-footer-border text-secondary hover:text-secondary/50 cursor-pointer "
       onClick={(event) => {
         event.preventDefault();
         fileInputRef.current?.click();
@@ -971,8 +973,8 @@ function PureAttachmentsButton2({
       disabled={status !== 'ready'}
       variant="ghost"
     >
-      <PaperclipIcon size={14} /> 
-      <span>Attach</span>
+      <PaperclipIcon size={14} />
+      <span className='hidden md:flex'>Attach</span>
       {/* <Plus className="" size={14} /> */}
     </Button>
   );
@@ -985,11 +987,11 @@ const AttachmentsButton2 = memo(PureAttachmentsButton2);
 function PureToolButton({ toolName }: { toolName: string }) {
   return (
     <Button
-      className="rounded-full p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+      className="rounded-full border border-footer-border text-secondary hover:text-secondary/50 cursor-pointer"
       variant="ghost"
     >
-      <SupabaseIcon  size={14} /> {/* Assuming LightningBoltIcon is available or replace with appropriate icon */}
-      <span className="ml-1 text-xs">{toolName}</span> {/* Matches the "Supabase" label in the image */}
+      <SupabaseIcon size={14} /> {/* Assuming LightningBoltIcon is available or replace with appropriate icon */}
+      <span className="ml-1 text-xs hidden md:flex">{toolName}</span> {/* Matches the "Supabase" label in the image */}
     </Button>
   );
 }
@@ -1013,18 +1015,18 @@ function PureVoiceAndSendButtons({
   return (
     <div className="flex items-center gap-2">
       <Button
-        className="rounded-full p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+        className="w-9 h-9 text-secondary rounded-full border border-footer-border hover:text-secondary/50 cursor-pointer"
         variant="ghost"
       >
-        <MicIcon className="" size={14} /> {/* Assuming MicIcon is available or replace with appropriate icon */}
+        <SoundIcon /> {/* Assuming MicIcon is available or replace with appropriate icon */}
       </Button>
       {status === 'submitted' ? (
         // Placeholder setMessages, adjust if needed
-        <StopButton stop={stop} setMessages={() => {}} /> 
+        <StopButton stop={stop} setMessages={() => { }} />
       ) : (
         <Button
           data-testid="send-button"
-          className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
+          className="rounded-full w-9 h-9 text-background-secondary cursor-pointer"
           onClick={(event) => {
             event.preventDefault();
             submitForm();
