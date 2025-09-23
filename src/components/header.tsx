@@ -7,7 +7,11 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { Menu, User } from "lucide-react";
 import { LoginModal } from "./auth/Login";
 import { LogoutButton } from "./auth/LogoutButton";
+import { ProfileDropdown } from "./auth/ProfileDropdown";
 import { useAuth } from "../hooks/useAuth";
+import Gift from "./icons/Gift";
+import Inbox from "./icons/Inbox";
+import { useTheme } from "next-themes";
 
 const Headers = [
   { id: 1, name: "Community", href: "#" },
@@ -19,6 +23,10 @@ const Headers = [
 const Header = () => {
   const [open, setOpen] = React.useState(false);
   const { user, isAuthenticated, loading } = useAuth();
+  const { resolvedTheme } = useTheme();
+
+  const isDark = resolvedTheme === "dark";
+  let color = isDark ? "#5B5B5B" : "#fcfbf8";
 
   return (
     <header className="container mx-auto flex items-center justify-between py-4 px-2 sm:px-0 sticky top-0 bg-background z-50">
@@ -38,11 +46,9 @@ const Header = () => {
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
         ) : isAuthenticated ? (
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 text-sm text-foreground">
-              <User className="w-4 h-4" />
-              <span className="hidden sm:inline">{user?.email}</span>
-            </div>
-            <LogoutButton variant="outline" size="sm" />
+            <Gift color={color} />
+            <Inbox color={color} />
+            {user && <ProfileDropdown user={user} />}
           </div>
         ) : (
           <div className="flex items-center gap-2">

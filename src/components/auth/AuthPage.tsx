@@ -14,8 +14,8 @@ import {
     signupWithEmail,
     loginWithGoogle,
     loginWithGithub,
-    clearError
-} from "../../store/feature/authSlice";
+} from "../../store/feature/auth/authThunks";
+import { clearError } from "../../store/feature/auth/authSlice";
 import { toast } from "sonner";
 
 interface AuthPageProps {

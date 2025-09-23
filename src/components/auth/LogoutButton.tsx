@@ -3,7 +3,7 @@
 import { Button } from "../ui/button";
 import { useTypedDispatch } from "../../hooks/useTypedDispatch";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
-import { logout } from "../../store/feature/authSlice";
+import { logout } from "../../store/feature/auth/authThunks";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
 

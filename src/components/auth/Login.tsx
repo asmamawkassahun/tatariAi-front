@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTypedDispatch } from "../../hooks/useTypedDispatch";
 import { useTypedSelector } from "../../hooks/useTypedSelector";
-import { loginWithGoogle, loginWithGithub } from "../../store/feature/authSlice";
+import { loginWithGoogle, loginWithGithub } from "../../store/feature/auth/authThunks";
 import { toast } from "sonner";
 
 interface LoginModalProps {
