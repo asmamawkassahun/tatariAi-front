@@ -4,8 +4,14 @@ import Link from "next/link";
 import * as React from "react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { LoginModal } from "./auth/Login";
+import { LogoutButton } from "./auth/LogoutButton";
+import { ProfileDropdown } from "./auth/ProfileDropdown";
+import { useAuth } from "../hooks/useAuth";
+import Gift from "./icons/Gift";
+import Inbox from "./icons/Inbox";
+import { useTheme } from "next-themes";
 
 const Headers = [
   { id: 1, name: "Community", href: "#" },
@@ -16,6 +22,11 @@ const Headers = [
 
 const Header = () => {
   const [open, setOpen] = React.useState(false);
+  const { user, isAuthenticated, loading } = useAuth();
+  const { resolvedTheme } = useTheme();
+
+  const isDark = resolvedTheme === "dark";
+  let color = isDark ? "#5B5B5B" : "#fcfbf8";
 
   return (
     <header className="container mx-auto flex items-center justify-between py-4 px-2 sm:px-0 sticky top-0 bg-background z-50">
@@ -31,18 +42,28 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2">
-          <LoginModal mode="login">
-            <Button className="bg-accent text-foreground hover:bg-accent/50 rounded-[0.375rem] border border-[#ECEAE4] cursor-pointer">
-              Log in
-            </Button>
-          </LoginModal>
-          <LoginModal mode="signup">
-            <Button className="bg-foreground text-background-secondary rounded-[0.375rem] cursor-pointer">
-              Get Started
-            </Button>
-          </LoginModal>
-        </div>
+        {loading ? (
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+        ) : isAuthenticated ? (
+          <div className="flex items-center gap-2">
+            <Gift color={color} />
+            <Inbox color={color} />
+            {user && <ProfileDropdown user={user} />}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <LoginModal mode="login">
+              <Button className="bg-accent text-foreground hover:bg-accent/50 rounded-[0.375rem] border border-[#ECEAE4] cursor-pointer">
+                Log in
+              </Button>
+            </LoginModal>
+            <LoginModal mode="signup">
+              <Button className="bg-foreground text-background-secondary rounded-[0.375rem] cursor-pointer">
+                Get Started
+              </Button>
+            </LoginModal>
+          </div>
+        )}
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="sm:hidden">
@@ -62,6 +83,38 @@ const Header = () => {
                   {header.name}
                 </Link>
               ))}
+
+              {/* Mobile Auth Section */}
+              <div className="pt-6 border-t border-border">
+                {isAuthenticated ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-2 text-sm text-foreground">
+                      <User className="w-4 h-4" />
+                      <span>{user?.email}</span>
+                    </div>
+                    <LogoutButton variant="outline" className="w-full" />
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    <LoginModal mode="login">
+                      <Button
+                        className="w-full bg-accent text-foreground hover:bg-accent/50 rounded-[0.375rem] border border-[#ECEAE4] cursor-pointer"
+                        onClick={() => setOpen(false)}
+                      >
+                        Log in
+                      </Button>
+                    </LoginModal>
+                    <LoginModal mode="signup">
+                      <Button
+                        className="w-full bg-foreground text-background-secondary rounded-[0.375rem] cursor-pointer"
+                        onClick={() => setOpen(false)}
+                      >
+                        Get Started
+                      </Button>
+                    </LoginModal>
+                  </div>
+                )}
+              </div>
             </nav>
           </SheetContent>
         </Sheet>
