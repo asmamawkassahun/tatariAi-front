@@ -44,7 +44,7 @@ const Projects = () => {
                   </div>
 
                   {/* Discover Dropdown (visible on mobile) */}
-                  <div className="relative lg:hidden">
+                  {/* <div className="relative lg:hidden">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="flex w-[7.375rem] justify-between items-center gap-2 px-2 py-1 bg-[#FFFFFF01] border border-footer-border rounded-lg text-13 text-primary">
@@ -65,11 +65,11 @@ const Projects = () => {
                         <DropdownMenuItem>Prototype</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Category Tags - Hidden on small screens, visible on large screens */}
-                <div className="hidden lg:flex flex-wrap gap-2">
+                {/* <div className="hidden lg:flex flex-wrap gap-2">
                   <button className="bg-accent rounded-lg px-2 py-1 text-primary text-13 font-medium leading-5 border border-accent transition-colors">
                     Discover
                   </button>
@@ -91,7 +91,7 @@ const Projects = () => {
                   <button className="rounded-lg px-2 py-1 text-primary text-13 font-medium leading-5 border border-accent transition-colors">
                     Prototype
                   </button>
-                </div>
+                </div> */}
               </div>
 
               {/* Right side - View All Link */}
