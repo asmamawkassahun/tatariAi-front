@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // Import Inter instead of Geist
 import "./globals.css";
 import { ThemeProvider } from "@/provider/ThemeProvider";
+import { ReduxProvider } from "@/provider/ReduxProvider";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
@@ -27,15 +28,17 @@ export default function RootLayout({
       <body
         className={`${inter.variable} antialiased w-full mx-auto min-h-screen overflow-x-hidden`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <ReduxProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
