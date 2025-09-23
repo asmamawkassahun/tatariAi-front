@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // Import Inter instead of Geist
 import "./globals.css";
 import { ThemeProvider } from "@/provider/ThemeProvider";
-import Header from "@/components/header";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
@@ -34,7 +33,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
           {children}
           <Toaster />
         </ThemeProvider>

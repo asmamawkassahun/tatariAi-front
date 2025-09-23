@@ -1,20 +1,21 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import * as React from "react"
-import { Button } from "./ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet"
-import { Menu } from "lucide-react"
+import Link from "next/link";
+import * as React from "react";
+import { Button } from "./ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
+import { Menu } from "lucide-react";
+import { LoginModal } from "./auth/Login";
 
 const Headers = [
   { id: 1, name: "Community", href: "#" },
   { id: 2, name: "Pricing", href: "#" },
   { id: 3, name: "Learn", href: "#" },
   { id: 4, name: "Lounched", href: "#" },
-]
+];
 
 const Header = () => {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
 
   return (
     <header className="container mx-auto flex items-center justify-between py-4 px-2 sm:px-0 sticky top-0 bg-background z-50">
@@ -31,15 +32,23 @@ const Header = () => {
 
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
-          <Button className="bg-accent text-foreground hover:bg-accent/50 rounded-[0.375rem] border border-[#ECEAE4] cursor-pointer">Log in</Button>
-          <Button className="bg-foreground text-background-secondary rounded-[0.375rem] cursor-pointer">Get Started</Button>
+          <LoginModal mode="login">
+            <Button className="bg-accent text-foreground hover:bg-accent/50 rounded-[0.375rem] border border-[#ECEAE4] cursor-pointer">
+              Log in
+            </Button>
+          </LoginModal>
+          <LoginModal mode="signup">
+            <Button className="bg-foreground text-background-secondary rounded-[0.375rem] cursor-pointer">
+              Get Started
+            </Button>
+          </LoginModal>
         </div>
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="sm:hidden">
             <Button variant="ghost" size="icon">
               <Menu className="h-8 w-8 cursor-pointer" />
-             </Button>
+            </Button>
           </SheetTrigger>
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
             <nav className="flex flex-col gap-6 mt-6">
@@ -53,13 +62,12 @@ const Header = () => {
                   {header.name}
                 </Link>
               ))}
-              
             </nav>
           </SheetContent>
         </Sheet>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
