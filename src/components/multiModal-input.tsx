@@ -594,11 +594,16 @@ import { SelectItem, SelectValue } from '@/components/ui/select';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowDown, GlobeIcon, Image, MicIcon, Plus, PowerIcon } from 'lucide-react';
+import { ArrowDown, Building, Database, Figma, FileImage, GlobeIcon, Image, MicIcon, Plus, PowerIcon, Search } from 'lucide-react';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import type { VisibilityType, Attachment, ChatMessage } from '@/lib/types';
 import { chatModels } from '@/lib/ai/models';
 import { Button } from './ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Input } from './ui/input';
+import { Card, CardContent } from './ui/card';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Label } from './ui/label';
 
 interface MultimodalInputProps {
   chatId: string;
@@ -914,6 +919,33 @@ export const MultimodalInput = memo(
   },
 );
 
+// function PureAttachmentsButton({
+//   fileInputRef,
+//   status,
+// }: {
+//   fileInputRef: React.MutableRefObject<HTMLInputElement | null>;
+//   status: UseChatHelpers<ChatMessage>['status'];
+// }) {
+//   return (
+//     <Button
+//       data-testid="attachments-button"
+//       className=" !rounded-full bg-accent border border-footer-border w-9 h-9 text-secondary hover:text-secondary/50 cursor-pointer "
+//       onClick={(event) => {
+//         event.preventDefault();
+//         fileInputRef.current?.click();
+//       }}
+//       disabled={status !== 'ready'}
+//       variant="ghost"
+//     >
+//       <Plus className="" size={14} />
+//     </Button>
+//   );
+// }
+
+// const AttachmentsButton = memo(PureAttachmentsButton);
+
+
+
 function PureAttachmentsButton({
   fileInputRef,
   status,
@@ -921,34 +953,210 @@ function PureAttachmentsButton({
   fileInputRef: React.MutableRefObject<HTMLInputElement | null>;
   status: UseChatHelpers<ChatMessage>['status'];
 }) {
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
-    <Button
-      data-testid="attachments-button"
-      className=" !rounded-full bg-accent border border-footer-border w-9 h-9 text-secondary hover:text-secondary/50 cursor-pointer "
-      onClick={(event) => {
-        event.preventDefault();
-        fileInputRef.current?.click();
-      }}
-      disabled={status !== 'ready'}
-      variant="ghost"
-    >
-      <Plus className="" size={14} />
-    </Button>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          data-testid="attachments-button"
+          className="!rounded-full bg-accent border border-footer-border w-9 h-9 text-secondary hover:text-secondary/50 cursor-pointer"
+          disabled={status !== 'ready'}
+          variant="ghost"
+        >
+          <Plus className="" size={14} />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        className="w-80 p-4 mx-4 bg-background border border-border shadow-lg"
+        align="start"
+        sideOffset={8}
+      >
+        
+        {/* Quick Actions */}
+        <div className="space-y-2 mb-4">
+          
+
+          <DropdownMenuItem className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-accent">
+            <Figma className="h-4 w-4 text-purple-500" />
+            <div>
+              <div className="text-sm font-medium">Import from Figma</div>
+              <div className="text-xs text-muted-foreground">Bring in your designs</div>
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-accent">
+            <Database className="h-4 w-4 text-green-500" />
+            <div>
+              <div className="text-sm font-medium">Connect Database</div>
+              <div className="text-xs text-muted-foreground">Link your data source</div>
+            </div>
+          </DropdownMenuItem>
+        </div>
+
+                
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 const AttachmentsButton = memo(PureAttachmentsButton);
 
+
+
 // New function for VisibilityButton
+// function PureVisibilityButton({ selectedVisibilityType }: { selectedVisibilityType: VisibilityType }) {
+//   return (
+//     <Button
+//       className="rounded-full border border-footer-border hover:text-none text-secondary hover:text-secondary/50 cursor-pointer"
+//       variant="ghost"
+//     >
+//       <WorldIcon size={14} /> {/* Assuming GlobeIcon is available or replace with appropriate icon */}
+//       <span className="hidden md:flex ml-1 text-xs">Public</span> {/* Matches the "Public" label in the image */}
+//     </Button>
+//   );
+// }
+
+// const VisibilityButton = memo(PureVisibilityButton);
+
+
+
 function PureVisibilityButton({ selectedVisibilityType }: { selectedVisibilityType: VisibilityType }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const visibilityOptions = [
+    {
+      type: 'public' as VisibilityType,
+      title: 'Public',
+      description: 'Anyone can view and remix',
+      detailedDescription: 'Anyone can remix this project. This means copy and build on it. To stop remixing, upgrade to make it private.',
+      hasTooltip: true
+    },
+    {
+      type: 'workspace' as VisibilityType,
+      title: 'Workspace Pro',
+      description: 'Only visible to your workspace',
+      detailedDescription: 'Only visible to your workspace',
+      hasTooltip: false
+    },
+    {
+      type: 'personal' as VisibilityType,
+      title: 'Personal Business',
+      description: 'Only visible to yourself, unless shared',
+      detailedDescription: 'Only visible to yourself, unless shared',
+      hasTooltip: false
+    }
+  ];
+
+  const currentOption = visibilityOptions.find(opt => opt.type === selectedVisibilityType) || visibilityOptions[0];
+
+  const handleValueChange = (value: string) => {
+    console.log('Selected visibility:', value);
+    // You would typically update the state here
+    // setSelectedVisibilityType(value as VisibilityType);
+  };
+
   return (
-    <Button
-      className="rounded-full border border-footer-border hover:text-none text-secondary hover:text-secondary/50 cursor-pointer"
-      variant="ghost"
-    >
-      <WorldIcon size={14} /> {/* Assuming GlobeIcon is available or replace with appropriate icon */}
-      <span className="hidden md:flex ml-1 text-xs">Public</span> {/* Matches the "Public" label in the image */}
-    </Button>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          className="rounded-full border border-footer-border hover:text-none text-secondary hover:text-secondary/50 cursor-pointer"
+          variant="ghost"
+        >
+          <WorldIcon size={14} />
+          <span className="hidden md:flex ml-1 text-xs">{currentOption.title}</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent 
+        className="w-80 p-4 bg-background border border-border shadow-lg overflow-visible"
+        align="start"
+        sideOffset={8}
+      >
+        <RadioGroup value={selectedVisibilityType} onValueChange={handleValueChange} className="space-y-3">
+          {/* Public Option with Tooltip */}
+          <div className="relative">
+            <Label 
+              htmlFor="public" 
+              className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                selectedVisibilityType === 'public' 
+                  ? 'bg-accent border border-primary/20' 
+                  : 'hover:bg-accent/50'
+              }`}
+            >
+              <RadioGroupItem value="public" id="public" className="mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-medium">Public</div>
+                  
+                  {/* Info Icon with Tooltip - Only for Public */}
+                  <div className="relative group">
+                    <div className="w-4 h-4 rounded-full bg-muted flex items-center justify-center cursor-help">
+                      <span className="text-xs font-bold">i</span>
+                    </div>
+                    
+                    {/* Tooltip on Hover - Positioned to display over main div */}
+                    <div className="absolute left-full ml-2 top-0 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none min-w-64">
+                      <div className="bg-popover text-popover-foreground p-3 rounded-lg shadow-lg border">
+                        <div className="text-sm font-medium mb-1">Public</div>
+                        <div className="text-xs text-muted-foreground">
+                          Anyone can remix this project. This means copy and build on it. To stop remixing, upgrade to make it private.
+                        </div>
+                        <div className="absolute right-full top-3 w-0 h-0 border-t-2 border-b-2 border-l-0 border-r-2 border-l-transparent border-r-popover border-t-transparent border-b-transparent"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1 leading-tight">
+                  Anyone can view and remix
+                </div>
+              </div>
+            </Label>
+          </div>
+
+          {/* Workspace Pro Option */}
+          <Label 
+            htmlFor="workspace" 
+            className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+              selectedVisibilityType === 'workspace' 
+                ? 'bg-accent border border-primary/20' 
+                : 'hover:bg-accent/50'
+            }`}
+          >
+            <RadioGroupItem value="workspace" id="workspace" className="mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium">Workspace Pro</div>
+              <div className="text-xs text-muted-foreground mt-1 leading-tight">
+                Only visible to your workspace
+              </div>
+            </div>
+          </Label>
+
+          {/* Personal Business Option */}
+          <Label
+            htmlFor="personal" 
+            className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+              selectedVisibilityType === 'personal' 
+                ? 'bg-accent border border-primary/20' 
+                : 'hover:bg-accent/50'
+            }`}
+          >
+            <RadioGroupItem value="personal" id="personal" className="mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium">Personal Business</div>
+              <div className="text-xs text-muted-foreground mt-1 leading-tight">
+                Only visible to yourself, unless shared
+              </div>
+            </div>
+          </Label>
+        </RadioGroup>
+
+        <div className="mt-3 pt-3 border-t border-border">
+          <div className="text-xs text-muted-foreground text-center">
+            Visibility settings affect who can see this chat
+          </div>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
