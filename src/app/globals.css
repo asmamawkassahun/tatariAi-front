@@ -140,4 +140,11 @@
   .text-15 {
     font-size: 15px;
   }
+  .bg-gradient {
+    background: linear-gradient(122.23deg, rgba(255, 255, 255, 0.4) 30.34%, rgba(255, 255, 255, 0) 99.45%);
+  }
+
+  .bg-gradient-dark {
+    background: linear-gradient(122.23deg, rgba(28, 28, 28, 0.4) 30.34%, rgba(28, 28, 28, 0) 99.45%);
+  }
 }

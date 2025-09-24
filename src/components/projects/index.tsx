@@ -16,7 +16,7 @@ const Projects = () => {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <section className="bg-background container mx-auto rounded-[1.25rem]">
+    <section className="bg-gradient dark:bg-gradient-dark container mx-auto rounded-[1.25rem]">
       <div className="flex flex-col space-y-5 py-5 px-2 md:px-20">
         <div className="space-y-3 md:space-y-4">
           {/* Workspace Section - Only visible when authenticated */}
@@ -189,6 +189,14 @@ const Projects = () => {
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
+          <ProjectCard />
           <ProjectCard />
           <ProjectCard />
           <ProjectCard />

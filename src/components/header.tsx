@@ -29,7 +29,7 @@ const Header = () => {
   let color = isDark ? "#5B5B5B" : "#fcfbf8";
 
   return (
-    <header className="container mx-auto flex items-center justify-between py-4 px-2 sm:px-0 sticky top-0 bg-background z-50">
+    <header className="container mx-auto flex items-center justify-between py-4 px-2 sm:px-0 sticky top-0 bg-transparent z-50">
       <div className="flex items-center gap-6 sm:gap-8 lg:gap-[4.4375rem]">
         <div>Logo</div>
         <div className="hidden sm:flex items-center justify-center gap-3 sm:gap-4 lg:gap-6 text-foreground text-sm">
