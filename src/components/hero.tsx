@@ -115,7 +115,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="max-w-[48rem] mx-auto flex flex-col items-center my-[18rem] gap-12">
+    <div className="max-w-[48rem] mx-auto flex flex-col items-center my-52 sm:my-[18rem] gap-12">
       <div>
         <p className="text-primary text-center text-3xl sm:text-4xl md:text-[2.8475rem] font-medium leading-tight tracking-[-1.2px]">
           Build something Amazing
