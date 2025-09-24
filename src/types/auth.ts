@@ -18,6 +18,7 @@ export interface AuthState {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  authMethod: 'firebase' | 'api' | null;
 }
 
 export interface LoginCredentials {

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from 'firebase/auth';
-import { loginWithEmail, signupWithEmail, loginWithGoogle, loginWithGithub, logout } from './authThunks';
+import { loginWithEmail, signupWithEmail, loginWithGoogle, loginWithGithub, logout, verifyEmail, resendVerification } from './authThunks';
 import { AuthState, SerializableUser } from '@/types/auth';
 import { serializeUser } from '@/lib/userSerializer';
 
@@ -9,6 +9,7 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   isAuthenticated: false,
+  authMethod: null,
 };
 
 const authSlice = createSlice({
@@ -18,10 +19,19 @@ const authSlice = createSlice({
     setUser: (state, action: PayloadAction<User | null>) => {
       state.user = action.payload ? serializeUser(action.payload) : null;
       state.isAuthenticated = action.payload !== null;
+      state.authMethod = action.payload ? 'firebase' : null;
       state.error = null;
+      console.log('🔐 Auth state updated via setUser:', { 
+        isAuthenticated: state.isAuthenticated, 
+        authMethod: state.authMethod,
+        userEmail: state.user?.email 
+      });
     },
     clearError: (state) => {
       state.error = null;
+    },
+    setAuthMethod: (state, action: PayloadAction<'firebase' | 'api' | null>) => {
+      state.authMethod = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -38,7 +48,14 @@ const authSlice = createSlice({
       state.loading = false;
       state.user = action.payload;
       state.isAuthenticated = true;
+      state.authMethod = (action.payload as any).authMethod || null;
       state.error = null;
+      console.log('🔐 Auth state updated via thunk:', { 
+        isAuthenticated: state.isAuthenticated, 
+        authMethod: state.authMethod,
+        userEmail: state.user?.email,
+        userUID: state.user?.uid
+      });
     };
 
     const handleRejected = (state: AuthState, action: PayloadAction<string | undefined>) => {
@@ -77,11 +94,27 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
+        state.authMethod = null;
         state.error = null;
       })
       .addCase(logout.rejected, handleRejected);
+
+    // Email verification
+    builder
+      .addCase(verifyEmail.pending, handlePending)
+      .addCase(verifyEmail.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(verifyEmail.rejected, handleRejected)
+      .addCase(resendVerification.pending, handlePending)
+      .addCase(resendVerification.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(resendVerification.rejected, handleRejected);
   },
 });
 
-export const { setUser, clearError, setLoading } = authSlice.actions;
+export const { setUser, clearError, setLoading, setAuthMethod } = authSlice.actions;
 export default authSlice.reducer;

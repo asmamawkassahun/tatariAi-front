@@ -22,8 +22,21 @@ const Headers = [
 
 const Header = () => {
   const [open, setOpen] = React.useState(false);
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading, authMethod } = useAuth();
   const { resolvedTheme } = useTheme();
+
+  // Debug logging in development
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔐 Header auth state:', {
+        isAuthenticated,
+        loading,
+        authMethod,
+        userEmail: user?.email,
+        userUID: user?.uid
+      });
+    }
+  }, [isAuthenticated, loading, authMethod, user]);
 
   const isDark = resolvedTheme === "dark";
   let color = isDark ? "#5B5B5B" : "#fcfbf8";
