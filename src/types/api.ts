@@ -71,24 +71,33 @@ export interface AuthResponse {
     authDate?: string;
     createdAt: string;
     updatedAt: string;
+    client?: {
+        id: string;
+        phone: string | null;
+      };
+      enterprise?: {
+        id: string;
+        businessName?: string;
+        phone: string | null;
+      };
   };
 }
 
 // User Types
 export interface User {
-  id: string;
+ id: string;
   email: string;
-  displayName: string;
+  displayName: string; // Could derive from firstName + lastName in auth
   firstName?: string;
   lastName?: string;
-  avatar?: string;
+  avatar?: string; // Maps to photoUrl from auth
   bio?: string;
   emailVerified: boolean;
   role: string;
   isActive: boolean;
-  lastLoginAt?: string;
-  createdAt: string;
-  updatedAt: string;
+  lastLoginAt?: string; // ISO string
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string;
 }
 
 export interface UpdateUserRequest {
