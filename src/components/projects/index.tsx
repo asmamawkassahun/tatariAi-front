@@ -21,76 +21,82 @@ const Projects = () => {
         <div className="space-y-3 md:space-y-4">
           {/* Workspace Section - Only visible when authenticated */}
           {isAuthenticated && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex flex-col gap-4">
-                  <h2 className="text-primary dark:text-accent text-[1.375rem] font-medium leading-9">
-                    {user?.displayName || "User"}'s Lovable's Workspace
-                  </h2>
-                  {/* Search and Filter Bar */}
-                  <div className="flex items-center gap-4 mb-6">
-                    {/* Search Bar */}
-                    <div className="relative flex-1 max-w-md">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-secondary " />
-                      <Input
-                        placeholder="Search projects..."
-                        className="pl-10 bg-accent dark:bg-primary text-secondary border-footer-border rounded-lg"
-                      />
-                    </div>
+            <div className=" flex flex-col items-center sm:items-stretch">
+              <div>
+                <div className="flex items-center  justify-between w-full">
+                  <div className="flex flex-col gap-4">
+                    <h2 className="text-primary dark:text-accent text-3xl md:text-[1.375rem] font-medium leading-9">
+                      {user?.displayName || "User"}'s Lovable's Workspace
+                    </h2>
+                    {/* Search and Filter Bar */}
+                    <div className=" flex flex-col md:flex-row items-start gap-4 mb-6">
+                      {/* Search Bar */}
+                      <div className="relative flex-1 w-full max-w-full">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-secondary " />
+                        <Input
+                          placeholder="Search projects..."
+                          className="pl-10 bg-accent dark:bg-primary text-secondary border-footer-border rounded-lg"
+                        />
+                      </div>
 
-                    {/* Filter Buttons */}
-                    <div className="flex gap-2 ">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="flex items-center gap-2 px-3 py-2 bg-accent  dark:bg-primary border border-footer-border rounded-lg text-13 text-primary dark:text-accent hover:bg-accent/80 transition-colors">
-                            <span>Last edited</span>
-                            <ChevronDown className="w-4 h-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start">
-                          <DropdownMenuItem>Last edited</DropdownMenuItem>
-                          <DropdownMenuItem>Recently created</DropdownMenuItem>
-                          <DropdownMenuItem>Alphabetical</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="flex items-center w-full md:w-auto gap-4 md:gap-2">
+                        {/* Filter Buttons */}
+                        <div className="flex gap-2 ">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="flex items-center md:gap-2 px-1 md:px-3 py-2 bg-accent text-xs sm:text-base dark:bg-primary border border-footer-border rounded-lg  text-primary dark:text-accent hover:bg-accent/80 transition-colors">
+                                <span>Last edited</span>
+                                <ChevronDown className="w-4 h-4" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem>Last edited</DropdownMenuItem>
+                              <DropdownMenuItem>Recently created</DropdownMenuItem>
+                              <DropdownMenuItem>Alphabetical</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="flex items-center gap-2 px-3 py-2 bg-accent dark:bg-primary border border-footer-border rounded-lg text-13 text-primary dark:text-accent hover:bg-accent/80 transition-colors">
-                            <span>Newest first</span>
-                            <ChevronDown className="w-4 h-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start">
-                          <DropdownMenuItem>Newest first</DropdownMenuItem>
-                          <DropdownMenuItem>Oldest first</DropdownMenuItem>
-                          <DropdownMenuItem>Most popular</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="flex items-center gap-2 px-1 md:px-3 md:py-2 bg-accent dark:bg-primary text-xs sm:text-base border border-footer-border rounded-lg text-13 text-primary dark:text-accent hover:bg-accent/80 transition-colors">
+                                <span>Newest first</span>
+                                <ChevronDown className="w-4 h-4" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem>Newest first</DropdownMenuItem>
+                              <DropdownMenuItem>Oldest first</DropdownMenuItem>
+                              <DropdownMenuItem>Most popular</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
 
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="flex items-center gap-2 px-3 py-2 bg-accent dark:bg-primary border border-footer-border rounded-lg text-13 text-primary dark:text-accent hover:bg-accent/80 transition-colors">
-                            <span>All creators</span>
-                            <ChevronDown className="w-4 h-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start">
-                          <DropdownMenuItem>All creators</DropdownMenuItem>
-                          <DropdownMenuItem>My projects</DropdownMenuItem>
-                          <DropdownMenuItem>Shared with me</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="flex items-center gap-2 px-1 md:px-3 md:py-2 bg-accent dark:bg-primary text-xs sm:text-base border border-footer-border rounded-lg text-13 text-primary dark:text-accent hover:bg-accent/80 transition-colors">
+                                <span>All creators</span>
+                                <ChevronDown className="w-4 h-4" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem>All creators</DropdownMenuItem>
+                              <DropdownMenuItem>My projects</DropdownMenuItem>
+                              <DropdownMenuItem>Shared with me</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <button className="text-primary dark:text-accent text-13 font-medium leading-5 border border-accent dark:border-none rounded-lg px-2 py-1 transition-colors bg-accent dark:bg-primary hover:bg-accent/80 cursor-pointer">
-                  View All
-                </button>
-              </div>
 
+                </div>
+                <div className="flex justify-end ">
+                  <button className="text-primary dark:text-accent leading-5 border border-accent dark:border-none rounded-lg px-2 py-1 transition-colors bg-accent dark:bg-primary hover:bg-accent/80 cursor-pointer">
+                    View All
+                  </button>
+                </div>
+              </div>
               {/* Workspace Project Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mx-auto mb-8">
                 <ProjectCard />
                 <ProjectCard />
                 <ProjectCard />
@@ -112,7 +118,7 @@ const Projects = () => {
                   <div className="relative">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="flex w-[7.375rem] justify-between items-center gap-2 px-2 py-1 bg-accent dark:bg-primary border border-footer-border rounded-lg text-13 text-primary dark:text-accent">
+                        <button className="flex w-[7.375rem] justify-between items-center gap-2 px-2 py-1 bg-accent dark:bg-primary border border-footer-border rounded-lg  text-primary dark:text-accent">
                           <span> Popular</span>
                           <ChevronDown className="w-4 h-4" />
                         </button>
@@ -181,7 +187,7 @@ const Projects = () => {
 
               {/* Right side - View All Link */}
               <div className="flex justify-end">
-                <button className="rounded-lg px-2 py-1 bg-accent dark:bg-primary text-primary dark:text-accent text-13 font-medium leading-5 border border-accent dark:border-none transition-colors cursor-pointer hover:bg-accent/80">
+                <button className="rounded-lg px-2 py-1 bg-accent dark:bg-primary text-primary dark:text-accent   leading-5 border border-accent dark:border-none transition-colors cursor-pointer hover:bg-accent/80">
                   View All
                 </button>
               </div>
