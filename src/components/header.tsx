@@ -158,23 +158,10 @@ const Headers = [
 
 const Header = () => {
   const [open, setOpen] = React.useState(false);
-  const { user, isAuthenticated, loading, authMethod } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { resolvedTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false); // Track scroll state
   const headerRef = useRef<HTMLElement>(null); // Ref to measure header height
-
-  // Debug logging in development
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🔐 Header auth state:', {
-        isAuthenticated,
-        loading,
-        authMethod,
-        userEmail: user?.email,
-        userUID: user?.uid
-      });
-    }
-  }, [isAuthenticated, loading, authMethod, user]);
 
   const isDark = resolvedTheme === "dark";
   let color = isDark ? "#F7F4ED" : "#5F5F5D";
@@ -195,11 +182,10 @@ const Header = () => {
   return (
     <header
       ref={headerRef}
-      className={`sm:px-0 sticky top-0 z-50 transition-all duration-200 ease-out  ${
-        isScrolled
-          ? "bg-background/75 backdrop-blur-xl" // Opaque background when scrolled
-          : "bg-transparent" // Transparent initially
-      }`}
+      className={`sm:px-0 sticky top-0 z-50 transition-all duration-200 ease-out  ${isScrolled
+        ? "bg-background/75 backdrop-blur-xl" // Opaque background when scrolled
+        : "bg-transparent" // Transparent initially
+        }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between py-4 px-2">
         <div className="flex items-center gap-6 sm:gap-8 lg:gap-[4.4375rem]">
@@ -214,13 +200,10 @@ const Header = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          {loading ? (
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-          ) : isAuthenticated ? (
+          {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              <div className=" cursor-pointer hover:bg-primary/5 rounded-md p-1"><Gift color={color}  /></div>
+              <div className=" cursor-pointer hover:bg-primary/5 rounded-md p-1"><Gift color={color} /></div>
               <div className=" cursor-pointer hover:bg-primary/5 rounded-md p-1"><Inbox color={color} /></div>
-              
               {user && <ProfileDropdown user={user} />}
             </div>
           ) : (
