@@ -158,10 +158,23 @@ const Headers = [
 
 const Header = () => {
   const [open, setOpen] = React.useState(false);
-  const { user, isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading, authMethod } = useAuth();
   const { resolvedTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false); // Track scroll state
   const headerRef = useRef<HTMLElement>(null); // Ref to measure header height
+
+  // Debug logging in development
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔐 Header auth state:', {
+        isAuthenticated,
+        loading,
+        authMethod,
+        userEmail: user?.email,
+        userUID: user?.uid
+      });
+    }
+  }, [isAuthenticated, loading, authMethod, user]);
 
   const isDark = resolvedTheme === "dark";
   let color = isDark ? "#F7F4ED" : "#5F5F5D";
