@@ -16,33 +16,33 @@ const Projects = () => {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <section className="bg-gradient dark:bg-gradient-dark container mx-auto rounded-[1.25rem]">
+    <section className="bg-gradient dark:bg-gradient-dark container mx-auto rounded-[1.25rem] mb-8">
       <div className="flex flex-col space-y-5 py-5 px-2 md:px-20">
         <div className="space-y-3 md:space-y-4">
           {/* Workspace Section - Only visible when authenticated */}
           {isAuthenticated && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col gap-4">
-                  <h2 className="text-primary text-[1.375rem] font-medium leading-9">
+                  <h2 className="text-primary dark:text-accent text-[1.375rem] font-medium leading-9">
                     {user?.displayName || "User"}'s Lovable's Workspace
                   </h2>
                   {/* Search and Filter Bar */}
                   <div className="flex items-center gap-4 mb-6">
                     {/* Search Bar */}
                     <div className="relative flex-1 max-w-md">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-secondary" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-secondary " />
                       <Input
                         placeholder="Search projects..."
-                        className="pl-10 bg-[#FFFFFF01] border-footer-border rounded-lg"
+                        className="pl-10 bg-accent dark:bg-primary text-secondary border-footer-border rounded-lg"
                       />
                     </div>
 
                     {/* Filter Buttons */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 ">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="flex items-center gap-2 px-3 py-2 bg-[#FFFFFF01] border border-footer-border rounded-lg text-13 text-primary hover:bg-accent/10 transition-colors">
+                          <button className="flex items-center gap-2 px-3 py-2 bg-accent  dark:bg-primary border border-footer-border rounded-lg text-13 text-primary dark:text-accent hover:bg-accent/80 transition-colors">
                             <span>Last edited</span>
                             <ChevronDown className="w-4 h-4" />
                           </button>
@@ -56,7 +56,7 @@ const Projects = () => {
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="flex items-center gap-2 px-3 py-2 bg-[#FFFFFF01] border border-footer-border rounded-lg text-13 text-primary hover:bg-accent/10 transition-colors">
+                          <button className="flex items-center gap-2 px-3 py-2 bg-accent dark:bg-primary border border-footer-border rounded-lg text-13 text-primary dark:text-accent hover:bg-accent/80 transition-colors">
                             <span>Newest first</span>
                             <ChevronDown className="w-4 h-4" />
                           </button>
@@ -70,7 +70,7 @@ const Projects = () => {
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="flex items-center gap-2 px-3 py-2 bg-[#FFFFFF01] border border-footer-border rounded-lg text-13 text-primary hover:bg-accent/10 transition-colors">
+                          <button className="flex items-center gap-2 px-3 py-2 bg-accent dark:bg-primary border border-footer-border rounded-lg text-13 text-primary dark:text-accent hover:bg-accent/80 transition-colors">
                             <span>All creators</span>
                             <ChevronDown className="w-4 h-4" />
                           </button>
@@ -84,13 +84,13 @@ const Projects = () => {
                     </div>
                   </div>
                 </div>
-                <button className="text-primary text-13 font-medium leading-5 border border-accent rounded-lg px-2 py-1 transition-colors hover:bg-accent/10">
+                <button className="text-primary dark:text-accent text-13 font-medium leading-5 border border-accent dark:border-none rounded-lg px-2 py-1 transition-colors bg-accent dark:bg-primary hover:bg-accent/80 cursor-pointer">
                   View All
                 </button>
               </div>
 
               {/* Workspace Project Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  mb-8">
                 <ProjectCard />
                 <ProjectCard />
                 <ProjectCard />
@@ -98,7 +98,7 @@ const Projects = () => {
             </div>
           )}
           <div className="space-y-4">
-            <h2 className="text-primary text-[1.375rem] font-medium leading-9">
+            <h2 className="text-primary dark:text-accent text-[1.375rem] font-medium leading-9">
               From the Community
             </h2>
 
@@ -112,7 +112,7 @@ const Projects = () => {
                   <div className="relative">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="flex w-[7.375rem] justify-between items-center gap-2 px-2 py-1 bg-[#FFFFFF01] border border-footer-border rounded-lg text-13 text-primary">
+                        <button className="flex w-[7.375rem] justify-between items-center gap-2 px-2 py-1 bg-accent dark:bg-primary border border-footer-border rounded-lg text-13 text-primary dark:text-accent">
                           <span> Popular</span>
                           <ChevronDown className="w-4 h-4" />
                         </button>
@@ -181,14 +181,14 @@ const Projects = () => {
 
               {/* Right side - View All Link */}
               <div className="flex justify-end">
-                <button className="rounded-lg px-2 py-1 text-primary text-13 font-medium leading-5 border border-accent transition-colors">
+                <button className="rounded-lg px-2 py-1 bg-accent dark:bg-primary text-primary dark:text-accent text-13 font-medium leading-5 border border-accent dark:border-none transition-colors cursor-pointer hover:bg-accent/80">
                   View All
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 mx-auto md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <ProjectCard />
           <ProjectCard />
           <ProjectCard />

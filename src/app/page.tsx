@@ -14,17 +14,28 @@ export default function Home() {
       <div className={`absolute inset-0 w-full ${isDark ? "bg-[url('/assets/bg-dark.svg')] bg-cover bg-center" : "bg-[url('/assets/bg-light.svg')] bg-cover bg-center"}`}></div>
 
       {/* Content sections */}
-      <div className="relative z-10 px-2 md:px-0">
+      {/* <div className="relative z-10 px-2 md:px-0">
         <Header />
         <Hero />
       </div>
 
       <div className="relative z-10 px-2 md:px-0 glass-element">
         <Projects />
-      </div>
+      </div> */}
 
       {/* Footer without background */}
-      <div className="relative z-10">
+      {/* <div className="relative z-10">
+        <Footer />
+      </div> */}
+
+      <div className="relative z-20">
+        <Header />
+        <main className="px-2 md:px-0">
+          <Hero />
+          <div className="glass-element px-2 md:px-0">
+            <Projects />
+          </div>
+        </main>
         <Footer />
       </div>
     </div>

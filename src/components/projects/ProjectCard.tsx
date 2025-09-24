@@ -15,7 +15,7 @@ const ProjectCard = () => {
             width={342}
             height={192}
             alt="site imag"
-            className="object-cover rounded-xl"
+            className="object-contain rounded-xl"
           />
         </div>
         <div className="flex space-x-1.25">
@@ -30,10 +30,10 @@ const ProjectCard = () => {
             />
           </div>
           <div className="">
-            <h3 className="text-primary text-sm font-normal leading-6">
+            <h3 className="text-primary dark:text-accent text-sm font-normal leading-6">
               Project Title
             </h3>
-            <p className="text-secondary text-13 leading-5">8031 Remixes </p>
+            <p className="text-secondary dark:text-muted text-13 leading-5">8031 Remixes </p>
           </div>
         </div>
       </div>
