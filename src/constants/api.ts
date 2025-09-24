@@ -28,6 +28,10 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/signin',
     REGISTER: '/auth/signup',
+    GOOGLE_LOGIN: 'auth/google-signin',
+    LINKEDIN_LOGIN: 'auth/linkedin-signin',
+    FACEBOOK_LOGIN: 'auth/facebook-signin',
+    GITHUB_LOGIN: '/auth/github',
     LOGOUT: '/auth/logout',
     REFRESH_TOKEN: '/auth/refresh',
     FORGOT_PASSWORD: '/auth/forgot-password',
