@@ -71,8 +71,8 @@ const Header = () => {
               <Menu className="h-8 w-8 cursor-pointer" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-            <nav className="flex flex-col gap-6 mt-6">
+          <SheetContent side="right" className="">
+            <nav className="flex flex-col gap-6 bg mt-6">
               {Headers.map((header) => (
                 <Link
                   key={header.id}
@@ -85,14 +85,14 @@ const Header = () => {
               ))}
 
               {/* Mobile Auth Section */}
-              <div className="pt-6 border-t border-border">
+              <div className="pt-6 border-t border-border px-3">
                 {isAuthenticated ? (
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-2 text-sm text-foreground">
                       <User className="w-4 h-4" />
                       <span>{user?.email}</span>
                     </div>
-                    <LogoutButton variant="outline" className="w-full" />
+                    <LogoutButton variant="outline" className=" px-5" />
                   </div>
                 ) : (
                   <div className="flex flex-col gap-3">
