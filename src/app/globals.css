@@ -42,7 +42,9 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --footer-border: var(--footer-border);
+  --color-footer-border: var(--footer-border);
+  --color-footer-background: var(--footer-background);
+  --color-footer-muted: var(--footer-muted);
 }
 
 :root {
@@ -116,6 +118,8 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --footer-border: #2c2c2e;
+  --footer-background: #272725;
+  --footer-muted: #AFACA5;
 }
 
 @layer base {
