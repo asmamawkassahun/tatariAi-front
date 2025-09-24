@@ -1594,7 +1594,7 @@ function PureMultimodalInput({
       />
 
       <PromptInput
-        className="bg-accent rounded-[1.75rem] border border-primary/20 shadow-[0px_8px_10px_-6px_#0000001A] transition-all duration-200 dark:bg-sidebar dark:border-sidebar-border p-3"
+        className="bg-accent text-secondary rounded-[1.75rem] border border-primary/20 shadow-[0px_8px_10px_-6px_#0000001A] transition-all duration-200 dark:bg-sidebar dark:border-sidebar-border p-3"
         onSubmit={(event) => {
           event.preventDefault();
           if (status !== 'ready') {
@@ -1733,7 +1733,7 @@ function PureAttachmentsButton({
       <DropdownMenuTrigger asChild>
         <Button
           data-testid="attachments-button"
-          className="!rounded-full bg-accent border border-footer-border w-9 h-9 text-secondary hover:text-secondary/50 cursor-pointer"
+          className="!rounded-full  border border-footer-border w-9 h-9 text-secondary hover:text-secondary/50 dark:hover:bg-primary cursor-pointer"
           disabled={status !== 'ready'}
           variant="ghost"
         >
@@ -1782,7 +1782,7 @@ function PureAttachmentsButton2({
   return (
     <Button
       data-testid="attachments-button"
-      className="rounded-full border border-footer-border text-secondary hover:text-secondary/50 cursor-pointer "
+      className="rounded-full border border-footer-border text-secondary hover:text-secondary/50 dark:hover:bg-primary cursor-pointer "
       onClick={(event) => {
         event.preventDefault();
         fileInputRef.current?.click();
@@ -1837,7 +1837,7 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          className="rounded-full border border-footer-border hover:text-none text-secondary hover:text-secondary/50 cursor-pointer"
+          className="rounded-full border border-footer-border hover:text-none text-secondary dark:hover:bg-primary hover:text-secondary/50 cursor-pointer"
           variant="ghost"
         >
           <WorldIcon size={14} />
@@ -1937,7 +1937,7 @@ const VisibilityButton = memo(PureVisibilityButton);
 function PureToolButton({ toolName }: { toolName: string }) {
   return (
     <Button
-      className="rounded-full border border-footer-border text-secondary hover:text-secondary/50 cursor-pointer"
+      className="rounded-full border border-footer-border text-secondary hover:text-secondary/50 dark:hover:bg-primary cursor-pointer"
       variant="ghost"
     >
       <SupabaseIcon size={14} />
@@ -1964,7 +1964,7 @@ function PureVoiceAndSendButtons({
   return (
     <div className="flex items-center gap-2">
       <Button
-        className="w-9 h-9 text-secondary rounded-full border border-footer-border hover:text-secondary/50 cursor-pointer"
+        className="w-9 h-9 text-secondary rounded-full border border-footer-border hover:text-secondary/50 dark:hover:bg-primary cursor-pointer"
         variant="ghost"
       >
         <SoundIcon />
