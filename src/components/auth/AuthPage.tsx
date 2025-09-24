@@ -27,6 +27,8 @@ export function AuthPage({ mode, onModeChange }: AuthPageProps) {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [showPasswordForm, setShowPasswordForm] = React.useState(false);
+    const [emailError, setEmailError] = React.useState("");
+    const [passwordError, setPasswordError] = React.useState("");
     const router = useRouter();
     const dispatch = useTypedDispatch();
     const { loading, error } = useTypedSelector((state) => state.auth);
@@ -37,6 +39,39 @@ export function AuthPage({ mode, onModeChange }: AuthPageProps) {
             dispatch(clearError());
         }
     }, [error, dispatch]);
+
+    // Validation functions
+    const validateEmail = (email: string): boolean => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email.trim()) {
+            setEmailError("Email is required");
+            return false;
+        }
+        if (!emailRegex.test(email.trim())) {
+            setEmailError("Please enter a valid email address");
+            return false;
+        }
+        setEmailError("");
+        return true;
+    };
+
+    const validatePassword = (password: string): boolean => {
+        if (!password) {
+            setPasswordError("Password is required");
+            return false;
+        }
+        if (password.length < 6) {
+            setPasswordError("Password must be at least 6 characters long");
+            return false;
+        }
+        setPasswordError("");
+        return true;
+    };
+
+    const clearErrors = () => {
+        setEmailError("");
+        setPasswordError("");
+    };
 
     const handleGoogleSignIn = async () => {
         try {
@@ -59,26 +94,44 @@ export function AuthPage({ mode, onModeChange }: AuthPageProps) {
     };
 
     const handleContinue = () => {
-        if (!email) {
-            toast.error("Please enter your email");
-            return;
+        clearErrors();
+        if (validateEmail(email)) {
+            setShowPasswordForm(true);
         }
-        setShowPasswordForm(true);
+    };
+
+    // Real-time validation for email
+    const handleEmailChange = (value: string) => {
+        setEmail(value);
+        if (emailError && value.trim()) {
+            setEmailError("");
+        }
+    };
+
+    // Real-time validation for password
+    const handlePasswordChange = (value: string) => {
+        setPassword(value);
+        if (passwordError && value.length >= 6) {
+            setPasswordError("");
+        }
     };
 
     const handleEmailAuth = async () => {
-        if (!email || !password) {
-            toast.error("Please fill in all fields");
+        clearErrors();
+
+        const isEmailValid = validateEmail(email);
+        const isPasswordValid = validatePassword(password);
+
+        if (!isEmailValid || !isPasswordValid) {
             return;
         }
 
-
         try {
             if (mode === "login") {
-                await dispatch(loginWithEmail({ email, password })).unwrap();
+                await dispatch(loginWithEmail({ email: email.trim(), password })).unwrap();
                 toast.success("Successfully logged in!");
             } else {
-                await dispatch(signupWithEmail({ email, password, confirmPassword: password })).unwrap();
+                await dispatch(signupWithEmail({ email: email.trim(), password, confirmPassword: password })).unwrap();
                 toast.success("Account created successfully!");
             }
             router.push("/");
@@ -171,10 +224,13 @@ export function AuthPage({ mode, onModeChange }: AuthPageProps) {
                             type="email"
                             placeholder="Email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="h-12"
+                            onChange={(e) => handleEmailChange(e.target.value)}
+                            className={`h-12 ${emailError ? "border-red-500 focus:border-red-500" : ""}`}
                             disabled={loading}
                         />
+                        {emailError && (
+                            <p className="text-sm text-red-500 mt-1">{emailError}</p>
+                        )}
                     </div>
 
                     {/* Password Fields - Show when user clicks continue */}
@@ -183,16 +239,24 @@ export function AuthPage({ mode, onModeChange }: AuthPageProps) {
                             <div className="space-y-2">
                                 <Label htmlFor="password" className="text-sm font-medium text-primary">
                                     Password
+                                    {mode === "signup" && (
+                                        <span className="text-muted-foreground text-xs ml-1">
+                                            (minimum 6 characters)
+                                        </span>
+                                    )}
                                 </Label>
                                 <Input
                                     id="password"
                                     type="password"
                                     placeholder="Password"
                                     value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="h-12"
+                                    onChange={(e) => handlePasswordChange(e.target.value)}
+                                    className={`h-12 ${passwordError ? "border-red-500 focus:border-red-500" : ""}`}
                                     disabled={loading}
                                 />
+                                {passwordError && (
+                                    <p className="text-sm text-red-500 mt-1">{passwordError}</p>
+                                )}
                             </div>
 
                         </>
