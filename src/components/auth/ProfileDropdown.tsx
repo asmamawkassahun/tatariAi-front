@@ -224,6 +224,7 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useTypedDispatch } from "@/hooks/useTypedDispatch";
 import { logout } from "@/store/feature/auth/authThunks";
+import { toast } from "sonner";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -273,10 +274,12 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
 
     const handleSignOut = async () => {
         try {
-            await dispatch(logout()).unwrap();
+            const result = await dispatch(logout()).unwrap();
+            toast.success(result.message || "Successfully logged out!");
             router.push("/");
-        } catch (error) {
+        } catch (error: any) {
             console.error("Logout failed:", error);
+            toast.error(error?.message || "Failed to log out");
             router.push("/");
         }
     };

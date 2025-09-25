@@ -1,6 +1,7 @@
 import { BaseService } from './base';
 import { API_ENDPOINTS } from '@/constants/api';
 import { setRefreshToken, setUserToken } from '@/lib/authToken';
+import { storeUserData } from '@/lib/userStorage';
 import {
   LoginRequest,
   SignupRequest,
@@ -13,7 +14,8 @@ import {
   GoogleSigninRequest,
   RefreshTokenRequest,
   User,
-  ApiResponse
+  ApiResponse,
+  emailPasswordSignUpResponse
 } from '@/types/api';
 
 /**
@@ -47,17 +49,24 @@ export class AuthService extends BaseService {
   /**
    * User signup with email and password
    */
-  async signup(userData: SignupRequest): Promise<AuthResponse> {
+  async signup(userData: SignupRequest): Promise<emailPasswordSignUpResponse> {
     try {
-      const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, userData);
+      // Make the API call directly to get the full response structure
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.REGISTER, userData);
+      console.log("Signup response", JSON.stringify(response, null, 2));
 
-      // Store tokens if signup successful
-      if (response.success) {
-        setUserToken(response.data.accessToken);
-        setRefreshToken(response.data.refreshToken);
+      // Extract the structured response
+      const authResponse: emailPasswordSignUpResponse = {
+        success: response.data.success,
+        message: response.data.message,
+        data: response.data.data
+      };
+
+      // Store tokens and user data if signup successful
+      if (!authResponse.success) {
+        throw new Error(authResponse.message);
       }
-
-      return response;
+      return authResponse;
     } catch (error) {
       console.error('Signup failed:', error);
       throw error;
@@ -69,15 +78,32 @@ export class AuthService extends BaseService {
    */
   async signin(credentials: LoginRequest): Promise<AuthResponse> {
     try {
-      const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials);
+      // Make the API call directly to get the full response structure
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.LOGIN, credentials);
+      console.log("Signin response", JSON.stringify(response, null, 2));
 
-      // Store tokens if signin successful
-      if (response.success) {
-        setUserToken(response.data.accessToken);
-        setRefreshToken(response.data.refreshToken);
+      // Extract the structured response
+      const authResponse: AuthResponse = {
+        success: response.data.success,
+        message: response.data.message,
+        data: response.data.data
+      };
+
+      // Store tokens and user data if signin successful
+      if (authResponse.success) {
+        setUserToken(authResponse.data.accessToken);
+        setRefreshToken(authResponse.data.refreshToken);
+
+        // Store user data securely for persistence
+        const userData = {
+          ...authResponse.data.user,
+          createdAt: authResponse.data.user.createdAt || new Date().toISOString(),
+          updatedAt: authResponse.data.user.updatedAt || new Date().toISOString(),
+        };
+        storeUserData(userData);
       }
 
-      return response;
+      return authResponse;
     } catch (error) {
       console.error('Signin failed:', error);
       throw error;
@@ -89,16 +115,21 @@ export class AuthService extends BaseService {
    */
   async logout(): Promise<ApiResponse> {
     try {
-      const response = await this.post<ApiResponse>(API_ENDPOINTS.AUTH.LOGOUT);
+      // Call server logout API first - don't clear local data here
+      // Local cleanup will be handled by the logout thunk
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.LOGOUT);
+      console.log("Logout response", JSON.stringify(response, null, 2));
 
-      // Clear stored tokens
-      // clearUserToken();
+      // Extract the structured response
+      const apiResponse: ApiResponse = {
+        success: response.data.success,
+        message: response.data.message,
+        data: response.data.data
+      };
 
-      return response;
+      return apiResponse;
     } catch (error) {
       console.error('Logout failed:', error);
-      // Even if logout fails on server, clear local tokens
-      // clearUserToken();
       throw error;
     }
   }
@@ -193,7 +224,7 @@ export class AuthService extends BaseService {
       // Remove confirmPassword from the request
       const { confirmPassword, ...changeData } = data;
 
-      return await this.post<ApiResponse>(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, changeData);
+      return await this.post<ApiResponse>('/auth/change-password', changeData);
     } catch (error) {
       console.error('Change password failed:', error);
       throw error;
@@ -218,15 +249,32 @@ export class AuthService extends BaseService {
    */
   async googleSignin(data: GoogleSigninRequest): Promise<AuthResponse> {
     try {
-      const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.GOOGLE_LOGIN, data);
+      // Make the API call directly to get the full response structure
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.GOOGLE_LOGIN, data);
+      console.log("Google signin response", JSON.stringify(response, null, 2));
 
-      // Store tokens if login successful
-      if (response.success) {
-        setUserToken(response.data.accessToken);
-        setRefreshToken(response.data.refreshToken);
+      // Extract the structured response
+      const authResponse: AuthResponse = {
+        success: response.data.success,
+        message: response.data.message,
+        data: response.data.data
+      };
+
+      // Store tokens and user data if login successful
+      if (authResponse.success) {
+        setUserToken(authResponse.data.accessToken);
+        setRefreshToken(authResponse.data.refreshToken);
+
+        // Store user data securely for persistence
+        const userData = {
+          ...authResponse.data.user,
+          createdAt: authResponse.data.user.createdAt || new Date().toISOString(),
+          updatedAt: authResponse.data.user.updatedAt || new Date().toISOString(),
+        };
+        storeUserData(userData);
       }
 
-      return response;
+      return authResponse;
     } catch (error) {
       console.error('Google signin failed:', error);
       throw error;
@@ -238,15 +286,32 @@ export class AuthService extends BaseService {
    */
   async socialLogin(provider: 'github', token: string): Promise<AuthResponse> {
     try {
-      const response = await this.post<AuthResponse>(`/auth/${provider}`, { token });
+      // Make the API call directly to get the full response structure
+      const response = await this.rawPost(`/auth/${provider}`, { token });
+      console.log(`${provider} login response`, JSON.stringify(response, null, 2));
 
-      // Store tokens if login successful
-      if (response.success) {
-        setUserToken(response.data.accessToken);
-        setRefreshToken(response.data.refreshToken);
+      // Extract the structured response
+      const authResponse: AuthResponse = {
+        success: response.data.success,
+        message: response.data.message,
+        data: response.data.data
+      };
+
+      // Store tokens and user data if login successful
+      if (authResponse.success) {
+        setUserToken(authResponse.data.accessToken);
+        setRefreshToken(authResponse.data.refreshToken);
+
+        // Store user data securely for persistence
+        const userData = {
+          ...authResponse.data.user,
+          createdAt: authResponse.data.user.createdAt || new Date().toISOString(),
+          updatedAt: authResponse.data.user.updatedAt || new Date().toISOString(),
+        };
+        storeUserData(userData);
       }
 
-      return response;
+      return authResponse;
     } catch (error) {
       console.error(`${provider} login failed:`, error);
       throw error;
@@ -256,9 +321,34 @@ export class AuthService extends BaseService {
   /**
    * Verify email with OTP
    */
-  async verifyEmail(data: VerifyEmailRequest): Promise<ApiResponse<{ message: string }>> {
+  async verifyEmail(data: VerifyEmailRequest): Promise<AuthResponse> {
     try {
-      return await this.post(API_ENDPOINTS.AUTH.VERIFY_EMAIL, data);
+      // Make the API call directly to get the full response structure
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.VERIFY_EMAIL, data);
+      console.log("Email verification response", JSON.stringify(response, null, 2));
+
+      // Extract the structured response
+      const authResponse: AuthResponse = {
+        success: response.data.success,
+        message: response.data.message,
+        data: response.data.data
+      };
+
+      // Store tokens and user data if verification successful
+      if (authResponse.success) {
+        setUserToken(authResponse.data.accessToken);
+        setRefreshToken(authResponse.data.refreshToken);
+
+        // Store user data securely for persistence
+        const userData = {
+          ...authResponse.data.user,
+          createdAt: authResponse.data.user.createdAt || new Date().toISOString(),
+          updatedAt: authResponse.data.user.updatedAt || new Date().toISOString(),
+        };
+        storeUserData(userData);
+      }
+
+      return authResponse;
     } catch (error) {
       console.error('Email verification failed:', error);
       throw error;
@@ -268,7 +358,7 @@ export class AuthService extends BaseService {
   /**
    * Resend verification email
    */
-  async resendVerification(data: ResendVerificationRequest): Promise<ApiResponse<{ message: string }>> {
+  async resendVerification(data: ResendVerificationRequest): Promise<emailPasswordSignUpResponse> {
     try {
       return await this.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, data);
     } catch (error) {

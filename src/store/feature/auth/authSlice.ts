@@ -49,13 +49,25 @@ const authSlice = createSlice({
     // Login with email
     builder
       .addCase(loginWithEmail.pending, handlePending)
-      .addCase(loginWithEmail.fulfilled, handleFulfilled)
+      .addCase(loginWithEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.error = null;
+        console.log('✅ Login successful');
+      })
       .addCase(loginWithEmail.rejected, handleRejected);
 
     // Signup with email
     builder
       .addCase(signupWithEmail.pending, handlePending)
-      .addCase(signupWithEmail.fulfilled, handleFulfilled)
+      .addCase(signupWithEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // For signup, we don't set user or isAuthenticated since it's just OTP verification
+        // The OTP response is handled by the component
+        console.log('✅ Signup successful - OTP sent');
+      })
       .addCase(signupWithEmail.rejected, handleRejected);
 
     // Login with Google
@@ -73,11 +85,12 @@ const authSlice = createSlice({
     // Logout
     builder
       .addCase(logout.pending, handlePending)
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout.fulfilled, (state, action) => {
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
         state.error = null;
+        console.log('✅ Logout successful:', action.payload.message);
       })
       .addCase(logout.rejected, handleRejected);
 
@@ -90,7 +103,13 @@ const authSlice = createSlice({
     // Email verification
     builder
       .addCase(verifyEmail.pending, handlePending)
-      .addCase(verifyEmail.fulfilled, handleVoidFulfilled)
+      .addCase(verifyEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.error = null;
+        console.log('✅ Email verification successful - user authenticated');
+      })
       .addCase(verifyEmail.rejected, handleRejected)
       .addCase(resendVerification.pending, handlePending)
       .addCase(resendVerification.fulfilled, handleVoidFulfilled)
@@ -99,8 +118,28 @@ const authSlice = createSlice({
     // Restore auth state
     builder
       .addCase(restoreAuthState.pending, handlePending)
-      .addCase(restoreAuthState.fulfilled, handleVoidFulfilled)
-      .addCase(restoreAuthState.rejected, handleRejected);
+      .addCase(restoreAuthState.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload) {
+          // User data was successfully restored
+          state.user = action.payload;
+          state.isAuthenticated = true;
+          state.error = null;
+          console.log('✅ Auth state restored successfully');
+        } else {
+          // No user data to restore (user not logged in)
+          state.user = null;
+          state.isAuthenticated = false;
+          state.error = null;
+          console.log('🔐 No auth state to restore');
+        }
+      })
+      .addCase(restoreAuthState.rejected, (state, action) => {
+        state.loading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.error = action.payload || 'Failed to restore auth state';
+      });
   },
 });
 

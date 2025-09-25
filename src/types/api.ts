@@ -95,6 +95,15 @@ export interface AuthResponse {
   }
 }
 
+export interface emailPasswordSignUpResponse {
+  success: boolean;
+  message: string;
+  data: {
+    message: string;
+    otp?: string;
+  };
+}
+
 export interface AuthState {
   user: User | null;
   loading: boolean;

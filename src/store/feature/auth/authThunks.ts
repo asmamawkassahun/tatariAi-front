@@ -4,11 +4,27 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   GithubAuthProvider,
+  signOut as firebaseSignOut,
 } from 'firebase/auth';
 import { clearAuthCookies } from '@/lib/cookies';
 import { authService } from '@/services/authService';
-import { LoginRequest, SignupRequest, VerifyEmailRequest, ResendVerificationRequest, GoogleSigninRequest, User, AuthResponse } from '@/types/api';
-import { setUserToken, setRefreshToken, getRefreshToken, isAuthenticatedSync } from '@/lib/authToken';
+import { LoginRequest, SignupRequest, VerifyEmailRequest, ResendVerificationRequest, GoogleSigninRequest, User, AuthResponse, emailPasswordSignUpResponse } from '@/types/api';
+import { setUserToken, setRefreshToken, getRefreshToken, isAuthenticatedSync, clearAllUserData } from '@/lib/authToken';
+import { getUserData, validateStoredUserData, clearUserData as clearStoredUserData, storeUserData } from '@/lib/userStorage';
+
+// Type definitions
+interface LogoutStep {
+  name: string;
+  action: () => Promise<void>;
+  required: boolean;
+}
+
+interface LogoutResult {
+  step: string;
+  success: boolean;
+  error: string | null;
+}
+
 // Helper function to map Firebase errors to user-friendly messages
 
 // Helper function to map API errors to user-friendly messages
@@ -33,7 +49,66 @@ const mapAuthUserToUser = (authUser: AuthResponse['data']['user']): User => ({
   updatedAt: authUser?.updatedAt || '',
 });
 
-export const loginWithEmail = createAsyncThunk<User, LoginRequest, { rejectValue: string }>(
+// Helper function to perform comprehensive logout cleanup
+const performLogoutCleanup = async (): Promise<void> => {
+  const cleanupSteps: LogoutStep[] = [
+    {
+      name: 'Firebase signOut',
+      action: async () => {
+        await firebaseSignOut(auth);
+      },
+      required: false
+    },
+    {
+      name: 'Clear authentication tokens',
+      action: async () => {
+        setUserToken(null);
+        setRefreshToken(null);
+      },
+      required: true
+    },
+    {
+      name: 'Clear cookies',
+      action: async () => {
+        await clearAuthCookies();
+      },
+      required: true
+    },
+    {
+      name: 'Clear all user data',
+      action: async () => {
+        clearAllUserData(); // Clear tokens and cookies
+        clearStoredUserData(); // Clear secure user data storage
+      },
+      required: true
+    }
+  ];
+
+  const results: LogoutResult[] = [];
+
+  for (const step of cleanupSteps) {
+    try {
+      await step.action();
+      console.log(`✅ ${step.name} successful`);
+      results.push({ step: step.name, success: true, error: null });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.warn(`⚠️ ${step.name} failed:`, errorMessage);
+      results.push({ step: step.name, success: false, error: errorMessage });
+
+      if (step.required) {
+        throw new Error(`Critical logout step failed: ${step.name} - ${errorMessage}`);
+      }
+    }
+  }
+
+  // Log summary of logout process
+  const successful = results.filter(r => r.success).length;
+  const failed = results.filter(r => !r.success).length;
+  console.log(`🎉 Logout process completed: ${successful} successful, ${failed} failed`);
+};
+
+export const loginWithEmail = createAsyncThunk<{ user: User; message: string }, LoginRequest, { rejectValue: string }>(
   'auth/loginWithEmail',
   async ({ email, password }, { rejectWithValue }) => {
     try {
@@ -53,7 +128,12 @@ export const loginWithEmail = createAsyncThunk<User, LoginRequest, { rejectValue
 
       setUserToken(response.data.accessToken);
       setRefreshToken(response.data.refreshToken);
-      return mapAuthUserToUser(response.data.user);
+
+      // Return both user data and API message
+      return {
+        user: mapAuthUserToUser(response.data.user),
+        message: response.message
+      };
     } catch (error: any) {
       return rejectWithValue(mapApiError(error));
     }
@@ -61,7 +141,7 @@ export const loginWithEmail = createAsyncThunk<User, LoginRequest, { rejectValue
 );
 
 
-export const signupWithEmail = createAsyncThunk<User, SignupRequest, { rejectValue: string }>(
+export const signupWithEmail = createAsyncThunk<emailPasswordSignUpResponse, SignupRequest, { rejectValue: string }>(
   'auth/signupWithEmail',
   async ({ email, password, firstName, lastName }, { rejectWithValue }) => {
     try {
@@ -77,13 +157,22 @@ export const signupWithEmail = createAsyncThunk<User, SignupRequest, { rejectVal
       };
 
       const response = await authService.signup(signupData);
+
+      // For email/password signup, we expect an OTP response, not user authentication
       if (!response.success) {
         throw new Error(response.message || 'Signup failed');
       }
 
-      setUserToken(response.data.accessToken);
-      setRefreshToken(response.data.refreshToken);
-      return mapAuthUserToUser(response.data.user);
+      // Return the OTP response for email verification
+      return {
+        success: response.success,
+        message: response.message,
+        data: {
+          message: response.data.message,
+          otp: response.data.otp,
+          email: email.trim() // Include email for verification step
+        }
+      };
     } catch (error: any) {
       return rejectWithValue(mapApiError(error));
     }
@@ -104,6 +193,8 @@ export const loginWithGoogle = createAsyncThunk<User, void, { rejectValue: strin
       };
 
       const response = await authService.googleSignin(googleSigninData);
+      console.log("Google sign-in response", JSON.stringify(response, null, 2));
+
       if (!response.success) {
         throw new Error(response.message || 'Google sign-in failed');
       }
@@ -112,6 +203,7 @@ export const loginWithGoogle = createAsyncThunk<User, void, { rejectValue: strin
       setRefreshToken(response.data.refreshToken);
       return mapAuthUserToUser(response.data.user);
     } catch (error: any) {
+      console.error("google sign-in failed", error);
       return rejectWithValue(mapApiError(error));
     }
   }
@@ -139,21 +231,28 @@ export const loginWithGithub = createAsyncThunk<User, void, { rejectValue: strin
   }
 );
 
-export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
+export const logout = createAsyncThunk<{ message: string }, void, { rejectValue: string }>(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      await authService.logout();
-    } catch (apiError) {
-      console.warn('API logout failed, continuing with local cleanup:', apiError);
-    }
+      console.log('🚪 Starting logout process...');
 
-    try {
-      setUserToken(null);
-      setRefreshToken(null);
-      await clearAuthCookies();
+      // STEP 1: Call server logout API FIRST (before clearing any user data)
+      console.log('📡 Calling server logout API...');
+      const response = await authService.logout();
+      const logoutMessage = response.message || 'Logged out successfully';
+      console.log('✅ Server logout successful:', logoutMessage);
+
+      // STEP 2: Now clear all local user data after successful server logout
+      console.log('🧹 Clearing local user data...');
+      await performLogoutCleanup();
+
+      console.log('🎉 Logout process completed successfully');
+      return { message: logoutMessage };
     } catch (error: any) {
-      return rejectWithValue('Failed to clear authentication data');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to complete logout process';
+      console.error('❌ Logout failed:', errorMessage);
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -181,22 +280,59 @@ export const refreshAuthToken = createAsyncThunk<User, void, { rejectValue: stri
   }
 );
 
-export const restoreAuthState = createAsyncThunk<void, void, { rejectValue: string }>(
+export const restoreAuthState = createAsyncThunk<User | null, void, { rejectValue: string }>(
   'auth/restoreAuthState',
   async (_, { rejectWithValue }) => {
     try {
       const hasApiToken = isAuthenticatedSync();
+
       if (!hasApiToken) {
-        throw new Error('No valid tokens found');
+        // No tokens found - this is normal for unauthenticated users
+        // Don't throw an error, just return (user is not logged in)
+        console.log('🔐 No authentication tokens found - user not logged in');
+        return null;
       }
-      // Assume auth state is restored in Redux via token presence
+
+      // If we have tokens, try to restore user data from secure storage
+      console.log('🔐 Authentication tokens found - attempting to restore user data');
+
+      // Validate stored user data
+      if (!validateStoredUserData()) {
+        console.log('🔐 Stored user data is invalid or corrupted');
+        return null;
+      }
+
+      // Get user data from secure storage
+      const storedUserData = getUserData();
+      if (!storedUserData) {
+        console.log('🔐 No valid user data found in storage');
+        return null;
+      }
+
+      // Convert SafeUserData back to User type for Redux
+      const restoredUser: User = {
+        id: storedUserData.id,
+        email: storedUserData.email,
+        firstName: storedUserData.firstName,
+        lastName: storedUserData.lastName,
+        photoUrl: storedUserData.photoUrl,
+        createdAt: storedUserData.createdAt,
+        updatedAt: storedUserData.updatedAt,
+      };
+
+      console.log('✅ User data restored successfully from storage');
+      return restoredUser;
+
     } catch (error: any) {
-      return rejectWithValue(mapApiError(error));
+      console.warn('Failed to restore auth state:', error);
+      // Don't reject for restore failures - just log and continue
+      // This prevents the app from breaking if there are token issues
+      return null;
     }
   }
 );
 
-export const verifyEmail = createAsyncThunk<void, VerifyEmailRequest, { rejectValue: string }>(
+export const verifyEmail = createAsyncThunk<{ user: User; message: string }, VerifyEmailRequest, { rejectValue: string }>(
   'auth/verifyEmail',
   async ({ email, otp }, { rejectWithValue }) => {
     try {
@@ -204,6 +340,16 @@ export const verifyEmail = createAsyncThunk<void, VerifyEmailRequest, { rejectVa
       if (!response.success) {
         throw new Error(response.message || 'Email verification failed');
       }
+
+      // Email verification successful - user is automatically authenticated
+      console.log('✅ Email verification successful - user authenticated');
+
+      // Return both user data and API message
+      return {
+        user: mapAuthUserToUser(response.data.user),
+        message: response.message
+      };
+
     } catch (error: any) {
       return rejectWithValue(mapApiError(error));
     }
