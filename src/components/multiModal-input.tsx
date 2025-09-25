@@ -1845,7 +1845,7 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
-        className="w-80 p-4 bg-background border border-border shadow-lg overflow-visible"
+        className="w-80 p-4 dark:bg-primary border-none shadow-lg overflow-visible"
         align="start"
         sideOffset={8}
       >
@@ -1856,7 +1856,7 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
               htmlFor="public" 
               className={cn(
                 'flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors',
-                selectedVisibilityType === 'public' ? 'bg-accent border border-primary/20' : 'hover:bg-accent/50'
+                selectedVisibilityType === 'public' ? 'bg-accent/10 border border-primary/20' : 'hover:bg-accent/50 dark:hover:bg-accent/10'
               )}
             >
               <RadioGroupItem value="public" id="public" className="mt-0.5" />
@@ -1892,7 +1892,7 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
             htmlFor="workspace" 
             className={cn(
               'flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors',
-              selectedVisibilityType === 'workspace' ? 'bg-accent border border-primary/20' : 'hover:bg-accent/50'
+              selectedVisibilityType === 'workspace' ? 'bg-accent/10 border border-primary/20' : 'hover:bg-accent/50 dark:hover:bg-accent/10'
             )}
           >
             <RadioGroupItem value="workspace" id="workspace" className="mt-0.5" />
@@ -1909,7 +1909,7 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
             htmlFor="personal" 
             className={cn(
               'flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors',
-              selectedVisibilityType === 'personal' ? 'bg-accent border border-primary/20' : 'hover:bg-accent/50'
+              selectedVisibilityType === 'personal' ? 'bg-accent/10  border border-primary/20' : 'hover:bg-accent/50 dark:hover:bg-accent/10'
             )}
           >
             <RadioGroupItem value="personal" id="personal" className="mt-0.5" />
