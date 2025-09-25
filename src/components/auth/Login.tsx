@@ -56,17 +56,17 @@ export function LoginModal({ children, mode = "login" }: LoginModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[35.125rem] bg-background border-border text-card-foreground p-[4.75rem]">
+      <DialogContent className="sm:max-w-[35.125rem] bg-accent dark:bg-primary border-border text-primary p-[4.75rem]">
         <DialogTitle className="sr-only">Login Modal</DialogTitle>
         <div className="flex flex-col items-left space-y-6.5">
           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center">
             <div className="w-8 h-8 bg-white rounded opacity-90"></div>
           </div>
           <div className="text-center space-y-2">
-            <h1 className="text-lg font-bold text-primary">
+            <h1 className="text-lg font-bold text-primary dark:text-accent">
               Let&apos;s Get Started
             </h1>
-            <p className="text-secondary text-sm font-normal leading-[1.125rem]">
+            <p className="text-secondary dark:text-muted text-sm font-normal leading-[1.125rem]">
               {mode === "login"
                 ? "Log in to unlock tailored content and stay connected"
                 : "Create your account to unlock tailored content and stay connected"
@@ -77,8 +77,8 @@ export function LoginModal({ children, mode = "login" }: LoginModalProps) {
           <div className="w-full space-y-3">
             <Button
               onClick={handleGoogleLogin}
-              variant="outline"
-              className="w-full bg-white dark:bg-black border-border text-primary hover:bg-white/80 hover:text-primary/80 h-12 cursor-pointer"
+              // variant="outline"
+              className="w-full bg-white dark:bg-accent border border-border text-primary hover:bg-white/80 dark:hover:bg-accent/90 hover:text-primary/80 h-12 cursor-pointer"
               disabled={loading}
             >
               <svg className="w-5 h-5 mr-8" viewBox="0 0 24 24">
@@ -104,8 +104,8 @@ export function LoginModal({ children, mode = "login" }: LoginModalProps) {
 
             <Button
               onClick={handleLinkedInLogin}
-              variant="outline"
-              className="w-full bg-white dark:bg-black border-border text-primary hover:bg-white/80 hover:text-primary/80 h-12 cursor-pointer"
+              // variant="outline"
+              className="w-full bg-white dark:bg-accent border border-border text-primary hover:bg-white/80 dark:hover:bg-accent/90  h-12 cursor-pointer"
               disabled={loading}
             >
               <svg className="w-5 h-5 mr-8" fill="#0A66C2" viewBox="0 0 24 24">
@@ -122,7 +122,7 @@ export function LoginModal({ children, mode = "login" }: LoginModalProps) {
 
             <Button
               onClick={handleEmailLogin}
-              className="w-full bg-white dark:bg-black border-border text-primary hover:bg-white/80 hover:text-primary/80 h-12 cursor-pointer"
+              className="w-full bg-white dark:bg-accent border border-border text-primary hover:bg-white/80 dark:hover:bg-accent/90 h-12 cursor-pointer"
               disabled={loading}
             >
               Continue with email
@@ -132,14 +132,14 @@ export function LoginModal({ children, mode = "login" }: LoginModalProps) {
           {/* Terms and Privacy Policy - Only show for signup */}
           {mode === "signup" && (
             <div className="text-center mt-4">
-              <p className="text-muted-foreground text-sm leading-5">
+              <p className="text-secondary dark:text-muted text-sm leading-5">
                 By continuing, you agree to the{" "}
-                <Link href="/terms" className="text-primary hover:underline">
-                  Terms of Service
+                <Link href="/terms" className="text-primary dark:text-accent hover:underline">
+                  Terms of Service 
                 </Link>
-                and
-                <Link href="/privacy" className="text-primary hover:underline">
-                  Privacy Policy
+                 {" "}and
+                <Link href="/privacy" className=" text-primary dark:text-accent hover:underline">
+                 {" "} Privacy Policy
                 </Link>
                 .
               </p>
