@@ -21,7 +21,6 @@ import {
 import { clearError } from "../../store/feature/auth/authSlice";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
-import { authService } from "../../services/authService";
 
 interface AuthPageProps {
     mode: "login" | "signup";
