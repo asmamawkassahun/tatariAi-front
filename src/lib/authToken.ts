@@ -12,7 +12,7 @@ export const getUserToken = async (): Promise<string | null> => {
     try {
       const auth = getAuth();
       const user = auth.currentUser;
-      
+
       if (user) {
         // Get the ID token from Firebase auth
         const token = await user.getIdToken();
@@ -32,7 +32,7 @@ export const getUserToken = async (): Promise<string | null> => {
         .split('; ')
         .find(row => row.startsWith('authToken='))
         ?.split('=')[1];
-      
+
       if (cookieValue) {
         return decodeURIComponent(cookieValue);
       }
@@ -150,6 +150,110 @@ export const clearUserToken = () => {
 };
 
 /**
+ * Clear all user-related data from storage
+ * This function clears everything related to the user session
+ */
+export const clearAllUserData = () => {
+  // Clear from localStorage (client-side)
+  if (typeof window !== 'undefined') {
+    try {
+      // Clear authentication tokens
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
+
+      // Clear any other user-related data that might be stored
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (
+          key.startsWith('user_') ||
+          key.startsWith('auth_') ||
+          key.startsWith('session_') ||
+          key.includes('user') ||
+          key.includes('auth') ||
+          key.includes('token') ||
+          key.includes('profile') ||
+          key.includes('preference') ||
+          key.includes('setting')
+        )) {
+          keysToRemove.push(key);
+        }
+      }
+
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+
+      console.log('🧹 Cleared localStorage items:', keysToRemove);
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error);
+    }
+  }
+
+  // Clear from sessionStorage (client-side)
+  if (typeof window !== 'undefined') {
+    try {
+      // Clear authentication tokens
+      sessionStorage.removeItem('authToken');
+      sessionStorage.removeItem('refreshToken');
+
+      // Clear any other user-related data
+      const keysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (
+          key.startsWith('user_') ||
+          key.startsWith('auth_') ||
+          key.startsWith('session_') ||
+          key.includes('user') ||
+          key.includes('auth') ||
+          key.includes('token') ||
+          key.includes('profile') ||
+          key.includes('preference') ||
+          key.includes('setting')
+        )) {
+          keysToRemove.push(key);
+        }
+      }
+
+      keysToRemove.forEach(key => sessionStorage.removeItem(key));
+
+      console.log('🧹 Cleared sessionStorage items:', keysToRemove);
+    } catch (error) {
+      console.warn('Failed to clear sessionStorage:', error);
+    }
+  }
+
+  // Clear from cookies (client-side)
+  if (typeof document !== 'undefined') {
+    try {
+      // Clear all authentication-related cookies
+      const cookiesToClear = [
+        'authToken',
+        'refreshToken',
+        'firebase_access_token',
+        'firebase_refresh_token',
+        'user_info',
+        'session_id',
+        'user_preferences',
+        'auth_state'
+      ];
+
+      cookiesToClear.forEach(cookieName => {
+        // Clear cookie for current path
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        // Clear cookie for root path
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+        // Clear cookie for parent domain
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`;
+      });
+
+      console.log('🧹 Cleared cookies:', cookiesToClear);
+    } catch (error) {
+      console.warn('Failed to clear cookies:', error);
+    }
+  }
+};
+
+/**
  * Check if user is authenticated by verifying token existence
  */
 export const isAuthenticated = async (): Promise<boolean> => {
@@ -168,7 +272,7 @@ export const isAuthenticatedSync = (): boolean => {
         .split('; ')
         .find(row => row.startsWith('authToken='))
         ?.split('=')[1];
-      
+
       if (cookieValue) {
         return true;
       }

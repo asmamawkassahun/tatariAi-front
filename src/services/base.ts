@@ -1,8 +1,8 @@
 import { api } from '@/config/axiosInstance';
 import { API_MESSAGES, PAGINATION } from '@/constants/api';
-import { 
-  PaginatedResponse, 
-  ApiError, 
+import {
+  PaginatedResponse,
+  ApiError,
   ValidationError,
 } from '@/types/api';
 
@@ -31,7 +31,7 @@ export class BaseService {
    */
   protected handlePaginatedResponse<T>(response: any): PaginatedResponse<T> {
     const data = response.data;
-    
+
     if (data.success === false) {
       throw this.createApiError(data.message || API_MESSAGES.ERROR.SERVER_ERROR);
     }
@@ -91,7 +91,21 @@ export class BaseService {
   protected async post<T>(endpoint: string, data?: any): Promise<T> {
     try {
       const response = await api.post(`${this.baseEndpoint}${endpoint}`, data);
+      console.log("POST response", JSON.stringify(response, null, 2));
       return this.handleResponse<T>(response);
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Raw POST request that returns the full response structure
+   */
+  protected async rawPost(endpoint: string, data?: any): Promise<any> {
+    try {
+      const response = await api.post(`${this.baseEndpoint}${endpoint}`, data);
+      console.log("Raw POST response", JSON.stringify(response, null, 2));
+      return response;
     } catch (error) {
       throw this.handleError(error);
     }
@@ -164,7 +178,7 @@ export class BaseService {
     if (error.response) {
       // Server responded with error status
       const { status, data } = error.response;
-      
+
       if (status === 422 && data.errors) {
         // Validation errors
         return {
@@ -173,7 +187,7 @@ export class BaseService {
           details: this.handleValidationErrors(data.errors),
         };
       }
-      
+
       return {
         code: `HTTP_${status}`,
         message: data.message || data.error || 'An error occurred',
@@ -201,7 +215,7 @@ export class BaseService {
    */
   protected buildQueryString(params: Record<string, any>): string {
     const searchParams = new URLSearchParams();
-    
+
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         if (Array.isArray(value)) {
@@ -211,7 +225,7 @@ export class BaseService {
         }
       }
     });
-    
+
     return searchParams.toString();
   }
 }

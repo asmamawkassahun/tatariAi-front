@@ -23,10 +23,10 @@ export function LogoutButton({
 
     const handleLogout = async () => {
         try {
-            await dispatch(logout()).unwrap();
-            toast.success("Successfully logged out!");
-        } catch (error) {
-            toast.error("Failed to log out");
+            const result = await dispatch(logout()).unwrap();
+            toast.success(result.message || "Successfully logged out!");
+        } catch (error: any) {
+            toast.error(error?.message || "Failed to log out");
         }
     };
 

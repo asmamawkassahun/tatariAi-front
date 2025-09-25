@@ -14,7 +14,7 @@ import Inbox from "./icons/Inbox";
 import { useTheme } from "next-themes";
 import { useEffect, useState, useRef } from "react";
 import ReferralModal from "../components/ReferralModal";
-import { InboxDropdown, NotificationDropdown } from "./InboxDropdown";
+import { InboxDropdown } from "./InboxDropdown";
 
 const Headers = [
   { id: 1, name: "Community", href: "#" },
@@ -26,24 +26,11 @@ const Headers = [
 const Header = () => {
   const [open, setOpen] = React.useState(false);
   const [referralModalOpen, setReferralModalOpen] = React.useState(false);
-  const { user, isAuthenticated, loading, authMethod } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { resolvedTheme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
-
-  // Debug logging in development
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      console.log("🔐 Header auth state:", {
-        isAuthenticated,
-        loading,
-        authMethod,
-        userEmail: user?.email,
-        userUID: user?.uid,
-      });
-    }
-  }, [isAuthenticated, loading, authMethod, user]);
 
   const isDark = resolvedTheme === "dark";
   const color = isDark ? "#F7F4ED" : "#5F5F5D";
@@ -90,9 +77,7 @@ const Header = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            {loading ? (
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-            ) : isAuthenticated ? (
+            {isAuthenticated ? (
               <div className="flex items-center gap-1 mg:gap-4 relative">
                 <div
                   className="cursor-pointer hover:bg-primary/5 rounded-md p-1 transition-colors"

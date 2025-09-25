@@ -1,6 +1,6 @@
 // API Base Configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://192.168.1.6:3000/api',
+  BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
   TIMEOUT: 10000, // 10 seconds
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 second
@@ -28,13 +28,16 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/signin',
     REGISTER: '/auth/signup',
+    GOOGLE_LOGIN: 'auth/google-signin',
+    LINKEDIN_LOGIN: 'auth/linkedin-signin',
+    FACEBOOK_LOGIN: 'auth/facebook-signin',
+    GITHUB_LOGIN: '/auth/github',
     LOGOUT: '/auth/logout',
     REFRESH_TOKEN: '/auth/refresh',
     FORGOT_PASSWORD: '/auth/forgot-password',
     RESET_PASSWORD: '/auth/reset-password',
     VERIFY_EMAIL: '/auth/verify-otp',
-    RESEND_VERIFICATION: '/auth/resend-verification',
-    CHANGE_PASSWORD: '/auth/change-password',
+    RESEND_VERIFICATION: '/auth/resend-otp',
     PROFILE: '/auth/profile',
   },
 

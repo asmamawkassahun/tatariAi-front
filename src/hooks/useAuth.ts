@@ -2,25 +2,35 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig';
-import { setUser, setLoading } from '../store/feature/auth/authSlice';
+import { setUser } from '../store/feature/auth/authSlice';
 import { restoreAuthState } from '../store/feature/auth/authThunks';
 import { useTypedSelector } from './useTypedSelector';
 import { getUserToken, isAuthenticatedSync } from '../lib/authToken';
+import { User } from '@/types/api';
 
 export const useAuth = () => {
   const dispatch = useDispatch();
-  const { user, loading, error, isAuthenticated, authMethod } = useTypedSelector((state) => state.auth);
+  const { user, loading, error, isAuthenticated } = useTypedSelector((state) => state.auth);
 
   useEffect(() => {
     // Listen to Firebase auth state changes
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       console.log('🔐 Firebase auth state changed:', firebaseUser ? 'User logged in' : 'User logged out');
-      
+
       // Only update Firebase auth if we don't have an API auth session
       const hasApiToken = isAuthenticatedSync();
-      if (!hasApiToken) {
-        dispatch(setUser(firebaseUser));
-        dispatch(setLoading(false));
+      if (!hasApiToken && firebaseUser) {
+        // Map Firebase user to our User type
+        const mappedUser: User = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email || '',
+          firstName: firebaseUser.displayName?.split(' ')[0] || '',
+          lastName: firebaseUser.displayName?.split(' ').slice(1).join(' ') || '',
+          photoUrl: firebaseUser.photoURL || undefined,
+          createdAt: firebaseUser.metadata?.creationTime || new Date().toISOString(),
+          updatedAt: firebaseUser.metadata?.lastSignInTime || new Date().toISOString(),
+        };
+        dispatch(setUser(mappedUser));
       } else {
         console.log('🔐 API auth session detected, not overriding with Firebase state');
       }
@@ -31,9 +41,9 @@ export const useAuth = () => {
       try {
         const hasApiToken = isAuthenticatedSync();
         const apiToken = await getUserToken();
-        
+
         console.log('🔐 Checking API auth on mount:', { hasApiToken, hasToken: !!apiToken });
-        
+
         // If we have an API token but no Firebase user, we need to restore the auth state
         if (hasApiToken && apiToken) {
           console.log('🔐 API token found. This might be an API login session.');
@@ -46,7 +56,7 @@ export const useAuth = () => {
     };
 
     checkApiAuth();
-    
+
     // Restore auth state from stored tokens
     dispatch(restoreAuthState() as any);
 
@@ -58,6 +68,5 @@ export const useAuth = () => {
     loading,
     error,
     isAuthenticated,
-    authMethod,
   };
 };

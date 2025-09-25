@@ -1,15 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from 'firebase/auth';
-import { loginWithEmail, signupWithEmail, loginWithGoogle, loginWithGithub, logout, verifyEmail, resendVerification } from './authThunks';
-import { AuthState, SerializableUser } from '@/types/auth';
-import { serializeUser } from '@/lib/userSerializer';
-
+import { loginWithEmail, signupWithEmail, loginWithGoogle, loginWithGithub, logout, refreshAuthToken, verifyEmail, resendVerification, restoreAuthState } from './authThunks';
+import { AuthState, User } from '@/types/api';
 const initialState: AuthState = {
   user: null,
   loading: false,
   error: null,
   isAuthenticated: false,
-  authMethod: null,
 };
 
 const authSlice = createSlice({
@@ -17,25 +13,14 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload ? serializeUser(action.payload) : null;
+      state.user = action.payload ? action.payload : null;
       state.isAuthenticated = action.payload !== null;
-      state.authMethod = action.payload ? 'firebase' : null;
       state.error = null;
-      console.log('🔐 Auth state updated via setUser:', { 
-        isAuthenticated: state.isAuthenticated, 
-        authMethod: state.authMethod,
-        userEmail: state.user?.email 
-      });
     },
     clearError: (state) => {
       state.error = null;
     },
-    setAuthMethod: (state, action: PayloadAction<'firebase' | 'api' | null>) => {
-      state.authMethod = action.payload;
-    },
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload;
-    },
+
   },
   extraReducers: (builder) => {
     // Common reducer logic for pending, fulfilled, and rejected states
@@ -44,18 +29,16 @@ const authSlice = createSlice({
       state.error = null;
     };
 
-    const handleFulfilled = (state: AuthState, action: PayloadAction<SerializableUser>) => {
+    const handleFulfilled = (state: AuthState, action: PayloadAction<User>) => {
       state.loading = false;
       state.user = action.payload;
       state.isAuthenticated = true;
-      state.authMethod = (action.payload as any).authMethod || null;
       state.error = null;
-      console.log('🔐 Auth state updated via thunk:', { 
-        isAuthenticated: state.isAuthenticated, 
-        authMethod: state.authMethod,
-        userEmail: state.user?.email,
-        userUID: state.user?.uid
-      });
+    };
+
+    const handleVoidFulfilled = (state: AuthState) => {
+      state.loading = false;
+      state.error = null;
     };
 
     const handleRejected = (state: AuthState, action: PayloadAction<string | undefined>) => {
@@ -66,13 +49,25 @@ const authSlice = createSlice({
     // Login with email
     builder
       .addCase(loginWithEmail.pending, handlePending)
-      .addCase(loginWithEmail.fulfilled, handleFulfilled)
+      .addCase(loginWithEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.error = null;
+        console.log('✅ Login successful');
+      })
       .addCase(loginWithEmail.rejected, handleRejected);
 
     // Signup with email
     builder
       .addCase(signupWithEmail.pending, handlePending)
-      .addCase(signupWithEmail.fulfilled, handleFulfilled)
+      .addCase(signupWithEmail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // For signup, we don't set user or isAuthenticated since it's just OTP verification
+        // The OTP response is handled by the component
+        console.log('✅ Signup successful - OTP sent');
+      })
       .addCase(signupWithEmail.rejected, handleRejected);
 
     // Login with Google
@@ -90,31 +85,63 @@ const authSlice = createSlice({
     // Logout
     builder
       .addCase(logout.pending, handlePending)
-      .addCase(logout.fulfilled, (state) => {
+      .addCase(logout.fulfilled, (state, action) => {
         state.loading = false;
         state.user = null;
         state.isAuthenticated = false;
-        state.authMethod = null;
         state.error = null;
+        console.log('✅ Logout successful:', action.payload.message);
       })
       .addCase(logout.rejected, handleRejected);
+
+    // Refresh token
+    builder
+      .addCase(refreshAuthToken.pending, handlePending)
+      .addCase(refreshAuthToken.fulfilled, handleFulfilled)
+      .addCase(refreshAuthToken.rejected, handleRejected);
 
     // Email verification
     builder
       .addCase(verifyEmail.pending, handlePending)
-      .addCase(verifyEmail.fulfilled, (state) => {
+      .addCase(verifyEmail.fulfilled, (state, action) => {
         state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
         state.error = null;
+        console.log('✅ Email verification successful - user authenticated');
       })
       .addCase(verifyEmail.rejected, handleRejected)
       .addCase(resendVerification.pending, handlePending)
-      .addCase(resendVerification.fulfilled, (state) => {
-        state.loading = false;
-        state.error = null;
-      })
+      .addCase(resendVerification.fulfilled, handleVoidFulfilled)
       .addCase(resendVerification.rejected, handleRejected);
+
+    // Restore auth state
+    builder
+      .addCase(restoreAuthState.pending, handlePending)
+      .addCase(restoreAuthState.fulfilled, (state, action) => {
+        state.loading = false;
+        if (action.payload) {
+          // User data was successfully restored
+          state.user = action.payload;
+          state.isAuthenticated = true;
+          state.error = null;
+          console.log('✅ Auth state restored successfully');
+        } else {
+          // No user data to restore (user not logged in)
+          state.user = null;
+          state.isAuthenticated = false;
+          state.error = null;
+          console.log('🔐 No auth state to restore');
+        }
+      })
+      .addCase(restoreAuthState.rejected, (state, action) => {
+        state.loading = false;
+        state.user = null;
+        state.isAuthenticated = false;
+        state.error = action.payload || 'Failed to restore auth state';
+      });
   },
 });
 
-export const { setUser, clearError, setLoading, setAuthMethod } = authSlice.actions;
+export const { setUser, clearError } = authSlice.actions;
 export default authSlice.reducer;
