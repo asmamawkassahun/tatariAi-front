@@ -21,7 +21,6 @@ import {
 import { clearError } from "../../store/feature/auth/authSlice";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
-import { authService } from "../../services/authService";
 
 interface AuthPageProps {
     mode: "login" | "signup";
@@ -136,22 +135,21 @@ export function AuthPage({ mode, onModeChange }: AuthPageProps) {
         }
 
         try {
-            await dispatch(verifyEmail({ email: verificationEmail, otp })).unwrap();
-            toast.success("Email verified successfully!");
+            // Email verification now automatically authenticates the user
+            const result = await dispatch(verifyEmail({ email: verificationEmail, otp })).unwrap();
 
-            if (verificationMode === 'signup') {
-                // Redirect to login page after successful signup verification
-                toast.success("Account verified! Please log in.");
-                setShowVerification(false);
-                onModeChange?.('login');
-            } else {
-                // For login verification, try to login again
-                await dispatch(loginWithEmail({ email: verificationEmail, password })).unwrap();
-                toast.success("Successfully logged in!");
-                router.push("/");
-            }
-        } catch (error) {
-            // Error is handled by the useEffect above
+            // Show the API message from the response
+            toast.success(result.message || "Email verified successfully!");
+
+            // Since email verification now automatically logs in the user,
+            // we can redirect them to the main app
+            toast.success("Welcome! You are now logged in.");
+            router.push("/");
+
+        } catch (error: any) {
+            // Show the actual error message from the API
+            const errorMessage = error?.message || 'Email verification failed';
+            toast.error(errorMessage);
         }
     };
 
@@ -231,41 +229,25 @@ export function AuthPage({ mode, onModeChange }: AuthPageProps) {
 
         try {
             if (mode === "login") {
-                await dispatch(loginWithEmail({ email: email.trim(), password })).unwrap();
-                toast.success("Successfully logged in!");
+                const result = await dispatch(loginWithEmail({ email: email.trim(), password })).unwrap();
+                toast.success(result.message || "Successfully logged in!");
                 router.push("/");
             } else {
-                // For signup, just call the API directly without updating Redux state
-                const signupData = {
+                // For signup, use the thunk to get consistent API message handling
+                const result = await dispatch(signupWithEmail({
                     email: email.trim(),
                     password,
                     firstName: firstName.trim(),
                     lastName: lastName.trim()
-                };
+                })).unwrap();
 
-                try {
-                    const response = await authService.signup(signupData);
+                // Show the API message from the response
+                toast.success(result.message || "Account created successfully!");
 
-                    console.log('Signup response:', response);
-                    // If we reach here, the API call was successful (status 200)
-                    toast.success("Account created successfully!");
-
-                    // Show verification screen after successful signup
-                    setVerificationEmail(email.trim());
-                    setVerificationMode('signup');
-                    setShowVerification(true);
-                } catch (error: any) {
-                    // Handle different types of errors
-                    if (error?.response?.data?.message) {
-                        toast.error(error.response.data.message);
-                    } else if (error?.response?.data?.error) {
-                        toast.error(error.response.data.error);
-                    } else if (error?.message) {
-                        toast.error(error.message);
-                    } else {
-                        toast.error('Signup failed. Please try again.');
-                    }
-                }
+                // Show verification screen after successful signup
+                setVerificationEmail(email.trim());
+                setVerificationMode('signup');
+                setShowVerification(true);
             }
         } catch (error: any) {
             // Check if it's an email verification error

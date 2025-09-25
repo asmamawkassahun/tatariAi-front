@@ -58,45 +58,74 @@ export interface ResendVerificationRequest {
   email: string;
 }
 
-export interface AuthResponse {
-  accessToken: string;
+export interface GoogleSigninRequest {
+  idToken: string;
+  userType: 'client';
+}
+
+export interface RefreshTokenRequest {
   refreshToken: string;
-  user: {
-    id: string;
-    email: string;
-    username?: string;
-    firstName?: string;
-    lastName?: string;
-    photoUrl?: string;
-    authDate?: string;
-    createdAt: string;
-    updatedAt: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    user: {
+      id: string;
+      email: string;
+      username?: string;
+      firstName?: string;
+      lastName?: string;
+      photoUrl?: string;
+      createdAt?: string;
+      updatedAt?: string;
+      client?: {
+        id: string;
+        phone: string | null;
+      };
+      enterprise?: {
+        id: string;
+        businessName?: string;
+        phone: string | null;
+      };
+    };
+  }
+}
+
+export interface emailPasswordSignUpResponse {
+  success: boolean;
+  message: string;
+  data: {
+    message: string;
+    otp?: string;
   };
+}
+
+export interface AuthState {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  isAuthenticated: boolean;
 }
 
 // User Types
 export interface User {
   id: string;
   email: string;
-  displayName: string;
   firstName?: string;
   lastName?: string;
-  avatar?: string;
-  bio?: string;
-  emailVerified: boolean;
-  role: string;
-  isActive: boolean;
-  lastLoginAt?: string;
-  createdAt: string;
-  updatedAt: string;
+  photoUrl?: string; // Maps to photoUrl from auth
+  createdAt: string; // ISO string
+  updatedAt: string; // ISO string;
 }
 
 export interface UpdateUserRequest {
-  displayName?: string;
   firstName?: string;
   lastName?: string;
-  bio?: string;
-  avatar?: string;
+  photoUrl?: string;
 }
 
 // Project Types

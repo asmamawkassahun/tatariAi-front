@@ -28,15 +28,6 @@ export function AuthGuard({
         }
     }, [loading, isAuthenticated, requireAuth, redirectTo, router]);
 
-    // Show loading state while checking authentication
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-            </div>
-        );
-    }
-
     // Don't render children if auth state doesn't match requirements
     if (requireAuth && !isAuthenticated) {
         return null;
