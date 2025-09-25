@@ -1,16 +1,19 @@
 import { BaseService } from './base';
 import { API_ENDPOINTS } from '@/constants/api';
-import { 
-  LoginRequest, 
-  SignupRequest, 
-  AuthResponse, 
-  ForgotPasswordRequest, 
-  ResetPasswordRequest, 
+import { setRefreshToken, setUserToken } from '@/lib/authToken';
+import {
+  LoginRequest,
+  SignupRequest,
+  AuthResponse,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
   ChangePasswordRequest,
   VerifyEmailRequest,
   ResendVerificationRequest,
+  GoogleSigninRequest,
+  RefreshTokenRequest,
   User,
-  ApiResponse 
+  ApiResponse
 } from '@/types/api';
 
 /**
@@ -27,13 +30,13 @@ export class AuthService extends BaseService {
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     try {
       const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials);
-      
+
       // Store tokens if login successful
-      if (response.accessToken) {
-        // You can store the token using your auth token utility
-        // setUserToken(response.accessToken);
+      if (response.success) {
+        setUserToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
       }
-      
+
       return response;
     } catch (error) {
       console.error('Login failed:', error);
@@ -47,12 +50,13 @@ export class AuthService extends BaseService {
   async signup(userData: SignupRequest): Promise<AuthResponse> {
     try {
       const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.REGISTER, userData);
-      
+
       // Store tokens if signup successful
-      if (response.accessToken) {
-        // setUserToken(response.accessToken);
+      if (response.success) {
+        setUserToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
       }
-      
+
       return response;
     } catch (error) {
       console.error('Signup failed:', error);
@@ -66,12 +70,13 @@ export class AuthService extends BaseService {
   async signin(credentials: LoginRequest): Promise<AuthResponse> {
     try {
       const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials);
-      
+
       // Store tokens if signin successful
-      if (response.accessToken) {
-        // setUserToken(response.accessToken);
+      if (response.success) {
+        setUserToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
       }
-      
+
       return response;
     } catch (error) {
       console.error('Signin failed:', error);
@@ -85,10 +90,10 @@ export class AuthService extends BaseService {
   async logout(): Promise<ApiResponse> {
     try {
       const response = await this.post<ApiResponse>(API_ENDPOINTS.AUTH.LOGOUT);
-      
+
       // Clear stored tokens
       // clearUserToken();
-      
+
       return response;
     } catch (error) {
       console.error('Logout failed:', error);
@@ -101,15 +106,17 @@ export class AuthService extends BaseService {
   /**
    * Refresh authentication token
    */
-  async refreshToken(): Promise<AuthResponse> {
+  async refreshToken(refreshToken: string): Promise<AuthResponse> {
     try {
-      const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.REFRESH_TOKEN);
-      
+      const data: RefreshTokenRequest = { refreshToken };
+      const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.REFRESH_TOKEN, data);
+
       // Update stored tokens
-      if (response.accessToken) {
-        // setUserToken(response.accessToken);
+      if (response.success) {
+        setUserToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
       }
-      
+
       return response;
     } catch (error) {
       console.error('Token refresh failed:', error);
@@ -165,7 +172,7 @@ export class AuthService extends BaseService {
 
       // Remove confirmPassword from the request
       const { confirmPassword, ...resetData } = data;
-      
+
       return await this.post<ApiResponse>(API_ENDPOINTS.AUTH.RESET_PASSWORD, resetData);
     } catch (error) {
       console.error('Reset password failed:', error);
@@ -185,7 +192,7 @@ export class AuthService extends BaseService {
 
       // Remove confirmPassword from the request
       const { confirmPassword, ...changeData } = data;
-      
+
       return await this.post<ApiResponse>(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, changeData);
     } catch (error) {
       console.error('Change password failed:', error);
@@ -207,17 +214,38 @@ export class AuthService extends BaseService {
   }
 
   /**
-   * Social login (Google, GitHub, etc.)
+   * Google signin with ID token
    */
-  async socialLogin(provider: 'google' | 'github', token: string): Promise<AuthResponse> {
+  async googleSignin(data: GoogleSigninRequest): Promise<AuthResponse> {
+    try {
+      const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.GOOGLE_LOGIN, data);
+
+      // Store tokens if login successful
+      if (response.success) {
+        setUserToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Google signin failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Social login (GitHub, etc.)
+   */
+  async socialLogin(provider: 'github', token: string): Promise<AuthResponse> {
     try {
       const response = await this.post<AuthResponse>(`/auth/${provider}`, { token });
-      
+
       // Store tokens if login successful
-      if (response.accessToken) {
-        // setUserToken(response.accessToken);
+      if (response.success) {
+        setUserToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
       }
-      
+
       return response;
     } catch (error) {
       console.error(`${provider} login failed:`, error);

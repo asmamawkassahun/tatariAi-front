@@ -1,35 +1,15 @@
 import { auth } from '@/config/firebaseConfig';
-import { FirebaseError, LoginCredentials, SerializableUser } from '@/types/auth';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
-  signOut,
   signInWithPopup,
   GoogleAuthProvider,
   GithubAuthProvider,
-  User,
 } from 'firebase/auth';
-import { SignupCredentials } from '@/types/auth';
-import { setAuthCookies, clearAuthCookies } from '@/lib/cookies';
-import { setAuthMethod } from './authSlice';
-import { serializeUser } from '@/lib/userSerializer';
+import { clearAuthCookies } from '@/lib/cookies';
 import { authService } from '@/services/authService';
-import { LoginRequest, SignupRequest, AuthResponse, User as ApiUser, VerifyEmailRequest, ResendVerificationRequest } from '@/types/api';
-import { setUserToken, setRefreshToken, getUserToken, isAuthenticatedSync } from '@/lib/authToken';
+import { LoginRequest, SignupRequest, VerifyEmailRequest, ResendVerificationRequest, GoogleSigninRequest, User, AuthResponse } from '@/types/api';
+import { setUserToken, setRefreshToken, getRefreshToken, isAuthenticatedSync } from '@/lib/authToken';
 // Helper function to map Firebase errors to user-friendly messages
-const mapFirebaseError = (error: FirebaseError): string => {
-  switch (error.code) {
-    case 'auth/user-not-found':
-      return 'No account found with this email.';
-    case 'auth/wrong-password':
-      return 'Incorrect password. Please try again.';
-    case 'auth/email-already-in-use':
-      return 'This email is already registered.';
-    case 'auth/invalid-email':
-      return 'Invalid email format.';
-    default:
-      return error.message || 'An unexpected error occurred.';
-  }
-};
 
 // Helper function to map API errors to user-friendly messages
 const mapApiError = (error: any): string => {
@@ -42,27 +22,21 @@ const mapApiError = (error: any): string => {
   return 'An unexpected error occurred.';
 };
 
-// Helper function to convert API user to SerializableUser
-const convertApiUserToSerializableUser = (apiUser: any): SerializableUser => {
-  return {
-    uid: apiUser.id,
-    email: apiUser.email,
-    displayName: apiUser.username || `${apiUser.firstName || ''} ${apiUser.lastName || ''}`.trim() || apiUser.email,
-    photoURL: apiUser.photoUrl || null,
-    emailVerified: true, // Assuming verified if they can login
-    isAnonymous: false,
-    metadata: {
-      creationTime: apiUser.createdAt,
-      lastSignInTime: apiUser.authDate || apiUser.updatedAt,
-    },
-  };
-};
+// Helper to map AuthResponse user to User type
+const mapAuthUserToUser = (authUser: AuthResponse['data']['user']): User => ({
+  id: authUser.id,
+  email: authUser.email,
+  firstName: authUser.firstName,
+  lastName: authUser.lastName,
+  photoUrl: authUser.photoUrl,
+  createdAt: authUser?.createdAt || '',
+  updatedAt: authUser?.updatedAt || '',
+});
 
-export const loginWithEmail = createAsyncThunk<SerializableUser, LoginCredentials, { rejectValue: string }>(
+export const loginWithEmail = createAsyncThunk<User, LoginRequest, { rejectValue: string }>(
   'auth/loginWithEmail',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      // Sanitize inputs
       if (!email || !password) {
         throw new Error('Email and password are required.');
       }
@@ -73,215 +47,163 @@ export const loginWithEmail = createAsyncThunk<SerializableUser, LoginCredential
       };
 
       const response = await authService.signin(loginData);
-      
-      // Store the tokens
-      if (response.accessToken) {
-        setUserToken(response.accessToken);
+      if (!response.success) {
+        throw new Error(response.message || 'Login failed');
       }
-      if (response.refreshToken) {
-        setRefreshToken(response.refreshToken);
-      }
-      
-      const serializableUser = convertApiUserToSerializableUser(response.user);
-      // Mark this as API authentication
-      (serializableUser as any).authMethod = 'api';
-      
-      console.log('🔐 API Login successful:', {
-        user: serializableUser,
-        authMethod: 'api',
-        hasTokens: {
-          accessToken: !!response.accessToken,
-          refreshToken: !!response.refreshToken
-        }
-      });
-      
-      return serializableUser;
+
+      setUserToken(response.data.accessToken);
+      setRefreshToken(response.data.refreshToken);
+      return mapAuthUserToUser(response.data.user);
     } catch (error: any) {
       return rejectWithValue(mapApiError(error));
     }
   }
 );
 
-export const signupWithEmail = createAsyncThunk<SerializableUser, SignupCredentials, { rejectValue: string }>(
+
+export const signupWithEmail = createAsyncThunk<User, SignupRequest, { rejectValue: string }>(
   'auth/signupWithEmail',
-  async ({ email, password, confirmPassword }, { rejectWithValue }) => {
+  async ({ email, password, firstName, lastName }, { rejectWithValue }) => {
     try {
-      if (password !== confirmPassword) {
-        throw new Error('Passwords do not match.');
-      }
-      if (!email || !password) {
-        throw new Error('Email and password are required.');
+      if (!email || !password || !firstName || !lastName) {
+        throw new Error('Email, password, first name, and last name are required.');
       }
 
       const signupData: SignupRequest = {
         email: email.trim(),
         password,
-        firstName: 'User', // Default values - you might want to add these to the form
-        lastName: 'Name',
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
       };
 
       const response = await authService.signup(signupData);
-      
-      // Store the tokens
-      if (response.accessToken) {
-        setUserToken(response.accessToken);
+      if (!response.success) {
+        throw new Error(response.message || 'Signup failed');
       }
-      if (response.refreshToken) {
-        setRefreshToken(response.refreshToken);
-      }
-      
-      const serializableUser = convertApiUserToSerializableUser(response.user);
-      // Mark this as API authentication
-      (serializableUser as any).authMethod = 'api';
-      return serializableUser;
+
+      setUserToken(response.data.accessToken);
+      setRefreshToken(response.data.refreshToken);
+      return mapAuthUserToUser(response.data.user);
     } catch (error: any) {
       return rejectWithValue(mapApiError(error));
     }
   }
 );
 
-export const loginWithGoogle = createAsyncThunk<SerializableUser, void, { rejectValue: string }>(
+export const loginWithGoogle = createAsyncThunk<User, void, { rejectValue: string }>(
   'auth/loginWithGoogle',
   async (_, { rejectWithValue }) => {
     try {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
-      
-      // Get the access token and set cookies
-      const accessToken = await userCredential.user.getIdToken();
-      await setAuthCookies(userCredential.user, accessToken);
-      
-      const serializableUser = serializeUser(userCredential.user);
-      // Mark this as Firebase authentication
-      (serializableUser as any).authMethod = 'firebase';
-      return serializableUser;
+      const idToken = await userCredential.user.getIdToken();
+
+      const googleSigninData: GoogleSigninRequest = {
+        idToken,
+        userType: 'client',
+      };
+
+      const response = await authService.googleSignin(googleSigninData);
+      if (!response.success) {
+        throw new Error(response.message || 'Google sign-in failed');
+      }
+
+      setUserToken(response.data.accessToken);
+      setRefreshToken(response.data.refreshToken);
+      return mapAuthUserToUser(response.data.user);
     } catch (error: any) {
-      return rejectWithValue(mapFirebaseError(error));
+      return rejectWithValue(mapApiError(error));
     }
   }
 );
 
-export const loginWithGithub = createAsyncThunk<SerializableUser, void, { rejectValue: string }>(
+export const loginWithGithub = createAsyncThunk<User, void, { rejectValue: string }>(
   'auth/loginWithGithub',
   async (_, { rejectWithValue }) => {
     try {
       const provider = new GithubAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
-      
-      // Get the access token and set cookies
-      const accessToken = await userCredential.user.getIdToken();
-      await setAuthCookies(userCredential.user, accessToken);
-      
-      const serializableUser = serializeUser(userCredential.user);
-      // Mark this as Firebase authentication
-      (serializableUser as any).authMethod = 'firebase';
-      return serializableUser;
+      const idToken = await userCredential.user.getIdToken();
+
+      const response = await authService.socialLogin('github', idToken);
+      if (!response.success) {
+        throw new Error(response.message || 'GitHub sign-in failed');
+      }
+
+      setUserToken(response.data.accessToken);
+      setRefreshToken(response.data.refreshToken);
+      return mapAuthUserToUser(response.data.user);
     } catch (error: any) {
-      return rejectWithValue(mapFirebaseError(error));
+      return rejectWithValue(mapApiError(error));
     }
   }
 );
 
 export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
   'auth/logout',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      // Get current state to determine auth method
-      const state = getState() as any;
-      const currentUser = state.auth?.user;
-      const authMethod = state.auth?.authMethod;
-      
-      console.log('🔐 Logout initiated. Auth method:', authMethod);
-      console.log('🔐 Current user:', currentUser);
+      await authService.logout();
+    } catch (apiError) {
+      console.warn('API logout failed, continuing with local cleanup:', apiError);
+    }
 
-      // Determine logout method based on auth method or token presence
-      const hasApiToken = typeof window !== 'undefined' && (
-        localStorage.getItem('authToken') || 
-        document.cookie.includes('authToken=')
-      );
-
-      if (authMethod === 'firebase' || (currentUser?.uid && !hasApiToken)) {
-        // Firebase authentication - use Firebase logout
-        console.log('🔐 Logging out via Firebase');
-        try {
-          await signOut(auth);
-          console.log('✅ Firebase logout successful');
-        } catch (firebaseError) {
-          console.warn('Firebase logout failed:', firebaseError);
-        }
-        await clearAuthCookies();
-        
-      } else if (authMethod === 'api' || hasApiToken) {
-        // Email/Password authentication - use API logout
-        console.log('🔐 Logging out via API');
-        try {
-          await authService.logout();
-          console.log('✅ API logout successful');
-        } catch (apiError) {
-          console.warn('API logout failed, but continuing with local cleanup:', apiError);
-        }
-        
-        // Clear local tokens and cookies
-        setUserToken(null);
-        await clearAuthCookies();
-        
-      } else {
-        // Fallback - just clear local data
-        console.log('🔐 Clearing local auth data (fallback)');
-        setUserToken(null);
-        await clearAuthCookies();
-      }
-      
-      console.log('✅ Logout completed successfully');
-      
-    } catch (error: any) {
-      console.error('❌ Logout error:', error);
-      
-      // Always clear local tokens even if logout fails
+    try {
       setUserToken(null);
+      setRefreshToken(null);
       await clearAuthCookies();
-      
-      // Only return error if it's a critical failure that prevents logout
-      if (error.code === 'auth/network-request-failed') {
-        return rejectWithValue('Network error during logout. Please try again.');
-      }
-      
-      // For other errors, we still want to clear local data
-      // but don't show error to user since logout should succeed
-      console.log('⚠️ Logout completed with errors, but local data cleared');
+    } catch (error: any) {
+      return rejectWithValue('Failed to clear authentication data');
     }
   }
 );
 
-// Thunk to restore auth state from stored tokens
+export const refreshAuthToken = createAsyncThunk<User, void, { rejectValue: string }>(
+  'auth/refreshAuthToken',
+  async (_, { rejectWithValue }) => {
+    try {
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) {
+        throw new Error('No refresh token available');
+      }
+
+      const response = await authService.refreshToken(refreshToken);
+      if (!response.success) {
+        throw new Error(response.message || 'Token refresh failed');
+      }
+
+      setUserToken(response.data.accessToken);
+      setRefreshToken(response.data.refreshToken);
+      return mapAuthUserToUser(response.data.user);
+    } catch (error: any) {
+      return rejectWithValue(mapApiError(error));
+    }
+  }
+);
+
 export const restoreAuthState = createAsyncThunk<void, void, { rejectValue: string }>(
   'auth/restoreAuthState',
-  async (_, { rejectWithValue, dispatch }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const hasApiToken = isAuthenticatedSync();
-      
-      if (hasApiToken) {
-        console.log('🔐 Restoring API auth state from stored tokens');
-        // Set auth method to API
-        dispatch(setAuthMethod('api'));
-      } else {
-        console.log('🔐 No API tokens found, auth state will be handled by Firebase');
+      if (!hasApiToken) {
+        throw new Error('No valid tokens found');
       }
+      // Assume auth state is restored in Redux via token presence
     } catch (error: any) {
-      console.warn('Error restoring auth state:', error);
-      return rejectWithValue('Failed to restore auth state');
+      return rejectWithValue(mapApiError(error));
     }
   }
 );
 
-// Email verification thunks
 export const verifyEmail = createAsyncThunk<void, VerifyEmailRequest, { rejectValue: string }>(
   'auth/verifyEmail',
   async ({ email, otp }, { rejectWithValue }) => {
     try {
-     const res= await authService.verifyEmail({ email, otp });
-     console.log('✅ Email verified successfully', res);
-      console.log('✅ Email verified successfully');
+      const response = await authService.verifyEmail({ email, otp });
+      if (!response.success) {
+        throw new Error(response.message || 'Email verification failed');
+      }
     } catch (error: any) {
       return rejectWithValue(mapApiError(error));
     }
@@ -292,8 +214,10 @@ export const resendVerification = createAsyncThunk<void, ResendVerificationReque
   'auth/resendVerification',
   async ({ email }, { rejectWithValue }) => {
     try {
-      await authService.resendVerification({ email });
-      console.log('✅ Verification email resent successfully');
+      const response = await authService.resendVerification({ email });
+      if (!response.success) {
+        throw new Error(response.message || 'Resend verification failed');
+      }
     } catch (error: any) {
       return rejectWithValue(mapApiError(error));
     }

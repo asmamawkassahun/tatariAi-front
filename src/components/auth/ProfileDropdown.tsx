@@ -5,7 +5,6 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useTypedDispatch } from "@/hooks/useTypedDispatch";
 import { logout } from "@/store/feature/auth/authThunks";
-import { SerializableUser } from "@/types/auth";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,9 +25,10 @@ import {
     LogOut,
     Check,
 } from "lucide-react";
+import { User } from "@/types/api";
 
 interface ProfileDropdownProps {
-    user: SerializableUser;
+    user: User;
 }
 
 export function ProfileDropdown({ user }: ProfileDropdownProps) {
@@ -41,7 +41,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
         setMounted(true);
     }, []);
 
-    const displayName = user.displayName || "User";
+    const displayName = user.firstName || "User";
     const email = user.email || "";
     const firstName = displayName.split(" ")[0];
     const firstLetter = displayName.charAt(0).toUpperCase();

@@ -21,7 +21,7 @@ export const HTTP_STATUS = {
   INTERNAL_SERVER_ERROR: 500,
   SERVICE_UNAVAILABLE: 503,
 } as const;
-  
+
 // API Endpoints
 export const API_ENDPOINTS = {
   // Authentication
@@ -38,7 +38,6 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: '/auth/reset-password',
     VERIFY_EMAIL: '/auth/verify-otp',
     RESEND_VERIFICATION: '/auth/resend-verification',
-    CHANGE_PASSWORD: '/auth/change-password',
     PROFILE: '/auth/profile',
   },
 

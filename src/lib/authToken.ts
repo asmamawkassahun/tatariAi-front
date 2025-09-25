@@ -12,7 +12,7 @@ export const getUserToken = async (): Promise<string | null> => {
     try {
       const auth = getAuth();
       const user = auth.currentUser;
-      
+
       if (user) {
         // Get the ID token from Firebase auth
         const token = await user.getIdToken();
@@ -32,7 +32,7 @@ export const getUserToken = async (): Promise<string | null> => {
         .split('; ')
         .find(row => row.startsWith('authToken='))
         ?.split('=')[1];
-      
+
       if (cookieValue) {
         return decodeURIComponent(cookieValue);
       }
@@ -168,7 +168,7 @@ export const isAuthenticatedSync = (): boolean => {
         .split('; ')
         .find(row => row.startsWith('authToken='))
         ?.split('=')[1];
-      
+
       if (cookieValue) {
         return true;
       }
