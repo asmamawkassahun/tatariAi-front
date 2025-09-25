@@ -290,12 +290,12 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="flex items-center gap-1 border-none rounded-[0.375rem] hover:bg-accent/50 transition-colors cursor-pointer"
+                    className="flex items-center gap-1 border-none rounded-[0.375rem] bg-primary dark:bg-accent hover:bg-primary/80 dark:hover:bg-accent/80 transition-colors cursor-pointer"
                 >
-                    <span className="text-sm rounded-[0.3125rem] w-6 h-6 flex bg-red-500 hover:bg-red-400 items-center justify-center text-accent font-medium">
+                    <span className="text-sm rounded-[0.3125rem] w-6 h-6 flex bg-accent dark:bg-primary text-primary dark:text-accent items-center justify-center font-medium">
                         {firstLetter}
                     </span>
-                    <span className="hidden sm:block text-primary dark:text-accent text-xs font-medium leading-5">
+                    <span className="hidden sm:block text-accent dark:text-primary text-xs font-medium leading-5">
                         {firstName}'s lovable
                     </span>
                 </Button>
@@ -356,11 +356,11 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
 
                     {/* Action Buttons */}
                     <div className="flex px-4 py-2 space-x-2">
-                        <Button variant="outline" className="w-full justify-start gap-2 cursor-pointer w-fit px-2">
+                        <Button variant="outline" className="w-fit justify-start gap-2 cursor-pointer px-2">
                             <Settings className="h-4 w-4" />
                             Settings
                         </Button>
-                        <Button variant="outline" className="w-full justify-start gap-2 cursor-pointer w-fit px-2">
+                        <Button variant="outline" className="w-fit justify-start gap-2 cursor-pointer px-2">
                             <UserPlus className="h-4 w-4" />
                             Invite
                         </Button>
