@@ -230,8 +230,19 @@ export function AuthPage({ mode, onModeChange }: AuthPageProps) {
         try {
             if (mode === "login") {
                 const result = await dispatch(loginWithEmail({ email: email.trim(), password })).unwrap();
-                toast.success(result.message || "Successfully logged in!");
-                router.push("/");
+
+                // Check if email verification is required
+                if (result.requiresVerification) {
+                    // Show verification screen for login
+                    setVerificationEmail(result.email || email.trim());
+                    setVerificationMode('login');
+                    setShowVerification(true);
+                    toast.info(result.message || "Please verify your email to continue.");
+                } else {
+                    // Normal login success
+                    toast.success(result.message || "Successfully logged in!");
+                    router.push("/");
+                }
             } else {
                 // For signup, use the thunk to get consistent API message handling
                 const result = await dispatch(signupWithEmail({

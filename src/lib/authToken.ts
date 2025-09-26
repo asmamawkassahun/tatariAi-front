@@ -1,30 +1,16 @@
-import { getAuth } from 'firebase/auth';
+/**
+ * Authentication token management utilities
+ * Handles API tokens only - Firebase auth is managed by Firebase itself
+ */
 
 /**
  * Get user token from multiple sources in order of preference:
- * 1. Firebase auth user (ID token)
- * 2. Cookies
- * 3. Local storage (fallback)
+ * 1. Cookies
+ * 2. Local storage (fallback)
+ * 
+ * Note: Firebase tokens are handled by Firebase auth state, not stored manually
  */
 export const getUserToken = async (): Promise<string | null> => {
-  // Try to get token from Firebase auth user first (client-side)
-  if (typeof window !== 'undefined') {
-    try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
-      if (user) {
-        // Get the ID token from Firebase auth
-        const token = await user.getIdToken();
-        if (token) {
-          return token;
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to get token from Firebase auth:', error);
-    }
-  }
-
   // Try to get token from cookies (server-side and client-side)
   if (typeof document !== 'undefined') {
     try {
@@ -181,8 +167,6 @@ export const clearAllUserData = () => {
       }
 
       keysToRemove.forEach(key => localStorage.removeItem(key));
-
-      console.log('🧹 Cleared localStorage items:', keysToRemove);
     } catch (error) {
       console.warn('Failed to clear localStorage:', error);
     }
@@ -215,8 +199,6 @@ export const clearAllUserData = () => {
       }
 
       keysToRemove.forEach(key => sessionStorage.removeItem(key));
-
-      console.log('🧹 Cleared sessionStorage items:', keysToRemove);
     } catch (error) {
       console.warn('Failed to clear sessionStorage:', error);
     }
@@ -245,8 +227,6 @@ export const clearAllUserData = () => {
         // Clear cookie for parent domain
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`;
       });
-
-      console.log('🧹 Cleared cookies:', cookiesToClear);
     } catch (error) {
       console.warn('Failed to clear cookies:', error);
     }
@@ -259,6 +239,22 @@ export const clearAllUserData = () => {
 export const isAuthenticated = async (): Promise<boolean> => {
   const token = await getUserToken();
   return token !== null && token.length > 0;
+};
+
+/**
+ * Check if user has API authentication (not Firebase-only)
+ */
+export const hasApiAuthentication = (): boolean => {
+  // Check for refresh token which is only set for API authentication
+  if (typeof window !== 'undefined') {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      return refreshToken !== null && refreshToken.length > 0;
+    } catch (error) {
+      console.warn('Failed to check refresh token:', error);
+    }
+  }
+  return false;
 };
 
 /**

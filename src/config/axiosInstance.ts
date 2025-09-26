@@ -1,6 +1,13 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { getUserToken, setUserToken, clearUserToken, getRefreshToken, setRefreshToken } from '@/lib/authToken';
-import { API_CONFIG, HTTP_STATUS } from '@/constants/api';
+import { API_CONFIG, HTTP_STATUS, API_ENDPOINTS } from '@/constants/api';
+
+// Extend AxiosRequestConfig to include our custom needsAuth property
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    needsAuth?: boolean;
+  }
+}
 
 // Base configuration
 const baseURL = API_CONFIG.BASE_URL;
@@ -15,23 +22,19 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
+
 // Request interceptor
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    // Add auth token if available
-    const token = await getUserToken();
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Check if this request needs authentication (default: true)
+    const needsAuth = config.needsAuth !== false;
 
-    // Log request in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
-      console.log('Request config:', {
-        baseURL: config.baseURL,
-        url: config.url,
-        headers: config.headers,
-      });
+    // Only add auth token if the request needs authentication
+    if (needsAuth) {
+      const token = await getUserToken();
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     return config;
@@ -45,11 +48,6 @@ axiosInstance.interceptors.request.use(
 // Response interceptor
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    // Log response in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`✅ API Response: ${response.status} ${response.config.url}`);
-    }
-
     return response;
   },
   async (error: AxiosError) => {
@@ -58,41 +56,50 @@ axiosInstance.interceptors.response.use(
       // Server responded with error status
       const { status, data } = error.response;
       const { config } = error;
-      
+
       switch (status) {
         case HTTP_STATUS.UNAUTHORIZED:
-          console.error('🔐 Unauthorized - Token may be invalid or expired');
-          
+          // Check if this is an email verification required case (not a real auth error)
+          if (data && (data as any).requiresVerification && (data as any).error === "UNAUTHORIZED") {
+            // This is not a real auth error - it's a business logic response
+            // Return the response as successful so it can be handled by the service
+            return Promise.resolve({
+              data: data,
+              status: 200, // Treat as successful
+              statusText: 'OK',
+              headers: error.response.headers,
+              config: error.config
+            });
+          }
+
           // Try to refresh token if this is not already a refresh request
           if (config && !config.url?.includes('/auth/refresh')) {
             try {
               const refreshToken = getRefreshToken();
               if (refreshToken) {
-                console.log('🔄 Attempting to refresh token...');
-                
-                const refreshResponse = await axios.post(`${baseURL}/auth/refresh`, {
+
+                const refreshResponse = await axios.post(`${baseURL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
                   refreshToken: refreshToken
                 });
-                
+
                 if (refreshResponse.data.accessToken) {
                   console.log('✅ Token refreshed successfully');
-                  
+
                   // Update tokens
                   setUserToken(refreshResponse.data.accessToken);
                   if (refreshResponse.data.refreshToken) {
                     setRefreshToken(refreshResponse.data.refreshToken);
                   }
-                  
+
                   // Retry original request with new token
                   if (config.headers) {
                     config.headers.Authorization = `Bearer ${refreshResponse.data.accessToken}`;
                   }
-                  
+
                   return axiosInstance(config);
                 }
               }
             } catch (refreshError) {
-              console.error('❌ Token refresh failed:', refreshError);
               // Clear tokens on refresh failure and redirect to login
               clearUserToken();
               if (typeof window !== 'undefined') {
@@ -105,30 +112,29 @@ axiosInstance.interceptors.response.use(
             if (typeof window !== 'undefined') {
               window.location.href = '/login';
             }
-            console.error('🔒 Unauthorized access - redirecting to login');
           }
           break;
-          
+
         case HTTP_STATUS.FORBIDDEN:
           console.error('🚫 Forbidden - insufficient permissions');
           break;
-          
+
         case HTTP_STATUS.NOT_FOUND:
           console.error('🔍 Resource not found');
           break;
-          
+
         case HTTP_STATUS.UNPROCESSABLE_ENTITY:
           console.error('📝 Validation error:', data);
           break;
-          
+
         case HTTP_STATUS.TOO_MANY_REQUESTS:
           console.error('⏰ Rate limit exceeded');
           break;
-          
+
         case HTTP_STATUS.INTERNAL_SERVER_ERROR:
           console.error('🔥 Internal server error');
           break;
-          
+
         default:
           console.error(`❌ API Error ${status}:`, data);
       }
@@ -192,11 +198,11 @@ export const handleApiError = (error: AxiosError) => {
   if (error.response?.data) {
     return error.response.data;
   }
-  
+
   if (error.message) {
     return { message: error.message };
   }
-  
+
   return { message: 'An unexpected error occurred' };
 };
 
