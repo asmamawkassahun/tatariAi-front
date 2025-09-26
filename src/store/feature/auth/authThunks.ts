@@ -9,7 +9,7 @@ import {
 import { clearAuthCookies } from '@/lib/cookies';
 import { authService } from '@/services/authService';
 import { LoginRequest, SignupRequest, VerifyEmailRequest, ResendVerificationRequest, GoogleSigninRequest, User, AuthResponse, emailPasswordSignUpResponse } from '@/types/api';
-import { setUserToken, setRefreshToken, getRefreshToken, isAuthenticatedSync, clearAllUserData } from '@/lib/authToken';
+import { setUserToken, setRefreshToken, getRefreshToken, isAuthenticatedSync, hasApiAuthentication, clearAllUserData } from '@/lib/authToken';
 import { getUserData, validateStoredUserData, clearUserData as clearStoredUserData, storeUserData } from '@/lib/userStorage';
 
 // Type definitions
@@ -39,15 +39,20 @@ const mapApiError = (error: any): string => {
 };
 
 // Helper to map AuthResponse user to User type
-const mapAuthUserToUser = (authUser: AuthResponse['data']['user']): User => ({
-  id: authUser.id,
-  email: authUser.email,
-  firstName: authUser.firstName,
-  lastName: authUser.lastName,
-  photoUrl: authUser.photoUrl,
-  createdAt: authUser?.createdAt || '',
-  updatedAt: authUser?.updatedAt || '',
-});
+const mapAuthUserToUser = (authUser: AuthResponse['data']['user']): User => {
+  if (!authUser) {
+    throw new Error('User data is required');
+  }
+  return {
+    id: authUser.id,
+    email: authUser.email,
+    firstName: authUser.firstName,
+    lastName: authUser.lastName,
+    photoUrl: authUser.photoUrl,
+    createdAt: authUser.createdAt || '',
+    updatedAt: authUser.updatedAt || '',
+  };
+};
 
 // Helper function to perform comprehensive logout cleanup
 const performLogoutCleanup = async (): Promise<void> => {
@@ -57,7 +62,7 @@ const performLogoutCleanup = async (): Promise<void> => {
       action: async () => {
         await firebaseSignOut(auth);
       },
-      required: false
+      required: true
     },
     {
       name: 'Clear authentication tokens',
@@ -89,11 +94,9 @@ const performLogoutCleanup = async (): Promise<void> => {
   for (const step of cleanupSteps) {
     try {
       await step.action();
-      console.log(`✅ ${step.name} successful`);
       results.push({ step: step.name, success: true, error: null });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.warn(`⚠️ ${step.name} failed:`, errorMessage);
       results.push({ step: step.name, success: false, error: errorMessage });
 
       if (step.required) {
@@ -101,14 +104,9 @@ const performLogoutCleanup = async (): Promise<void> => {
       }
     }
   }
-
-  // Log summary of logout process
-  const successful = results.filter(r => r.success).length;
-  const failed = results.filter(r => !r.success).length;
-  console.log(`🎉 Logout process completed: ${successful} successful, ${failed} failed`);
 };
 
-export const loginWithEmail = createAsyncThunk<{ user: User; message: string }, LoginRequest, { rejectValue: string }>(
+export const loginWithEmail = createAsyncThunk<{ user: User; message: string; requiresVerification?: boolean; email?: string }, LoginRequest, { rejectValue: string }>(
   'auth/loginWithEmail',
   async ({ email, password }, { rejectWithValue }) => {
     try {
@@ -122,6 +120,18 @@ export const loginWithEmail = createAsyncThunk<{ user: User; message: string }, 
       };
 
       const response = await authService.signin(loginData);
+
+      // Check if email verification is required
+      if (response.data.requiresVerification) {
+        // Return verification required response
+        return {
+          user: null as any, // No user yet
+          message: response.message,
+          requiresVerification: true,
+          email: response.data.email || email.trim()
+        };
+      }
+
       if (!response.success) {
         throw new Error(response.message || 'Login failed');
       }
@@ -235,23 +245,25 @@ export const logout = createAsyncThunk<{ message: string }, void, { rejectValue:
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      console.log('🚪 Starting logout process...');
+      // Check if user has API tokens (API authentication)
+      const hasApiToken = hasApiAuthentication();
 
-      // STEP 1: Call server logout API FIRST (before clearing any user data)
-      console.log('📡 Calling server logout API...');
-      const response = await authService.logout();
-      const logoutMessage = response.message || 'Logged out successfully';
-      console.log('✅ Server logout successful:', logoutMessage);
+      if (hasApiToken) {
+        // STEP 1: Call server logout API FIRST (before clearing any user data)
+        try {
+          const response = await authService.logout();
+          const logoutMessage = response.message || 'Logged out successfully';
+        } catch (apiError) {
+          // API logout failed, but continue with local cleanup
+        }
+      }
 
-      // STEP 2: Now clear all local user data after successful server logout
-      console.log('🧹 Clearing local user data...');
+      // STEP 2: Clear all local user data (works for both API and Firebase auth)
       await performLogoutCleanup();
 
-      console.log('🎉 Logout process completed successfully');
-      return { message: logoutMessage };
+      return { message: 'Logged out successfully' };
     } catch (error: any) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to complete logout process';
-      console.error('❌ Logout failed:', errorMessage);
       return rejectWithValue(errorMessage);
     }
   }

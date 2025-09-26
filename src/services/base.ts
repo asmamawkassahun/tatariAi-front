@@ -88,10 +88,10 @@ export class BaseService {
   /**
    * Generic POST request
    */
-  protected async post<T>(endpoint: string, data?: any): Promise<T> {
+  protected async post<T>(endpoint: string, data?: any, needsAuth: boolean = true): Promise<T> {
     try {
-      const response = await api.post(`${this.baseEndpoint}${endpoint}`, data);
-      console.log("POST response", JSON.stringify(response, null, 2));
+      const config = { needsAuth };
+      const response = await api.post(`${this.baseEndpoint}${endpoint}`, data, config);
       return this.handleResponse<T>(response);
     } catch (error) {
       throw this.handleError(error);
@@ -101,10 +101,10 @@ export class BaseService {
   /**
    * Raw POST request that returns the full response structure
    */
-  protected async rawPost(endpoint: string, data?: any): Promise<any> {
+  protected async rawPost(endpoint: string, data?: any, needsAuth: boolean = true): Promise<any> {
     try {
-      const response = await api.post(`${this.baseEndpoint}${endpoint}`, data);
-      console.log("Raw POST response", JSON.stringify(response, null, 2));
+      const config = { needsAuth };
+      const response = await api.post(`${this.baseEndpoint}${endpoint}`, data, config);
       return response;
     } catch (error) {
       throw this.handleError(error);

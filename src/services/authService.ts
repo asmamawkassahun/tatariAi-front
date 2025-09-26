@@ -31,7 +31,7 @@ export class AuthService extends BaseService {
    */
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     try {
-      const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials);
+      const response = await this.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, credentials, false);
 
       // Store tokens if login successful
       if (response.success) {
@@ -52,7 +52,7 @@ export class AuthService extends BaseService {
   async signup(userData: SignupRequest): Promise<emailPasswordSignUpResponse> {
     try {
       // Make the API call directly to get the full response structure
-      const response = await this.rawPost(API_ENDPOINTS.AUTH.REGISTER, userData);
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.REGISTER, userData, false);
       console.log("Signup response", JSON.stringify(response, null, 2));
 
       // Extract the structured response
@@ -79,10 +79,26 @@ export class AuthService extends BaseService {
   async signin(credentials: LoginRequest): Promise<AuthResponse> {
     try {
       // Make the API call directly to get the full response structure
-      const response = await this.rawPost(API_ENDPOINTS.AUTH.LOGIN, credentials);
-      console.log("Signin response", JSON.stringify(response, null, 2));
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.LOGIN, credentials, false);
 
-      // Extract the structured response
+      // Check if this is an email verification required case
+      if (response.data.requiresVerification && response.data.error === "UNAUTHORIZED") {
+        // This is not an error - user needs to verify email
+        const verificationResponse: AuthResponse = {
+          success: false, // Not fully authenticated yet
+          message: response.data.message,
+          data: {
+            accessToken: null,
+            refreshToken: null,
+            user: null,
+            requiresVerification: true,
+            email: credentials.email // Include email for verification step
+          }
+        };
+        return verificationResponse;
+      }
+
+      // Extract the structured response for normal signin
       const authResponse: AuthResponse = {
         success: response.data.success,
         message: response.data.message,
@@ -90,7 +106,7 @@ export class AuthService extends BaseService {
       };
 
       // Store tokens and user data if signin successful
-      if (authResponse.success) {
+      if (authResponse.success && authResponse.data.user) {
         setUserToken(authResponse.data.accessToken);
         setRefreshToken(authResponse.data.refreshToken);
 
@@ -118,7 +134,6 @@ export class AuthService extends BaseService {
       // Call server logout API first - don't clear local data here
       // Local cleanup will be handled by the logout thunk
       const response = await this.rawPost(API_ENDPOINTS.AUTH.LOGOUT);
-      console.log("Logout response", JSON.stringify(response, null, 2));
 
       // Extract the structured response
       const apiResponse: ApiResponse = {
@@ -184,7 +199,7 @@ export class AuthService extends BaseService {
    */
   async forgotPassword(data: ForgotPasswordRequest): Promise<ApiResponse> {
     try {
-      return await this.post<ApiResponse>(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, data);
+      return await this.post<ApiResponse>(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, data, false);
     } catch (error) {
       console.error('Forgot password failed:', error);
       throw error;
@@ -204,7 +219,7 @@ export class AuthService extends BaseService {
       // Remove confirmPassword from the request
       const { confirmPassword, ...resetData } = data;
 
-      return await this.post<ApiResponse>(API_ENDPOINTS.AUTH.RESET_PASSWORD, resetData);
+      return await this.post<ApiResponse>(API_ENDPOINTS.AUTH.RESET_PASSWORD, resetData, false);
     } catch (error) {
       console.error('Reset password failed:', error);
       throw error;
@@ -250,7 +265,7 @@ export class AuthService extends BaseService {
   async googleSignin(data: GoogleSigninRequest): Promise<AuthResponse> {
     try {
       // Make the API call directly to get the full response structure
-      const response = await this.rawPost(API_ENDPOINTS.AUTH.GOOGLE_LOGIN, data);
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.GOOGLE_LOGIN, data, false);
       console.log("Google signin response", JSON.stringify(response, null, 2));
 
       // Extract the structured response
@@ -261,7 +276,7 @@ export class AuthService extends BaseService {
       };
 
       // Store tokens and user data if login successful
-      if (authResponse.success) {
+      if (authResponse.success && authResponse.data.user) {
         setUserToken(authResponse.data.accessToken);
         setRefreshToken(authResponse.data.refreshToken);
 
@@ -287,7 +302,7 @@ export class AuthService extends BaseService {
   async socialLogin(provider: 'github', token: string): Promise<AuthResponse> {
     try {
       // Make the API call directly to get the full response structure
-      const response = await this.rawPost(`/auth/${provider}`, { token });
+      const response = await this.rawPost(`/auth/${provider}`, { token }, false);
       console.log(`${provider} login response`, JSON.stringify(response, null, 2));
 
       // Extract the structured response
@@ -298,7 +313,7 @@ export class AuthService extends BaseService {
       };
 
       // Store tokens and user data if login successful
-      if (authResponse.success) {
+      if (authResponse.success && authResponse.data.user) {
         setUserToken(authResponse.data.accessToken);
         setRefreshToken(authResponse.data.refreshToken);
 
@@ -324,7 +339,7 @@ export class AuthService extends BaseService {
   async verifyEmail(data: VerifyEmailRequest): Promise<AuthResponse> {
     try {
       // Make the API call directly to get the full response structure
-      const response = await this.rawPost(API_ENDPOINTS.AUTH.VERIFY_EMAIL, data);
+      const response = await this.rawPost(API_ENDPOINTS.AUTH.VERIFY_EMAIL, data, false);
       console.log("Email verification response", JSON.stringify(response, null, 2));
 
       // Extract the structured response
@@ -335,7 +350,7 @@ export class AuthService extends BaseService {
       };
 
       // Store tokens and user data if verification successful
-      if (authResponse.success) {
+      if (authResponse.success && authResponse.data.user) {
         setUserToken(authResponse.data.accessToken);
         setRefreshToken(authResponse.data.refreshToken);
 
@@ -360,7 +375,7 @@ export class AuthService extends BaseService {
    */
   async resendVerification(data: ResendVerificationRequest): Promise<emailPasswordSignUpResponse> {
     try {
-      return await this.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, data);
+      return await this.post(API_ENDPOINTS.AUTH.RESEND_VERIFICATION, data, false);
     } catch (error) {
       console.error('Resend verification failed:', error);
       throw error;
