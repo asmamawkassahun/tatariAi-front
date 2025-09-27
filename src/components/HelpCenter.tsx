@@ -22,8 +22,8 @@ export function HelpCenter() {
     };
 
     return (
-        <div className="p-6 bg-background text-foreground min-h-screen">
-            <h2 className="text-[3.5375rem] font-medium text-primary text-center dark:text-white">Help & Support</h2>
+        <div className="p-6 bg-background text-foreground space-y-16 sm:space-y-20 md:space-y-24 my-8 sm:my-10 md:my-14  min-h-screen">
+            <h2 className=" text-3xl sm:text-4xl md:text-[3.5375rem] font-medium text-primary text-center dark:text-white">Help & Support</h2>
 
             <form onSubmit={handleSearch} className="mb-6 w-full  max-w-md mx-auto">
                 <div className="relative">
@@ -32,9 +32,9 @@ export function HelpCenter() {
                         placeholder="Ask anything..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2  border-none rounded-md"
+                        className="w-full pl-10 pr-4 py-2  border-footer-border rounded-md"
                     />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2  transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 </div>
             </form>
             <div className="flex flex-col md:flex-row justify-center items-stretch gap-6">
@@ -69,7 +69,7 @@ export function HelpCenter() {
 
                 </Card>
             </div>
-            <div className="mt-10">
+            <div className="mt-24">
                 <h3 className="text-3xl font-medium text-primary text-center dark:text-white mb-4">Get Involved</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-[48rem] mx-auto">
                     <div className="flex flex-col gap-4">
