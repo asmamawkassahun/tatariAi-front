@@ -26,7 +26,7 @@ const Projects = () => {
                 <div className="flex items-center  justify-between w-full">
                   <div className="flex flex-col gap-4">
                     <h2 className="text-primary dark:text-accent text-3xl md:text-[1.375rem] font-medium leading-9">
-                      {user?.displayName || "User"}'s Lovable's Workspace
+                      {user?.firstName || "User"}'s Lovable's Workspace
                     </h2>
                     {/* Search and Filter Bar */}
                     <div className=" flex flex-col md:flex-row items-start gap-4 mb-6">

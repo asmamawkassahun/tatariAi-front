@@ -4,14 +4,30 @@ import Header from "@/components/header";
 import Hero from "@/components/hero";
 import Projects from "@/components/projects";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by only rendering theme-dependent content after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
+
   return (
     <div className="relative w-full space-y-4 md:space-y-8">
       {/* Background covering all content except footer */}
-      <div className={`absolute inset-0 w-full ${isDark ? "bg-[url('/assets/bg-dark.svg')] bg-cover bg-center" : "bg-[url('/assets/bg-light.svg')] bg-cover bg-center"}`}></div>
+      <div
+        className={`absolute inset-0 w-full bg-cover bg-center ${mounted
+            ? isDark
+              ? "bg-[url('/assets/bg-dark.svg')]"
+              : "bg-[url('/assets/bg-light.svg')]"
+            : "bg-[url('/assets/bg-light.svg')]" // Default to light theme during SSR
+          }`}
+      ></div>
 
       {/* Content sections */}
       {/* <div className="relative z-10 px-2 md:px-0">

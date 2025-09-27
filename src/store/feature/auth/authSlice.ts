@@ -51,10 +51,19 @@ const authSlice = createSlice({
       .addCase(loginWithEmail.pending, handlePending)
       .addCase(loginWithEmail.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
-        state.isAuthenticated = true;
-        state.error = null;
-        console.log('✅ Login successful');
+
+        // Check if email verification is required
+        if (action.payload.requiresVerification) {
+          state.user = null;
+          state.isAuthenticated = false;
+          state.error = null;
+          console.log('📧 Email verification required');
+        } else {
+          state.user = action.payload.user;
+          state.isAuthenticated = true;
+          state.error = null;
+          console.log('✅ Login successful');
+        }
       })
       .addCase(loginWithEmail.rejected, handleRejected);
 

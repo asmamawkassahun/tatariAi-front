@@ -71,8 +71,8 @@ export interface AuthResponse {
   success: boolean;
   message: string;
   data: {
-    accessToken: string;
-    refreshToken: string;
+    accessToken: string | null;
+    refreshToken: string | null;
     user: {
       id: string;
       email: string;
@@ -91,7 +91,9 @@ export interface AuthResponse {
         businessName?: string;
         phone: string | null;
       };
-    };
+    } | null;
+    requiresVerification?: boolean;
+    email?: string;
   }
 }
 
