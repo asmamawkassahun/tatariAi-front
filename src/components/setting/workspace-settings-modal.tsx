@@ -1,4 +1,673 @@
+// // components/workspace-settings-modal.tsx
+// "use client";
+
+// import * as React from "react";
+// import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+// import { Button } from "@/components/ui/button";
+// import { Switch } from "@/components/ui/switch";
+// import { Label } from "@/components/ui/label";
+// import { Input } from "@/components/ui/input";
+// import { Textarea } from "@/components/ui/textarea";
+// import { Separator } from "@/components/ui/separator";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { Settings, Upload, Save, X, ArrowLeft, FlaskConical, Database, Github, User, CreditCard, Users } from "lucide-react";
+// import { SettingsSidebar } from "./settings-sidebar";
+
+// interface WorkspaceSettingsModalProps {
+//     open: boolean;
+//     onOpenChange: (open: boolean) => void;
+//     workspace: {
+//         name: string;
+//         description: string;
+//         avatar?: string;
+//         allowUnprotectedSamples: boolean;
+//         allowInvites: boolean;
+//     };
+//     user: {
+//         firstName: string;
+//         email: string;
+//     };
+// }
+
+// export function WorkspaceSettingsModal({
+//     open,
+//     onOpenChange,
+//     workspace,
+//     user
+// }: WorkspaceSettingsModalProps) {
+//     const [activeSection, setActiveSection] = React.useState("workspace");
+//     const [name, setName] = React.useState(workspace.name);
+//     const [description, setDescription] = React.useState(workspace.description);
+//     const [allowUnprotectedSamples, setAllowUnprotectedSamples] = React.useState(
+//         workspace.allowUnprotectedSamples
+//     );
+//     const [allowInvites, setAllowInvites] = React.useState(workspace.allowInvites);
+
+//     const workspaceName = `${user.firstName}'s Lovable`;
+//     const firstLetter = user.firstName.charAt(0).toUpperCase();
+
+//     const handleSave = () => {
+//         // Handle save logic here
+//         console.log("Saving workspace settings:", {
+//             name,
+//             description,
+//             allowUnprotectedSamples,
+//             allowInvites,
+//         });
+//         onOpenChange(false);
+//     };
+
+//     const renderContent = () => {
+//         switch (activeSection) {
+//             case "workspace":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-xl font-semibold text-primary leading-6 dark:text-white">Workspace Setings</h2>
+//                             <p className="text-secondary mt-1">Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.</p>
+//                         </div>
+
+//                         {/* <Separator /> */}
+
+//                         {/* Workspace Avatar Section */}
+//                         <div className=" grid md:grid-cols-2 items-center">
+//                             <div>
+//                                 <h3 className="text-lg font-semibold text-primary leading-6 ">Workspace Avatar</h3>
+//                                 <p className=" text-base text-secondary">Set an avatar for your workspace.</p>
+//                             </div>
+//                             <Avatar className="h-16 w-16">
+//                                 <AvatarImage src={workspace.avatar} />
+//                                 <AvatarFallback className="text-lg bg-primary text-accent">
+//                                     {firstLetter}
+//                                 </AvatarFallback>
+//                             </Avatar>
+//                             {/* <Button variant="outline" size="sm">
+//                                 <Upload className="h-4 w-4 mr-2" />
+//                                 Upload Avatar
+//                                 </Button> */}
+//                         </div>
+
+//                         {/* <Separator /> */}
+
+//                         {/* Workspace Name */}
+//                         <div className="grid grid-cols-1 md:grid-cols-2  ">
+//                             <div>
+//                                 <Label htmlFor="workspace-name" className="text-lg font-semibold ">
+//                                     Workspace Name
+//                                 </Label>
+//                                 <p className="text-base text-secondary ">Your full workspace name, as visible to others.</p>
+//                             </div>
+//                             <Input
+//                                 id="workspace-name"
+//                                 value={name}
+//                                 onChange={(e) => setName(e.target.value)}
+//                                 placeholder="Your full workspace name, as visible to others."
+//                                 className="max-w-md bg-accent"
+//                             />
+//                         </div>
+
+//                         {/* Workspace Description */}
+//                         <div className=" grid grid-cols-1 md:grid-cols-2 ">
+//                             <div>
+//                                 <Label htmlFor="workspace-description" className="text-lg font-semibold">
+//                                     Workspace Description
+//                                 </Label>
+//                                 <p className="text-secondary">A short description about your workspace or team.</p>
+//                             </div>
+//                             <Textarea
+//                                 id="workspace-description"
+//                                 value={description}
+//                                 onChange={(e) => setDescription(e.target.value)}
+//                                 placeholder="A short description about your workspace or team."
+//                                 rows={3}
+//                                 className="max-w-md bg-accent resize-none"
+//                             />
+//                         </div>
+
+//                         {/* <Separator /> */}
+
+//                         {/* Security Settings */}
+//                         <div className="space-y-6">
+//                             <div className="flex items-center justify-between">
+//                                 <div className="space-y-1 max-w-xl">
+//                                     <Label className="text-lg font-semibold leading-6">
+//                                         Include Unprotected Database Samples in Security Scans
+//                                     </Label>
+//                                     <p className=" text-secondary">
+//                                         Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.
+//                                     </p>
+//                                 </div>
+//                                 <Switch
+//                                     checked={allowUnprotectedSamples}
+//                                     onCheckedChange={setAllowUnprotectedSamples}
+//                                 />
+//                             </div>
+
+//                             <div className="flex items-center justify-between">
+//                                 <div className="space-y-1 max-w-lg">
+//                                     <Label className="text-lg font-semibold leading-6">
+//                                         Allow editors to invite workspace members
+//                                     </Label>
+//                                     <p className=" text-secondary">
+//                                         Upgrade your plan to allow editors and viewers to invite other members to this workspace.
+//                                     </p>
+//                                 </div>
+//                                 <Switch
+//                                     checked={allowInvites}
+//                                     onCheckedChange={setAllowInvites}
+//                                 // disabled // Disabled until plan upgrade
+//                                 />
+//                             </div>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "people":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">People</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage workspace members</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">People management coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "plans-billing":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Plans & Billing</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your subscription</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <CreditCard className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Billing management coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "your-account":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Your Account</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your personal account settings</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Account settings coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "labs":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Labs</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Experimental features</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <FlaskConical className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Experimental features coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "supabase":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Supabase</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage Supabase connection</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <Database className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Supabase integration coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "github":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Github</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage Github integration</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <Github className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Github integration coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             default:
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Workspace Settings</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your workspace preferences</p>
+//                         </div>
+//                     </div>
+//                 );
+//         }
+//     };
+
+//     return (
+//         <Dialog open={open} onOpenChange={onOpenChange}>
+//             <DialogContent className="!max-w-[90rem] h-max overflow-hidden p-0">
+//                 <div className="flex h-[80vh]">
+//                     {/* Sidebar */}
+//                     <SettingsSidebar
+//                         activeSection={activeSection}
+//                         onSectionChange={setActiveSection}
+//                         workspaceName={workspaceName}
+//                         user={user}
+//                     />
+
+//                     {/* Main Content */}
+//                     <div className="flex-1 overflow-y-auto">
+//                         <div className="p-8">
+//                             {renderContent()}
+
+//                             {/* Action Buttons - Only show for workspace section */}
+//                             {activeSection === "workspace" && (
+//                                 <div className="flex justify-end gap-3 pt-8 mt-8 border-t">
+//                                     <Button variant="outline" onClick={() => onOpenChange(false)}>
+//                                         <X className="h-4 w-4 mr-2" />
+//                                         Cancel
+//                                     </Button>
+//                                     <Button onClick={handleSave}>
+//                                         <Save className="h-4 w-4 mr-2" />
+//                                         Save Changes
+//                                     </Button>
+//                                 </div>
+//                             )}
+//                         </div>
+//                     </div>
+//                 </div>
+//             </DialogContent>
+//         </Dialog>
+//     );
+// }
+
+
+
 // components/workspace-settings-modal.tsx
+// "use client";
+
+// import * as React from "react";
+// import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+// import { Button } from "@/components/ui/button";
+// import { Switch } from "@/components/ui/switch";
+// import { Label } from "@/components/ui/label";
+// import { Input } from "@/components/ui/input";
+// import { Textarea } from "@/components/ui/textarea";
+// import { Separator } from "@/components/ui/separator";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { Settings, Upload, Save, X, ArrowLeft, FlaskConical, Database, Github, User, CreditCard, Users, Menu } from "lucide-react";
+// import { SettingsSidebar } from "./settings-sidebar";
+// import { cn } from "@/lib/utils"; // Make sure you have cn utility for conditional classes
+
+// interface WorkspaceSettingsModalProps {
+//     open: boolean;
+//     onOpenChange: (open: boolean) => void;
+//     workspace: {
+//         name: string;
+//         description: string;
+//         avatar?: string;
+//         allowUnprotectedSamples: boolean;
+//         allowInvites: boolean;
+//     };
+//     user: {
+//         firstName: string;
+//         email: string;
+//     };
+// }
+
+// export function WorkspaceSettingsModal({
+//     open,
+//     onOpenChange,
+//     workspace,
+//     user
+// }: WorkspaceSettingsModalProps) {
+//     const [activeSection, setActiveSection] = React.useState("workspace");
+//     const [name, setName] = React.useState(workspace.name);
+//     const [description, setDescription] = React.useState(workspace.description);
+//     const [allowUnprotectedSamples, setAllowUnprotectedSamples] = React.useState(
+//         workspace.allowUnprotectedSamples
+//     );
+//     const [allowInvites, setAllowInvites] = React.useState(workspace.allowInvites);
+//     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+//     const [isMobile, setIsMobile] = React.useState(false);
+
+//     const workspaceName = `${user.firstName}'s Lovable`;
+//     const firstLetter = user.firstName.charAt(0).toUpperCase();
+
+//     // Check if screen is mobile size
+//     React.useEffect(() => {
+//         const checkScreenSize = () => {
+//             const mobile = window.innerWidth < 768; // 768px is typical md breakpoint
+//             setIsMobile(mobile);
+//             if (!mobile) {
+//                 setIsSidebarOpen(true); // Always show sidebar on desktop
+//             } else {
+//                 setIsSidebarOpen(false); // Hide sidebar by default on mobile
+//             }
+//         };
+
+//         // Check initially
+//         checkScreenSize();
+
+//         // Add event listener for window resize
+//         window.addEventListener('resize', checkScreenSize);
+
+//         // Cleanup
+//         return () => window.removeEventListener('resize', checkScreenSize);
+//     }, []);
+
+//     const handleSave = () => {
+//         // Handle save logic here
+//         console.log("Saving workspace settings:", {
+//             name,
+//             description,
+//             allowUnprotectedSamples,
+//             allowInvites,
+//         });
+//         onOpenChange(false);
+//     };
+
+//     const handleSectionChange = (section: string) => {
+//         setActiveSection(section);
+//         // Close sidebar on mobile after selecting a section
+//         if (isMobile) {
+//             setIsSidebarOpen(false);
+//         }
+//     };
+
+//     const toggleSidebar = () => {
+//         setIsSidebarOpen(!isSidebarOpen);
+//     };
+
+//     const renderContent = () => {
+//         switch (activeSection) {
+//             case "workspace":
+//                 return (
+//                     <div className="space-y-6">
+//                        {
+//                         !isMobile && (
+//                              <div>
+//                             <h2 className="text-xl font-semibold text-primary leading-6 dark:text-white">Workspace Settings</h2>
+//                             <p className="text-secondary mt-1">Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.</p>
+//                         </div>
+//                         )
+//                        }
+
+//                         {/* Workspace Avatar Section */}
+//                         <div className="grid md:grid-cols-2 items-center">
+//                             <div>
+//                                 <h3 className="text-lg font-semibold text-primary leading-6">Workspace Avatar</h3>
+//                                 <p className="text-base text-secondary">Set an avatar for your workspace.</p>
+//                             </div>
+//                             <Avatar className="h-16 w-16">
+//                                 <AvatarImage src={workspace.avatar} />
+//                                 <AvatarFallback className="text-lg bg-primary text-accent">
+//                                     {firstLetter}
+//                                 </AvatarFallback>
+//                             </Avatar>
+//                         </div>
+
+//                         {/* Workspace Name */}
+//                         <div className="grid grid-cols-1 md:grid-cols-2">
+//                             <div>
+//                                 <Label htmlFor="workspace-name" className="text-lg font-semibold">
+//                                     Workspace Name
+//                                 </Label>
+//                                 <p className="text-base text-secondary">Your full workspace name, as visible to others.</p>
+//                             </div>
+//                             <Input
+//                                 id="workspace-name"
+//                                 value={name}
+//                                 onChange={(e) => setName(e.target.value)}
+//                                 placeholder="Your full workspace name, as visible to others."
+//                                 className="max-w-md bg-accent"
+//                             />
+//                         </div>
+
+//                         {/* Workspace Description */}
+//                         <div className="grid grid-cols-1 md:grid-cols-2">
+//                             <div>
+//                                 <Label htmlFor="workspace-description" className="text-lg font-semibold">
+//                                     Workspace Description
+//                                 </Label>
+//                                 <p className="text-secondary">A short description about your workspace or team.</p>
+//                             </div>
+//                             <Textarea
+//                                 id="workspace-description"
+//                                 value={description}
+//                                 onChange={(e) => setDescription(e.target.value)}
+//                                 placeholder="A short description about your workspace or team."
+//                                 rows={3}
+//                                 className="max-w-md bg-accent resize-none"
+//                             />
+//                         </div>
+
+//                         {/* Security Settings */}
+//                         <div className="space-y-6">
+//                             <div className="flex items-center justify-between">
+//                                 <div className="space-y-1 max-w-xl">
+//                                     <Label className="text-lg font-semibold leading-6">
+//                                         Include Unprotected Database Samples in Security Scans
+//                                     </Label>
+//                                     <p className="text-secondary">
+//                                         Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.
+//                                     </p>
+//                                 </div>
+//                                 <Switch
+//                                     checked={allowUnprotectedSamples}
+//                                     onCheckedChange={setAllowUnprotectedSamples}
+//                                 />
+//                             </div>
+
+//                             <div className="flex items-center justify-between">
+//                                 <div className="space-y-1 max-w-lg">
+//                                     <Label className="text-lg font-semibold leading-6">
+//                                         Allow editors to invite workspace members
+//                                     </Label>
+//                                     <p className="text-secondary">
+//                                         Upgrade your plan to allow editors and viewers to invite other members to this workspace.
+//                                     </p>
+//                                 </div>
+//                                 <Switch
+//                                     checked={allowInvites}
+//                                     onCheckedChange={setAllowInvites}
+//                                 // disabled // Disabled until plan upgrade
+//                                 />
+//                             </div>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "people":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">People</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage workspace members</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">People management coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "plans-billing":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Plans & Billing</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your subscription</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <CreditCard className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Billing management coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "your-account":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Your Account</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your personal account settings</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Account settings coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "labs":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Labs</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Experimental features</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <FlaskConical className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Experimental features coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "supabase":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Supabase</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage Supabase connection</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <Database className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Supabase integration coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             case "github":
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Github</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage Github integration</p>
+//                         </div>
+//                         <div className="text-center py-12">
+//                             <Github className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+//                             <p className="text-gray-500 dark:text-gray-400">Github integration coming soon</p>
+//                         </div>
+//                     </div>
+//                 );
+
+//             default:
+//                 return (
+//                     <div className="space-y-6">
+//                         <div>
+//                             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Workspace Settings</h2>
+//                             <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your workspace preferences</p>
+//                         </div>
+//                     </div>
+//                 );
+//         }
+//     };
+
+//     return (
+//         <Dialog open={open} onOpenChange={onOpenChange}>
+//             <DialogContent className="!max-w-[90rem] h-max overflow-hidden p-0">
+//                 <div className="flex h-[80vh] relative">
+//                     {/* Mobile Header with Hamburger Menu */}
+//                     {isMobile && (
+//                         <div className="absolute top-0 left-0 right-0 z-20 bg-background border-b p-4 flex items-center justify-between md:hidden">
+//                             <h2 className=" flex text-lg font-semibold">Settings <span>{isMobile && (<p>/{activeSection}</p>)}</span></h2>
+//                             <Button
+//                                 variant="ghost"
+//                                 size="icon"
+//                                 onClick={toggleSidebar}
+//                                 className="md:hidden"
+//                             >
+//                                 {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+//                             </Button>
+//                         </div>
+//                     )}
+
+//                     {/* Sidebar */}
+//                     <div className={cn(
+//                         "flex-shrink-0 border-r bg-muted/50 transition-all duration-300 ease-in-out",
+//                         isMobile
+//                             ? `absolute left-0 top-0 bottom-0 z-10 transform ${
+//                                 isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+//                             }`
+//                             : ""
+//                     )}>
+//                         <SettingsSidebar
+//                             activeSection={activeSection}
+//                             onSectionChange={handleSectionChange}
+//                             workspaceName={workspaceName}
+//                             user={user}
+//                         />
+//                     </div>
+
+//                     {/* Overlay for mobile when sidebar is open */}
+//                     {isMobile && isSidebarOpen && (
+//                         <div 
+//                             className="fixed inset-0 bg-black bg-opacity-50 z-0 md:hidden"
+//                             onClick={() => setIsSidebarOpen(false)}
+//                         />
+//                     )}
+
+//                     {/* Main Content */}
+//                     <div className={cn(
+//                         "flex-1 overflow-y-auto transition-all duration-300",
+//                         isMobile ? "pt-16" : "" // Add padding for mobile header
+//                     )}>
+//                         <div className="p-4 md:p-8">
+//                             {renderContent()}
+
+//                             {/* Action Buttons - Only show for workspace section */}
+//                             {activeSection === "workspace" && (
+//                                 <div className="flex justify-end gap-3 pt-8 mt-8 border-t">
+//                                     <Button variant="outline" onClick={() => onOpenChange(false)}>
+//                                         <X className="h-4 w-4 mr-2" />
+//                                         Cancel
+//                                     </Button>
+//                                     <Button onClick={handleSave}>
+//                                         <Save className="h-4 w-4 mr-2" />
+//                                         Save Changes
+//                                     </Button>
+//                                 </div>
+//                             )}
+//                         </div>
+//                     </div>
+//                 </div>
+//             </DialogContent>
+//         </Dialog>
+//     );
+// }
+
+
+
+
+
+
+
 "use client";
 
 import * as React from "react";
@@ -10,8 +679,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Settings, Upload, Save, X, ArrowLeft, FlaskConical, Database, Github, User, CreditCard, Users } from "lucide-react";
+import { Settings, Upload, Save, X, ArrowLeft, FlaskConical, Database, Github, User, CreditCard, Users, Menu, Search, Download, Plus } from "lucide-react";
 import { SettingsSidebar } from "./settings-sidebar";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface WorkspaceSettingsModalProps {
     open: boolean;
@@ -42,12 +715,48 @@ export function WorkspaceSettingsModal({
         workspace.allowUnprotectedSamples
     );
     const [allowInvites, setAllowInvites] = React.useState(workspace.allowInvites);
+    const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+    const [isMobile, setIsMobile] = React.useState(false);
+    const [inviteEmail, setInviteEmail] = React.useState("");
 
     const workspaceName = `${user.firstName}'s Lovable`;
     const firstLetter = user.firstName.charAt(0).toUpperCase();
 
+    // Mock data for people section
+    const members = [
+        {
+            id: 1,
+            name: "Adams Lovable",
+            email: "Adamsdan@gmail.com",
+            role: "Owner",
+            avatar: "A",
+            status: "active"
+        }
+    ];
+
+    const usageData = [
+        { name: "Adam's Lovable", credits: 2, description: "Total usage across all months." },
+        { name: "Adam's Lovable", credits: 3, description: "Total usage across all months." }
+    ];
+
+    // Check if screen is mobile size
+    React.useEffect(() => {
+        const checkScreenSize = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (!mobile) {
+                setIsSidebarOpen(true);
+            } else {
+                setIsSidebarOpen(false);
+            }
+        };
+
+        checkScreenSize();
+        window.addEventListener('resize', checkScreenSize);
+        return () => window.removeEventListener('resize', checkScreenSize);
+    }, []);
+
     const handleSave = () => {
-        // Handle save logic here
         console.log("Saving workspace settings:", {
             name,
             description,
@@ -57,23 +766,41 @@ export function WorkspaceSettingsModal({
         onOpenChange(false);
     };
 
+    const handleSectionChange = (section: string) => {
+        setActiveSection(section);
+        if (isMobile) {
+            setIsSidebarOpen(false);
+        }
+    };
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
+    const handleInvite = () => {
+        if (inviteEmail) {
+            console.log("Inviting:", inviteEmail);
+            setInviteEmail("");
+            // Add invite logic here
+        }
+    };
+
     const renderContent = () => {
         switch (activeSection) {
             case "workspace":
                 return (
                     <div className="space-y-6">
-                        <div>
-                            <h2 className="text-xl font-semibold text-primary dark:text-white">Workspace Setings</h2>
-                            <p className="text-secondary mt-1">Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.</p>
-                        </div>
-
-                        {/* <Separator /> */}
-
-                        {/* Workspace Avatar Section */}
-                        <div className=" grid grid-cols-2 items-center">
+                        {!isMobile && (
                             <div>
-                                <h3 className="text-lg font-semibold text-primary ">Workspace Avatar</h3>
-                                <p className=" text-base text-secondary">Set an avatar for your workspace.</p>
+                                <h2 className="text-xl font-semibold text-primary leading-6 dark:text-white">Workspace Settings</h2>
+                                <p className="text-secondary mt-1">Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.</p>
+                            </div>
+                        )}
+
+                        <div className="grid md:grid-cols-2 items-center">
+                            <div>
+                                <h3 className="text-lg font-semibold text-primary leading-6">Workspace Avatar</h3>
+                                <p className="text-base text-secondary">Set an avatar for your workspace.</p>
                             </div>
                             <Avatar className="h-16 w-16">
                                 <AvatarImage src={workspace.avatar} />
@@ -81,16 +808,9 @@ export function WorkspaceSettingsModal({
                                     {firstLetter}
                                 </AvatarFallback>
                             </Avatar>
-                            {/* <Button variant="outline" size="sm">
-                                <Upload className="h-4 w-4 mr-2" />
-                                Upload Avatar
-                                </Button> */}
                         </div>
 
-                        {/* <Separator /> */}
-
-                        {/* Workspace Name */}
-                        <div className="grid grid-cols-2 ">
+                        <div className="grid grid-cols-1 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="workspace-name" className="text-lg font-semibold">
                                     Workspace Name
@@ -106,8 +826,7 @@ export function WorkspaceSettingsModal({
                             />
                         </div>
 
-                        {/* Workspace Description */}
-                        <div className=" grid grid-cols-2 ">
+                        <div className="grid grid-cols-1 md:grid-cols-2">
                             <div>
                                 <Label htmlFor="workspace-description" className="text-lg font-semibold">
                                     Workspace Description
@@ -124,16 +843,13 @@ export function WorkspaceSettingsModal({
                             />
                         </div>
 
-                        {/* <Separator /> */}
-
-                        {/* Security Settings */}
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
-                                <div className="space-y-1 max-w-md">
-                                    <Label className="text-lg font-semibold">
+                                <div className="space-y-1 max-w-xl">
+                                    <Label className="text-lg font-semibold leading-6">
                                         Include Unprotected Database Samples in Security Scans
                                     </Label>
-                                    <p className=" text-secondary">
+                                    <p className="text-secondary">
                                         Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.
                                     </p>
                                 </div>
@@ -144,18 +860,17 @@ export function WorkspaceSettingsModal({
                             </div>
 
                             <div className="flex items-center justify-between">
-                                <div className="space-y-1 max-w-md">
-                                    <Label className="text-lg font-semibold">
+                                <div className="space-y-1 max-w-lg">
+                                    <Label className="text-lg font-semibold leading-6">
                                         Allow editors to invite workspace members
                                     </Label>
-                                    <p className=" text-secondary">
+                                    <p className="text-secondary">
                                         Upgrade your plan to allow editors and viewers to invite other members to this workspace.
                                     </p>
                                 </div>
                                 <Switch
                                     checked={allowInvites}
                                     onCheckedChange={setAllowInvites}
-                                // disabled // Disabled until plan upgrade
                                 />
                             </div>
                         </div>
@@ -164,14 +879,135 @@ export function WorkspaceSettingsModal({
 
             case "people":
                 return (
-                    <div className="space-y-6">
-                        <div>
-                            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">People</h2>
-                            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage workspace members</p>
+                    <div className="space-y-8">
+                        {
+                            !isMobile && (
+                                <div>
+                                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">People</h2>
+                                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                                        Inviting people to {user.firstName}'s Lovable gives access to workspace shared projects and credits.
+                                        You have {members.length} people in this workspace.
+                                    </p>
+                                </div>
+                            )
+                        }
+
+                        {/* Invite Section */}
+                        <div className="  rounded-lg">
+                            <h3 className="text-lg font-semibold mb-4">Invite new members</h3>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <Input
+                                    placeholder="Add emails"
+                                    value={inviteEmail}
+                                    onChange={(e) => setInviteEmail(e.target.value)}
+                                    className="flex-1"
+                                />
+                                <Button onClick={handleInvite} className="sm:w-auto">
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Invite
+                                </Button>
+                            </div>
                         </div>
-                        <div className="text-center py-12">
-                            <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-500 dark:text-gray-400">People management coming soon</p>
+
+                        {/* Members Header */}
+                        <div className=" flex flex-col space-y-2.5">
+                            <div className="flex justify-between sm:w-auto mb-2.5">
+                                <h3 className="text-lg font-semibold">Members</h3>
+                                <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                                    <Download className="h-4 w-4 mr-2" />
+                                    <span className="hidden sm:flex">Export</span>
+                                </Button>
+                            </div>
+                            <div className=" relative">
+                                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 shadow-none text-gray-400" />
+                                <Input
+                                    placeholder="Search"
+                                    className="pl-8"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Tabs */}
+                        <Tabs defaultValue="all" className=" !bg-background">
+                            <TabsList className="grid  grid-cols-3">
+                                <TabsTrigger value="all">All</TabsTrigger>
+                                <TabsTrigger value="active">Active</TabsTrigger>
+                                <TabsTrigger value="pending">Pending</TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="all" className="space-y-4 mt-4">
+                                {members.map((member) => (
+                                    <div key={member.id} className="flex items-center justify-between ">
+                                        <div className="flex items-center gap-4">
+                                            <Avatar className="h-10 w-10">
+                                                <AvatarFallback className="bg-primary text-accent">
+                                                    {member.avatar}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <div className="font-semibold">{member.name}</div>
+                                                <div className="text-sm text-gray-600 dark:text-gray-400">{member.email}</div>
+                                            </div>
+                                        </div>
+                                        <Badge variant={member.role === "Owner" ? "default" : "secondary"}>
+                                            {member.role}
+                                        </Badge>
+                                    </div>
+                                ))}
+                            </TabsContent>
+
+                            <TabsContent value="active" className="space-y-4 mt-4">
+                                {members.filter(m => m.status === "active").map((member) => (
+                                    <div key={member.id} className="flex items-center justify-between ">
+                                        <div className="flex items-center gap-4">
+                                            <Avatar className="h-10 w-10">
+                                                <AvatarFallback className="bg-primary text-accent">
+                                                    {member.avatar}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <div className="font-semibold">{member.name}</div>
+                                                <div className="text-sm text-gray-600 dark:text-gray-400">{member.email}</div>
+                                            </div>
+                                        </div>
+                                        <Badge variant={member.role === "Owner" ? "default" : "secondary"}>
+                                            {member.role}
+                                        </Badge>
+                                    </div>
+                                ))}
+                            </TabsContent>
+
+                            <TabsContent value="pending" className="space-y-4 mt-4">
+                                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                    No pending invitations
+                                </div>
+                            </TabsContent>
+                        </Tabs>
+
+                        {/* Usage Section */}
+                        <div className="mt-8">
+                            <h3 className="text-xl text-primary font-semibold mb-4">Usage</h3>
+
+                            <div className=" flex flex-col gap-4">
+                                {usageData.map((usage, index) => (
+                                    <div key={index} className=" flex justify-between">
+                                        <div className=" flex flex-col gap-2 pb-3 w-full">
+                                            <p className=" text-base text-secondary">{usage.description}</p>
+                                            <div className=" flex justify-between items-center w-full">
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar className="h-10 w-10">
+                                                        <AvatarFallback className="bg-primary text-accent">
+                                                            {usage.name.charAt(0)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <p className=" text-lg md:text-xl font-medium text-primary">{usage.name}</p>
+                                                </div>
+                                                <p className=" text-lg md:text-xl font-medium text-secondary">{usage.credits} credits used</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 );
@@ -260,19 +1096,56 @@ export function WorkspaceSettingsModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="!max-w-7xl max-h-[90vh] overflow-hidden p-0">
-                <div className="flex h-[80vh]">
+            <DialogContent className="!max-w-[90rem] h-max overflow-hidden p-0">
+                <div className="flex h-[80vh] relative">
+                    {/* Mobile Header with Hamburger Menu */}
+                    {isMobile && (
+                        <div className="absolute top-0 left-0 right-0 z-20 bg-background border-b p-4 flex items-center justify-between md:hidden">
+                            <h2 className="flex text-lg font-semibold">
+                                Settings
+                                <span className="ml-1 text-gray-600">/{activeSection}</span>
+                            </h2>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={toggleSidebar}
+                                className="md:hidden"
+                            >
+                                {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                            </Button>
+                        </div>
+                    )}
+
                     {/* Sidebar */}
-                    <SettingsSidebar
-                        activeSection={activeSection}
-                        onSectionChange={setActiveSection}
-                        workspaceName={workspaceName}
-                        user={user}
-                    />
+                    <div className={cn(
+                        "flex-shrink-0 border-r bg-muted/50 transition-all duration-300 ease-in-out",
+                        isMobile
+                            ? `absolute left-0 top-0 bottom-0 z-10 w-64 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                            }`
+                            : "w-64"
+                    )}>
+                        <SettingsSidebar
+                            activeSection={activeSection}
+                            onSectionChange={handleSectionChange}
+                            workspaceName={workspaceName}
+                            user={user}
+                        />
+                    </div>
+
+                    {/* Overlay for mobile when sidebar is open */}
+                    {isMobile && isSidebarOpen && (
+                        <div
+                            className="fixed inset-0 bg-black bg-opacity-50 z-0 md:hidden"
+                            onClick={() => setIsSidebarOpen(false)}
+                        />
+                    )}
 
                     {/* Main Content */}
-                    <div className="flex-1 overflow-y-auto">
-                        <div className="p-8">
+                    <div className={cn(
+                        "flex-1 overflow-y-auto transition-all duration-300",
+                        isMobile ? "pt-16" : ""
+                    )}>
+                        <div className="p-4 md:p-8">
                             {renderContent()}
 
                             {/* Action Buttons - Only show for workspace section */}

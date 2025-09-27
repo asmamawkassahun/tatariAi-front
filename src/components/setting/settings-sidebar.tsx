@@ -97,7 +97,7 @@ export function SettingsSidebar({
     ];
 
     return (
-        <div className="w-64 bg-background pt-9 dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 h-full">
+        <div className="w-60 bg-background pt-9 dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 h-full">
             <div className="ml-4">
                 <h1 className="text-lg font-medium text-secondary">Workspace</h1>
             </div>
