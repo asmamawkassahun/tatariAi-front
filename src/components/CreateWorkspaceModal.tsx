@@ -48,15 +48,18 @@ export function CreateWorkspaceModal({ user, onWorkspaceCreated }: CreateWorkspa
     };
 
     return (
-        <div className=" w-full max-w-[52.9375rem] p-8">
-            <div className=" w-full max-w-[22.5rem] space-y-6">
+        <div className="p-14">
+            <div className="  max-w-[22.5rem] space-y-6">
+                <div>
+                    LOGO
+                </div>
                 <div className=" space-y-3">
                     <h1 className=" text-3xl font-bold">Create New Workspace</h1>
                     <p className=" textsecondary ">
                         Set up a new workspace for your projects. You can customize it later.
                     </p>
                 </div>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                <form onSubmit={handleSubmit} className="space-y-6 mt-4">
                     <div className="space-y-2">
                         <Label htmlFor="workspace-name">Workspace Name</Label>
                         <Input
@@ -67,17 +70,17 @@ export function CreateWorkspaceModal({ user, onWorkspaceCreated }: CreateWorkspa
                             required
                         />
                     </div>
-                   
+
                     <div className="flex items-center justify-center gap-12 mx-auto">
                         <Button
-                            type="button"
-                            variant="outline"
+                            type="submit"
                             onClick={() => onWorkspaceCreated()}
                             disabled={isLoading}
+                            className=" w-full max-w-[9.625rem]"
                         >
                             Go Back
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} className=" w-full max-w-[9.625rem]">
                             {isLoading ? "Creating..." : "Continue to Plan"}
                         </Button>
                     </div>
