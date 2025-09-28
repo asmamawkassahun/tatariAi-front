@@ -97,16 +97,16 @@ export function SettingsSidebar({
     ];
 
     return (
-        <div className="w-60 bg-background pt-9 dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 h-full">
+        <div className="w-60 bg-background dark:bg-primary pt-9  border-r border-gray-200 dark:border-gray-800 h-full">
             <div className="ml-4">
-                <h1 className="text-lg font-medium text-secondary">Workspace</h1>
+                <h1 className="text-lg font-medium text-secondary dark:text-muted">Workspace</h1>
             </div>
 
             <div className="space-y-8 px-4">
 
                 {menuSections.map((section) => (
                     <div key={section.title} className="space-y-3">
-                        <h3 className="text-xs font-medium text-secondary dark:text-gray-400 uppercase tracking-wide px-3">
+                        <h3 className="text-xs font-medium text-secondary dark:text-muted uppercase tracking-wide px-3">
                             {section.title}
                         </h3>
 
@@ -121,10 +121,10 @@ export function SettingsSidebar({
                                         variant="ghost"
                                         className={cn(
                                             "w-full justify-between items-center px-3 py-2 h-auto font-normal",
-                                            item.id === "workspace" ? "bg-primary text-accent hover:bg-primary/80 hover:text-accent" : "hover:text-primary",
-                                            "transition-colors duration-200",
+                                            item.id === "workspace" ? "bg-primary  dark:bg-accent hover:bg-primary/80 hover:text-accent dark:hover:bg-accent/80 dark:hover:text-primary text-accent dark:text-primary" : " dark:text-accent dark:hover:bg-accent/10 hover:text-primary",
+                                            "transition-colors  duration-200",
                                             isActive && item.id !== "workspace"
-                                                ? "bg-blue-50 dark:bg-blue-950/3 hover:text-primary "
+                                                ? "bg-blue-50 dark:bg-accent/10 hover:text-primary "
                                                 : "  "
                                         )}
                                         onClick={() => onSectionChange(item.id)}
@@ -132,7 +132,7 @@ export function SettingsSidebar({
                                         <div className="flex items-center gap-3">
                                             {
                                                 item.id === "workspace" ? (
-                                                    <div className="w-6 h-6 rounded-md bg-accent text-primary text-xl flex items-center justify-center font-medium">
+                                                    <div className="w-6 h-6 rounded-md bg-accent dark:bg-primary text-primary dark:text-accent text-xl flex items-center justify-center font-medium">
                                                         {firstChar}
                                                     </div>
                                                 ) :

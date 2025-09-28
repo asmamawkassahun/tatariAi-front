@@ -141,19 +141,19 @@ export function WorkspaceSettingsModal({
                     <div className="space-y-6">
                         {!isMobile && (
                             <div>
-                                <h2 className="text-xl font-semibold text-primary leading-6 dark:text-white">Workspace Settings</h2>
-                                <p className="text-secondary mt-1">Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.</p>
+                                <h2 className="text-xl font-semibold text-primary leading-6 dark:text-accent">Workspace Settings</h2>
+                                <p className="text-secondary dark:text-muted mt-1">Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.</p>
                             </div>
                         )}
 
                         <div className="grid md:grid-cols-2 items-center">
                             <div>
-                                <h3 className="text-lg font-semibold text-primary leading-6">Workspace Avatar</h3>
-                                <p className="text-base text-secondary">Set an avatar for your workspace.</p>
+                                <h3 className="text-lg font-semibold text-primary dark:text-accent leading-6">Workspace Avatar</h3>
+                                <p className="text-base text-secondary dark:text-muted">Set an avatar for your workspace.</p>
                             </div>
                             <Avatar className="h-16 w-16">
                                 <AvatarImage src={workspace.avatar} />
-                                <AvatarFallback className="text-lg bg-primary text-accent">
+                                <AvatarFallback className="text-lg bg-primary dark:bg-accent text-accent dark:text-primary">
                                     {firstLetter}
                                 </AvatarFallback>
                             </Avatar>
@@ -161,26 +161,26 @@ export function WorkspaceSettingsModal({
 
                         <div className="grid grid-cols-1 md:grid-cols-2">
                             <div>
-                                <Label htmlFor="workspace-name" className="text-lg font-semibold">
+                                <Label htmlFor="workspace-name" className="text-lg text-primary dark:text-accent font-semibold">
                                     Workspace Name
                                 </Label>
-                                <p className="text-base text-secondary">Your full workspace name, as visible to others.</p>
+                                <p className="text-base text-secondary dark:text-muted">Your full workspace name, as visible to others.</p>
                             </div>
                             <Input
                                 id="workspace-name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Your full workspace name, as visible to others."
-                                className="max-w-md bg-accent"
+                                className="max-w-md bg-accent text-secondary dark:text-muted"
                             />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2">
                             <div>
-                                <Label htmlFor="workspace-description" className="text-lg font-semibold">
+                                <Label htmlFor="workspace-description" className="text-lg font-semibold text-primary dark:text-accent">
                                     Workspace Description
                                 </Label>
-                                <p className="text-secondary">A short description about your workspace or team.</p>
+                                <p className="text-secondary dark:text-muted">A short description about your workspace or team.</p>
                             </div>
                             <Textarea
                                 id="workspace-description"
@@ -188,17 +188,17 @@ export function WorkspaceSettingsModal({
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="A short description about your workspace or team."
                                 rows={3}
-                                className="max-w-md bg-accent resize-none"
+                                className="max-w-md bg-accent text-secondary dark:text-muted resize-none"
                             />
                         </div>
 
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1 max-w-xl">
-                                    <Label className="text-lg font-semibold leading-6">
+                                    <Label className="text-lg font-semibold text-primary dark:text-accent leading-6">
                                         Include Unprotected Database Samples in Security Scans
                                     </Label>
-                                    <p className="text-secondary">
+                                    <p className="text-secondary dark:text-muted">
                                         Allow sharing sample data from unprotected database tables when analyzing security vulnerabilities.
                                     </p>
                                 </div>
@@ -210,16 +210,17 @@ export function WorkspaceSettingsModal({
 
                             <div className="flex items-center justify-between">
                                 <div className="space-y-1 max-w-lg">
-                                    <Label className="text-lg font-semibold leading-6">
+                                    <Label className="text-lg font-semibold text-primary dark:text-accent leading-6">
                                         Allow editors to invite workspace members
                                     </Label>
-                                    <p className="text-secondary">
+                                    <p className="text-secondary dark:text-muted">
                                         Upgrade your plan to allow editors and viewers to invite other members to this workspace.
                                     </p>
                                 </div>
                                 <Switch
                                     checked={allowInvites}
                                     onCheckedChange={setAllowInvites}
+                                    className=""
                                 />
                             </div>
                         </div>
@@ -232,8 +233,8 @@ export function WorkspaceSettingsModal({
                         {
                             !isMobile && (
                                 <div>
-                                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">People</h2>
-                                    <p className="text-gray-600 dark:text-gray-400 mt-1">
+                                    <h2 className="text-2xl font-semibold text-primary dark:text-accent">People</h2>
+                                    <p className="text-secondary dark:text-muted mt-1">
                                         Inviting people to {user.firstName}'s Lovable gives access to workspace shared projects and credits.
                                         You have {members.length} people in this workspace.
                                     </p>
@@ -243,7 +244,7 @@ export function WorkspaceSettingsModal({
 
                         {/* Invite Section */}
                         <div className="rounded-lg">
-                            <h3 className="text-lg font-semibold mb-4">Invite new members</h3>
+                            <h3 className="text-lg text-primary dark:text-accent font-semibold mb-4">Invite new members</h3>
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Input
                                     placeholder="Add emails"
@@ -251,7 +252,7 @@ export function WorkspaceSettingsModal({
                                     onChange={(e) => setInviteEmail(e.target.value)}
                                     className="flex-1"
                                 />
-                                <Button onClick={handleInvite} className="sm:w-auto">
+                                <Button onClick={handleInvite} className="sm:w-auto dark:bg-accent dark:hover:bg-accent/80">
                                     <Plus className="h-4 w-4 mr-2" />
                                     Invite
                                 </Button>
@@ -261,8 +262,8 @@ export function WorkspaceSettingsModal({
                         {/* Members Header */}
                         <div className="flex flex-col space-y-2.5">
                             <div className="flex justify-between sm:w-auto mb-2.5">
-                                <h3 className="text-lg font-semibold">Members</h3>
-                                <Button variant="outline" size="sm" className="sm:flex-none bg-background hover:bg-background/80 hover:text-primary">
+                                <h3 className="text-lg text-primary dark:text-accent font-semibold">Members</h3>
+                                <Button  size="sm" className="sm:flex-none dark:bg-accent dark:hover:bg-accent/80">
                                     <Download className="h-4 w-4 mr-2" />
                                     Export
                                 </Button>
@@ -289,16 +290,16 @@ export function WorkspaceSettingsModal({
                                     <div key={member.id} className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
                                             <Avatar className="h-10 w-10">
-                                                <AvatarFallback className="bg-primary text-accent">
+                                                <AvatarFallback className="bg-primary dark:bg-accent text-accent dark:text-primary">
                                                     {member.avatar}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <div className="font-semibold">{member.name}</div>
-                                                <div className="text-sm text-gray-600 dark:text-gray-400">{member.email}</div>
+                                                <div className="font-semibold text-primary dark:text-accent">{member.name}</div>
+                                                <div className="text-sm text-secondary dark:text-muted">{member.email}</div>
                                             </div>
                                         </div>
-                                        <Badge variant={member.role === "Owner" ? "default" : "secondary"}>
+                                        <Badge variant={member.role === "Owner" ? "default" : "secondary"} className=" dark:bg-accent">
                                             {member.role}
                                         </Badge>
                                     </div>
@@ -310,16 +311,16 @@ export function WorkspaceSettingsModal({
                                     <div key={member.id} className="flex items-center justify-between">
                                         <div className="flex items-center gap-4">
                                             <Avatar className="h-10 w-10">
-                                                <AvatarFallback className="bg-primary text-accent">
+                                                <AvatarFallback className="bg-primary dark:bg-accent text-accent dark:text-primary">
                                                     {member.avatar}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <div className="font-semibold">{member.name}</div>
-                                                <div className="text-sm text-gray-600 dark:text-gray-400">{member.email}</div>
+                                                <div className="font-semibold text-primary dark:text-accent">{member.name}</div>
+                                                <div className="text-sm text-secondary dark:text-muted">{member.email}</div>
                                             </div>
                                         </div>
-                                        <Badge variant={member.role === "Owner" ? "default" : "secondary"}>
+                                        <Badge variant={member.role === "Owner" ? "default" : "secondary"} className=" dark:bg-accent">
                                             {member.role}
                                         </Badge>
                                     </div>
@@ -327,7 +328,7 @@ export function WorkspaceSettingsModal({
                             </TabsContent>
 
                             <TabsContent value="pending" className="space-y-4 mt-4">
-                                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                <div className="text-center py-8 text-secondary dark:text-muted">
                                     No pending invitations
                                 </div>
                             </TabsContent>
@@ -335,23 +336,23 @@ export function WorkspaceSettingsModal({
 
                         {/* Usage Section */}
                         <div className="mt-8">
-                            <h3 className="text-xl text-primary font-semibold mb-4">Usage</h3>
+                            <h3 className="text-xl text-primary dark:text-accent font-semibold mb-4">Usage</h3>
 
                             <div className="flex flex-col gap-4">
                                 {usageData.map((usage, index) => (
                                     <div key={index} className="flex justify-between">
                                         <div className="flex flex-col gap-2 pb-3 w-full">
-                                            <p className="text-base text-secondary">{usage.description}</p>
+                                            <p className="text-base text-secondary dark:text-muted">{usage.description}</p>
                                             <div className="flex justify-between items-center w-full">
                                                 <div className="flex items-center gap-2">
                                                     <Avatar className="h-10 w-10">
-                                                        <AvatarFallback className="bg-primary text-accent">
+                                                        <AvatarFallback className="bg-primary dark:bg-accent text-accent dark:text-primary">
                                                             {usage.name.charAt(0)}
                                                         </AvatarFallback>
                                                     </Avatar>
-                                                    <p className="text-lg md:text-xl font-medium text-primary">{usage.name}</p>
+                                                    <p className="text-lg md:text-xl font-medium text-primary dark:text-accent">{usage.name}</p>
                                                 </div>
-                                                <p className="text-lg md:text-xl font-medium text-secondary">{usage.credits} credits used</p>
+                                                <p className="text-lg md:text-xl font-medium text-secondary dark:text-muted">{usage.credits} credits used</p>
                                             </div>
                                         </div>
                                     </div>
@@ -368,7 +369,7 @@ export function WorkspaceSettingsModal({
                             !isMobile && (
                                 <div>
                                     <h2 className="text-xl font-semibold text-primary dark:text-accent">Account Settings</h2>
-                                    <p className="text-secondary text-base dark:text-accent mt-1">
+                                    <p className="text-secondary text-base dark:text-muted mt-1">
                                         Personalize how others see and interact with you on Lovable.
                                     </p>
                                 </div>
@@ -378,13 +379,13 @@ export function WorkspaceSettingsModal({
                         {/* Your Avatar Section */}
                         <div className=" grid grid-cols-1 md:grid-cols-2 space-y-4">
                             <div>
-                                <h3 className="text-lg font-semibold text-primary">Your Avatar</h3>
-                                <p className="text-secondary dark:text-accent">
+                                <h3 className="text-lg font-semibold text-primary dark:text-accent">Your Avatar</h3>
+                                <p className="text-secondary dark:text-muted">
                                     Your avatar is automatically generated based on your account.
                                 </p>
                             </div>
                             <Avatar className="h-20 w-20">
-                                <AvatarFallback className="text-xl bg-primary text-accent">
+                                <AvatarFallback className="text-xl bg-primary dark:bg-accent text-accent dark:text-primary">
                                     {user.firstName.charAt(0).toUpperCase()}
                                 </AvatarFallback>
                             </Avatar>
@@ -394,8 +395,8 @@ export function WorkspaceSettingsModal({
                         {/* Username Section */}
                         <div className=" grid grid-cols-1 md:grid-cols-2 space-y-4">
                             <div>
-                                <Label htmlFor="username" className="text-xl font-semibold text-primary">Username</Label>
-                                <p className="text-secondary dark:text-accent">
+                                <Label htmlFor="username" className="text-xl font-semibold text-primary dark:text-accent">Username</Label>
+                                <p className="text-secondary dark:text-muted">
                                     Your public identifier and public URL
                                 </p>
                             </div>
@@ -404,7 +405,7 @@ export function WorkspaceSettingsModal({
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 placeholder="Your username"
-                                className="max-w-md bg-accent"
+                                className="max-w-md bg-accent text-secondary dark:text-muted"
                             />
                         </div>
 
@@ -412,8 +413,8 @@ export function WorkspaceSettingsModal({
                         {/* Email Section */}
                         <div className="grid grid-cols-1 md:grid-cols-2 space-y-4">
                             <div>
-                                <Label htmlFor="email" className="text-lg font-semibold text-primary">Email</Label>
-                                <p className="text-secondary dark:text-accent">
+                                <Label htmlFor="email" className="text-lg font-semibold text-primary dark:text-accent">Email</Label>
+                                <p className="text-secondary dark:text-muted">
                                     Your email address for notifications and account recovery
                                 </p>
                             </div>
@@ -423,7 +424,7 @@ export function WorkspaceSettingsModal({
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Your email address"
-                                className="max-w-md bg-accent"
+                                className="max-w-md bg-accent text-secondary dark:text-muted"
                             />
                         </div>
 
@@ -431,8 +432,8 @@ export function WorkspaceSettingsModal({
                         {/* Description Section */}
                         <div className="grid grid-cols-1 md:grid-cols-2 space-y-4">
                             <div>
-                                <Label htmlFor="description" className="text-lg font-semibold text-primary">Description</Label>
-                                <p className="text-secondary dark:text-accent">
+                                <Label htmlFor="description" className="text-lg font-semibold text-primary dark:text-accent">Description</Label>
+                                <p className="text-secondary dark:text-muted">
                                     A brief description about yourself
                                 </p>
                             </div>
@@ -442,7 +443,7 @@ export function WorkspaceSettingsModal({
                                 onChange={(e) => setAccountDescription(e.target.value)}
                                 placeholder="Tell others about yourself"
                                 rows={3}
-                                className="max-w-md resize-none bg-accent"
+                                className="max-w-md resize-none bg-accent text-secondary dark:text-muted"
                             />
                         </div>
 
@@ -450,8 +451,8 @@ export function WorkspaceSettingsModal({
                         {/* Location Section */}
                         <div className="grid grid-cols-1 md:grid-cols-2 space-y-4">
                             <div>
-                                <Label htmlFor="location" className="text-lg font-semibold text-primary">Location</Label>
-                                <p className="text-secondary dark:text-accent">
+                                <Label htmlFor="location" className="text-lg font-semibold text-primary dark:text-accent">Location</Label>
+                                <p className="text-secondary dark:text-muted">
                                     Where you're based
                                 </p>
                             </div>
@@ -460,7 +461,7 @@ export function WorkspaceSettingsModal({
                                 value={location}
                                 onChange={(e) => setLocation(e.target.value)}
                                 placeholder="Your location"
-                                className="max-w-md bg-accent"
+                                className="max-w-md bg-accent text-secondary dark:text-muted"
                             />
                         </div>
 
@@ -468,8 +469,8 @@ export function WorkspaceSettingsModal({
                         {/* Link Section */}
                         <div className="grid grid-cols-1 md:grid-cols-2 space-y-4">
                             <div>
-                                <Label htmlFor="website" className="text-lg font-semibold text-primary">Link</Label>
-                                <p className="text-secondary dark:text-accent">
+                                <Label htmlFor="website" className="text-lg font-semibold text-primary dark:text-accent">Link</Label>
+                                <p className="text-secondary dark:text-muted">
                                     Add a link to your personal website or portfolio
                                 </p>
                             </div>
@@ -479,13 +480,13 @@ export function WorkspaceSettingsModal({
                                 value={websiteLink}
                                 onChange={(e) => setWebsiteLink(e.target.value)}
                                 placeholder="https://example.com"
-                                className="max-w-md bg-accent"
+                                className="max-w-md bg-accent text-secondary dark:text-muted"
                             />
                         </div>
 
                         {/* Save Button */}
-                        <div className="flex justify-end gap-3 pt-6">
-                            <Button variant="outline" onClick={() => onOpenChange(false)}>
+                        {/* <div className="flex justify-end gap-3 pt-6">
+                            <Button variant="outline" className=" dark:bg-accent dark:to-primary" onClick={() => onOpenChange(false)}>
                                 <X className="h-4 w-4 mr-2" />
                                 Cancel
                             </Button>
@@ -493,7 +494,7 @@ export function WorkspaceSettingsModal({
                                 <Save className="h-4 w-4 mr-2" />
                                 Save Changes
                             </Button>
-                        </div>
+                        </div> */}
                     </div>
                 );
 
@@ -501,21 +502,21 @@ export function WorkspaceSettingsModal({
                 return (
                     <div className="space-y-6">
                         <div>
-                            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Plans & Billing</h2>
+                            <h2 className="text-2xl font-semibold text-pretty dark:text-accent">Plans & Billing</h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <Card className="bg-accent dark:bg-gray-800 border-footer-border shadow-none rounded-lg">
+                            <Card className="bg-accent dark:bg-accent/10 border-footer-border shadow-none rounded-lg">
                                 <CardHeader>
-                                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">Pro</CardTitle>
-                                    <CardDescription className="text-gray-600 dark:text-gray-400">Designed for fast-moving teams building together in real time.</CardDescription>
+                                    <CardTitle className="text-lg font-semibold text-primary dark:text-accent">Pro</CardTitle>
+                                    <CardDescription className="text-secondary dark:text-muted">Designed for fast-moving teams building together in real time.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="text-2xl font-bold text-gray-900 dark:text-white">$25 per month</div>
+                                    <div className="text-2xl font-bold text-primary dark:text-accent">$25 per month</div>
                                     <div className="flex items-center space-x-2">
                                         <Switch id="pro-annual" />
                                         <Label htmlFor="pro-annual">Annual</Label>
                                     </div>
-                                    <Button className="w-full bg-black text-white hover:bg-gray-800">Get Started</Button>
+                                    <Button className="w-full bg-black text-white hover:bg-black/50">Get Started</Button>
                                     <Select>
                                         <SelectTrigger className="w-full">
                                             <span>100 credits / month</span>
@@ -530,7 +531,7 @@ export function WorkspaceSettingsModal({
                                             </div>
                                         </SelectContent>
                                     </Select>
-                                    <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                                    <ul className="space-y-2 text-secondary dark:text-muted">
                                         <li className="mb-4">Everything in Free, plus:</li>
                                         <li className="flex items-center"> <Check /> 100 monthly credits</li>
                                         <li className="flex items-center"><Check /> 5 daily credits (up to 150/month)</li>
@@ -542,13 +543,13 @@ export function WorkspaceSettingsModal({
                                     </ul>
                                 </CardContent>
                             </Card>
-                            <Card className=" bg-background dark:bg-gray-800 border-footer-border shadow-none rounded-lg">
+                            <Card className=" bg-background border-footer-border shadow-none rounded-lg">
                                 <CardHeader>
-                                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">Business</CardTitle>
-                                    <CardDescription className="text-gray-600 dark:text-gray-400">Advanced controls and power features for growing departments</CardDescription>
+                                    <CardTitle className="text-lg font-semibold text-primary dark:text-accent">Business</CardTitle>
+                                    <CardDescription className="text-secondary dark:text-muted">Advanced controls and power features for growing departments</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="text-2xl font-bold text-gray-900 dark:text-white">$50 per month</div>
+                                    <div className="text-2xl font-bold text-primary dark:text-accent">$50 per month</div>
                                     <div className="flex items-center space-x-2">
                                         <Switch id="business-annual" />
                                         <Label htmlFor="business-annual">Annual</Label>
@@ -568,7 +569,7 @@ export function WorkspaceSettingsModal({
                                             </div>
                                         </SelectContent>
                                     </Select>
-                                    <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                                    <ul className="space-y-2 text-secondary dark:text-muted">
                                         <li className="mb-4">All features in Pro, plus:</li>
                                         <li className="flex items-center"><Check /> SSO</li>
                                         <li className="flex items-center"><Check /> Personal Projects</li>
@@ -577,15 +578,15 @@ export function WorkspaceSettingsModal({
                                     </ul>
                                 </CardContent>
                             </Card>
-                            <Card className="bg-background dark:bg-gray-800 border-footer-border shadow-none rounded-lg">
+                            <Card className="bg-background  border-footer-border shadow-none rounded-lg">
                                 <CardHeader>
-                                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">Enterprise</CardTitle>
-                                    <CardDescription className="text-gray-600 dark:text-gray-400">Built for large orgs needing flexibility, scale, and governance.</CardDescription>
+                                    <CardTitle className="text-lg font-semibold text-primary dark:text-accent">Enterprise</CardTitle>
+                                    <CardDescription className="text-secondary dark:text-muted">Built for large orgs needing flexibility, scale, and governance.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="text-gray-600 dark:text-gray-400">Flexible billing</div>
+                                    <div className="text-secondary dark:text-muted">Flexible billing</div>
                                     <Button className="w-full bg-accent text-primary hover:bg-accent/80">Book a demo</Button>
-                                    <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+                                    <ul className="space-y-2 text-secondary dark:text-muted">
                                         <li className="mb-4">Everything in Business, plus:</li>
                                         <li className="flex items-center"><Check /> Dedicated support</li>
                                         <li className="flex items-center"><Check /> Onboarding services</li>
@@ -604,12 +605,12 @@ export function WorkspaceSettingsModal({
                     <div className="space-y-6">
                         <div className=" flex flex-col gap-4">
                             <h2 className="text-xl font-semibold text-primary dark:text-accent">Labs</h2>
-                            <p className="text-secondary dark:text-accent">These are experimental features, that might be modified or removed.</p>
+                            <p className="text-secondary dark:text-muted">These are experimental features, that might be modified or removed.</p>
                         </div>
                         <div className=" flex items-center justify-between">
                             <div className=" flex flex-col gap-4">
                                 <h2 className="text-xl font-semibold text-primary dark:text-accent">GitHub Branch Switching</h2>
-                                <p className="text-secondary dark:text-accent">Select the branch to make edits to in your GitHub repository.</p>
+                                <p className="text-secondary dark:text-muted">Select the branch to make edits to in your GitHub repository.</p>
                             </div>
                             <Switch id="pro-annual" />
                         </div>
@@ -621,14 +622,14 @@ export function WorkspaceSettingsModal({
                     <div className="space-y-6">
                         <div className=" flex flex-col gap-4">
                             <h2 className="text-xl font-semibold text-primary dark:text-accent">Integration</h2>
-                            <p className="text-secondary dark:text-accent">Integrate user authentication, data storage, and backend capabilities.</p>
+                            <p className="text-secondary dark:text-muted">Integrate user authentication, data storage, and backend capabilities.</p>
                         </div>
                         <div className=" flex items-center justify-between">
                             <div className=" flex flex-col gap-4">
                                 <h2 className="text-xl font-semibold text-primary dark:text-accent">Organizations</h2>
-                                <p className="text-secondary dark:text-accent">Connected Supabase organizations will be accessible to all members in this workspace.</p>
+                                <p className="text-secondary dark:text-muted">Connected Supabase organizations will be accessible to all members in this workspace.</p>
                             </div>
-                            <Button className="bg-primary text-accent hover:bg-primary/80"><SupabaseIcon /> <span className=" hidden sm:flex">Supabase</span></Button>
+                            <Button className="bg-primary dark:bg-accent text-accent dark:text-primary hover:bg-primary/80"><SupabaseIcon /> <span className=" hidden sm:flex">Supabase</span></Button>
                         </div>
                     </div>
                 );
@@ -638,14 +639,14 @@ export function WorkspaceSettingsModal({
                     <div className="space-y-6">
                         <div className=" flex flex-col gap-4">
                             <h2 className="text-xl font-semibold text-primary dark:text-accent">Integration</h2>
-                            <p className="text-secondary dark:text-accent">Integrate user authentication, data storage, and backend capabilities.</p>
+                            <p className="text-secondary dark:text-muted">Integrate user authentication, data storage, and backend capabilities.</p>
                         </div>
                         <div className=" flex items-center justify-between">
                             <div className=" flex flex-col gap-4">
                                 <h2 className="text-xl font-semibold text-primary dark:text-accent">Connected Account</h2>
-                                <p className="text-secondary dark:text-accent">Add your GitHub account to manage connected organizations.</p>
+                                <p className="text-secondary dark:text-muted">Add your GitHub account to manage connected organizations.</p>
                             </div>
-                            <Button className="bg-primary text-accent hover:bg-primary/80"><GithubIcon /><span className=" hidden sm:flex"> Supabase</span></Button>                        </div>
+                            <Button className="bg-primary dark:bg-accent text-accent dark:text-primary hover:bg-primary/80"><GithubIcon /><span className=" hidden sm:flex"> Supabase</span></Button>                        </div>
                     </div>
                 );
 
