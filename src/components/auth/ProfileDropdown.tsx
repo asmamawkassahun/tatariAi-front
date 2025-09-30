@@ -124,12 +124,12 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
                             </div>
                         </div>
 
-                        <div className="flex flex-col p-4 gap-4 space-y-2 bg-primary rounded-lg mb-5">
+                        <div className="flex flex-col p-4 gap-4 space-y-2 bg-primary dark:bg-accent rounded-lg mb-5">
                             <div>
-                                <p className="font-semibold text-accent text-base">You're using free plan</p>
-                                <p className="text-muted text-base">You can add components to your app by upgrading to the next plan.</p>
+                                <p className="font-semibold text-accent dark:text-primary text-base">You're using free plan</p>
+                                <p className="text-muted dark:text-secondary text-base">You can add components to your app by upgrading to the next plan.</p>
                             </div>
-                            <Button className="bg-accent text-primary hover:bg-accent/90">
+                            <Button className="bg-accent dark:bg-primary text-primary dark:text-accent hover:bg-accent/90">
                                 Upgrade
                             </Button>
                         </div>
