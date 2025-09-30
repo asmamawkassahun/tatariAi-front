@@ -49,13 +49,13 @@ export function CreateWorkspaceModal({ user, onWorkspaceCreated }: CreateWorkspa
 
     return (
         <div className="p-14">
-            <div className="  max-w-[22.5rem] space-y-6">
+            <div className=" text-primary dark:text-accent max-w-[22.5rem] space-y-6">
                 <div>
                     LOGO
                 </div>
                 <div className=" space-y-3">
-                    <h1 className=" text-3xl font-bold">Create New Workspace</h1>
-                    <p className=" textsecondary ">
+                    <h1 className=" text-3xl text-primary dark:text-accent font-bold">Create New Workspace</h1>
+                    <p className=" text-secondary dark:text-muted ">
                         Set up a new workspace for your projects. You can customize it later.
                     </p>
                 </div>
