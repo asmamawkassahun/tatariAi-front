@@ -421,12 +421,12 @@ function PureAttachmentsButton({
           <Plus className="" size={14} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
+      <DropdownMenuContent
         className="w-80 p-4 mx-4 bg-background border border-border shadow-lg"
         align="start"
         sideOffset={8}
       >
-        
+
 
         {/* Quick Actions */}
         <div className="space-y-2 mb-4">
@@ -525,7 +525,7 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
           <span className="hidden md:flex ml-1 text-xs">{currentOption.title}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
+      <DropdownMenuContent
         className="w-80 p-4 dark:bg-primary border-none shadow-lg overflow-visible"
         align="start"
         sideOffset={8}
@@ -533,8 +533,8 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
         <RadioGroup value={selectedVisibilityType} onValueChange={handleValueChange} className="space-y-3">
           {/* Public Option with Tooltip */}
           <div className="relative">
-            <Label 
-              htmlFor="public" 
+            <Label
+              htmlFor="public"
               className={cn(
                 'flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors',
                 selectedVisibilityType === 'public' ? 'bg-accent/10 border border-primary/20' : 'hover:bg-accent/50 dark:hover:bg-accent/10'
@@ -569,8 +569,8 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
           </div>
 
           {/* Workspace Pro Option */}
-          <Label 
-            htmlFor="workspace" 
+          <Label
+            htmlFor="workspace"
             className={cn(
               'flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors',
               selectedVisibilityType === 'workspace' ? 'bg-accent/10 border border-primary/20' : 'hover:bg-accent/50 dark:hover:bg-accent/10'
@@ -587,7 +587,7 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
 
           {/* Personal Business Option */}
           <Label
-            htmlFor="personal" 
+            htmlFor="personal"
             className={cn(
               'flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors',
               selectedVisibilityType === 'personal' ? 'bg-accent/10  border border-primary/20' : 'hover:bg-accent/50 dark:hover:bg-accent/10'
@@ -651,7 +651,7 @@ function PureVoiceAndSendButtons({
         <SoundIcon className="text-[#5F5F5D] dark:text-muted" />
       </Button>
       {status === 'submitted' ? (
-        <StopButton stop={stop} setMessages={() => {}} />
+        <StopButton stop={stop} setMessages={() => { }} />
       ) : (
         <Button
           data-testid="send-button"
