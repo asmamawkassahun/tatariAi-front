@@ -38,32 +38,35 @@ export default function ProjectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F3] flex flex-col">
-      {/* Header */}
-      <ProjectHeader
-        projectName={project?.name || "hello-world-playground-125"}
-        previewStatus={previewLoading ? "Loading Live Preview..." : "Preview Ready"}
-        sidebarVisible={sidebarVisible}
-        onToggleSidebar={toggleSidebar}
-      />
-
-      {/* Main Content Area */}
-      <div className="flex flex-1">
-        {/* Left Sidebar - Chat Area */}
-        <ProjectSidebar
-          visible={sidebarVisible}
-          chatMessages={chatMessages}
-          isLoading={isLoading}
-          onSend={handleSend}
-          onVoice={handleVoice}
-          onSupabase={handleSupabase}
-        />
-
-        {/* Right Panel - Preview Area */}
-        <PreviewPanel
+    <div className="bg-[#F5F5F3] dark:bg-[#1A1A1A] ">
+      <div className="flex flex-col min-h-screen w-full">
+        {/* Header */}
+        <ProjectHeader
+          projectName={project?.name || "hello-world-playground-125"}
+          previewStatus={
+            previewLoading ? "Loading Live Preview..." : "Preview Ready"
+          }
           sidebarVisible={sidebarVisible}
-          isLoading={previewLoading}
+          onToggleSidebar={toggleSidebar}
         />
+        {/* Main Content Area */}
+        <div className="flex flex-1">
+          {/* Left Sidebar - Chat Area */}
+          <ProjectSidebar
+            visible={sidebarVisible}
+            chatMessages={chatMessages}
+            isLoading={isLoading}
+            onSend={handleSend}
+            onVoice={handleVoice}
+            onSupabase={handleSupabase}
+          />
+
+          {/* Right Panel - Preview Area */}
+          <PreviewPanel
+            sidebarVisible={sidebarVisible}
+            isLoading={previewLoading}
+          />
+        </div>
       </div>
     </div>
   );
