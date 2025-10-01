@@ -208,6 +208,20 @@ class ChatService {
     }
 
     /**
+     * Get chat messages by project ID
+     */
+    async getChatMessagesByProject(projectId: string): Promise<ChatMessage[]> {
+        try {
+            const response = await api.get(`${API_ENDPOINTS.PROJECTS.BASE}/${projectId}/chat/messages`);
+            return response.data.messages || [];
+        } catch (error) {
+            console.error('Error fetching chat messages by project:', error);
+            // Return empty array if no messages found or error occurs
+            return [];
+        }
+    }
+
+    /**
      * Send AI chat request
      */
     async sendAIChat(data: AIChatRequest): Promise<AIChatResponse> {
@@ -223,7 +237,7 @@ class ChatService {
             });
             console.log('Response received:', response.data);
             return response.data;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error('Error sending AI chat:', error);
 

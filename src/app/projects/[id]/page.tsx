@@ -5,10 +5,62 @@ import { useProject } from "@/hooks/useProject";
 import { ProjectHeader } from "@/components/projects/ProjectHeader";
 import { ProjectSidebar } from "@/components/projects/ProjectSidebar";
 import { PreviewPanel } from "@/components/projects/PreviewPanel";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { FileExplorer } from "@/components/projects/FileExplorer";
+import { useState } from "react";
+import { FileItem } from "@/types/fileItem";
+import { initialFiles } from "@/data";
+import { CodeEditor } from "@/components/projects/CodeEditor";
 
 export default function ProjectPage() {
   const params = useParams();
   const projectId = params.id as string;
+  const [files] = useState<FileItem[]>(initialFiles)
+  const [activeFile, setActiveFile] = useState<string>("src/pages/index.tsx")
+  const [activeView, setActiveView] = useState<"code" | "preview">("code")
+  const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false)
+  const [fileContents, setFileContents] = useState<Record<string, string>>(() => {
+    const contents: Record<string, string> = {}
+    const extractContents = (items: FileItem[]) => {
+      items.forEach((item) => {
+        if (item.type === "file") {
+          contents[item.path] = item.content
+        }
+        if (item.children) {
+          extractContents(item.children)
+        }
+      })
+    }
+    extractContents(initialFiles)
+    return contents
+  })
+
+  const handleFileSelect = (path: string) => {
+    setActiveFile(path)
+  }
+
+  const handleFileChange = (path: string, content: string) => {
+    setFileContents((prev) => ({
+      ...prev,
+      [path]: content,
+    }))
+  }
+
+  const getFileByPath = (path: string): FileItem | null => {
+    const findFile = (items: FileItem[]): FileItem | null => {
+      for (const item of items) {
+        if (item.path === path) return item
+        if (item.children) {
+          const found = findFile(item.children)
+          if (found) return found
+        }
+      }
+      return null
+    }
+    return findFile(files)
+  }
+
+  const currentFile = getFileByPath(activeFile)
 
   const {
     project,
@@ -42,31 +94,58 @@ export default function ProjectPage() {
       <div className="flex flex-col min-h-screen w-full">
         {/* Header */}
         <ProjectHeader
-          projectName={project?.name || "hello-world-playground-125"}
-          previewStatus={
-            previewLoading ? "Loading Live Preview..." : "Preview Ready"
-          }
-          sidebarVisible={sidebarVisible}
-          onToggleSidebar={toggleSidebar}
+          projectName="hi-there-friend-085"
+          previewStatus={previewLoading ? "Loading Live Preview..." : "Preview Ready"}
+          sidebarVisible={!isLeftPanelCollapsed}
+          activeView={activeView}
+          onToggleSidebar={() => setIsLeftPanelCollapsed(!isLeftPanelCollapsed)}
+          onToggleView={setActiveView}
         />
         {/* Main Content Area */}
-        <div className="flex flex-1">
+        <ResizablePanelGroup direction="horizontal" className="flex-1 w-full">
           {/* Left Sidebar - Chat Area */}
-          <ProjectSidebar
-            visible={sidebarVisible}
-            chatMessages={chatMessages}
-            isLoading={isLoading}
-            onSend={handleSend}
-            onVoice={handleVoice}
-            onSupabase={handleSupabase}
-          />
+          {!isLeftPanelCollapsed && (
+            <>
+              <ResizablePanel defaultSize={33.5} minSize={0} maxSize={33.5} className="">
+                <ProjectSidebar
+                  visible={sidebarVisible}
+                  chatMessages={chatMessages}
+                  isLoading={isLoading}
+                  onSend={handleSend}
+                  onVoice={handleVoice}
+                  onSupabase={handleSupabase}
+                />
+              </ResizablePanel>
 
-          {/* Right Panel - Preview Area */}
-          <PreviewPanel
-            sidebarVisible={sidebarVisible}
-            isLoading={previewLoading}
-          />
-        </div>
+              <ResizableHandle className="w-[1px] bg-[#2d2d30] hover:bg-[#007acc] transition-colors" />
+
+              {/* File Explorer */}
+              <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
+                <FileExplorer files={files} activeFile={activeFile} onFileSelect={handleFileSelect} />
+              </ResizablePanel>
+
+              <ResizableHandle className="w-[1px] bg-[#2d2d30] hover:bg-[#007acc] transition-colors" />
+            </>
+          )}
+
+
+
+          {/* Code Editor or Preview Panel */}
+          <ResizablePanel defaultSize={isLeftPanelCollapsed ? 100 : 55} minSize={30}>
+            {/* <StackBlitzContainer files={fileContents} activeFile={activeFile} onFileChange={handleFileChange} /> */}
+            {activeView === "code" ? (
+              <CodeEditor
+                file={currentFile}
+                content={fileContents[activeFile] || ""}
+                onContentChange={(content) => handleFileChange(activeFile, content)}
+              />
+            ) : (
+              <PreviewPanel files={fileContents} />
+            )}
+          </ResizablePanel>
+
+          <ResizableHandle className="w-[1px] bg-[#2d2d30] hover:bg-[#007acc] transition-colors" />
+        </ResizablePanelGroup>
       </div>
     </div>
   );
