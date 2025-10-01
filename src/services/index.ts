@@ -1,6 +1,7 @@
 // Export all services
 export { AuthService, authService } from './authService';
 export { ProjectService, projectService } from './projectService';
+export { chatService } from './chatService';
 export { BaseService } from './base';
 
 // Export types from the types folder
