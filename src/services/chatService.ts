@@ -48,6 +48,40 @@ export interface SendMessageResponse {
     timestamp: string;
 }
 
+export interface AIChatRequest {
+    message: string;
+    projectId?: string;
+}
+
+export interface AIChatResponse {
+    success: boolean;
+    message: string;
+    data: {
+        success: boolean;
+        chatId: string;
+        messageId: string;
+        aiResponse: string;
+        projectId?: string;
+        previewUrl?: string;
+        tokenUsage: {
+            promptTokens: number;
+            completionTokens: number;
+            totalTokens: number;
+        };
+        cost: number;
+        fileOperations?: {
+            success: boolean;
+            writtenFiles: string[];
+            renamedFiles: string[];
+            deletedFiles: string[];
+            addedDependencies: string[];
+            errors: string[];
+            warnings: string[];
+            commitHash: string;
+        };
+    };
+}
+
 export interface GetChatsResponse {
     chats: Array<{
         id: string;
@@ -169,6 +203,51 @@ class ChatService {
             return response.data;
         } catch (error) {
             console.error('Error searching chats:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Send AI chat request
+     */
+    async sendAIChat(data: AIChatRequest): Promise<AIChatResponse> {
+        try {
+            const fullUrl = `${this.baseUrl}${API_ENDPOINTS.CHAT.BASE}`;
+            console.log('Sending AI chat request to:', fullUrl);
+            console.log('With data:', data);
+            console.log('Base URL:', this.baseUrl);
+            console.log('Endpoint:', API_ENDPOINTS.CHAT.BASE);
+
+            const response = await api.post(API_ENDPOINTS.CHAT.CREATE, data, {
+                timeout: 300000, // 5 minutes timeout
+            });
+            console.log('Response received:', response.data);
+            return response.data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            console.error('Error sending AI chat:', error);
+
+            // Handle timeout specifically
+            if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+                console.error('Request timed out after 5 minutes');
+                throw new Error('Request timed out. The server is taking too long to respond. Please try again.');
+            }
+
+            // Handle network errors
+            if (error.code === 'ERR_NETWORK' || !error.response) {
+                console.error('Network error - server may be down or unreachable');
+                throw new Error('Unable to connect to the server. Please check your internet connection and try again.');
+            }
+
+            console.error('Error details:', {
+                message: error.message,
+                code: error.code,
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                url: error.config?.url,
+                baseURL: error.config?.baseURL
+            });
             throw error;
         }
     }

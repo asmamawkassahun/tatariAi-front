@@ -9,6 +9,7 @@ import { useInput } from '@/hooks/useInput';
 import { useVisibility } from '@/hooks/useVisibility';
 
 interface HeroCardProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSend?: (input: string, attachments: any[], visibility: string) => void;
     onVoice?: () => void;
     onSupabase?: () => void;
@@ -60,6 +61,7 @@ export const HeroCard = ({
                 <InputArea
                     value={input}
                     onChange={handleInputChange}
+                    onEnter={handleSend}
                     placeholder={placeholder}
                     disabled={disabled}
                 /></div>
