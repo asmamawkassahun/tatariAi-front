@@ -5,6 +5,7 @@ import { useTypingPlaceholder } from '@/hooks/useTypingPlaceholder';
 interface InputAreaProps {
     value: string;
     onChange: (value: string) => void;
+    onEnter?: () => void;
     placeholder?: string;
     disabled?: boolean;
 }
@@ -12,6 +13,7 @@ interface InputAreaProps {
 export const InputArea = ({
     value,
     onChange,
+    onEnter,
     disabled = false
 }: InputAreaProps) => {
     const typingTexts = [
@@ -32,15 +34,25 @@ export const InputArea = ({
         pauseTime: 3000
     });
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (onEnter && value.trim()) {
+                onEnter();
+            }
+        }
+    };
+
     return (
         <div className="flex items-center gap-2 p-2">
             <Input
                 placeholder={typingPlaceholder}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
+                onKeyDown={handleKeyDown}
                 disabled={disabled}
                 className={cn(
-                    "flex-1 border-0 bg-transparent text-gray-700 dark:text-gray-300",
+                    "flex-1 border-0 bg-[#F5F5F3] dark:bg-[#1A1A1A] text-gray-700 dark:text-gray-300",
                     "placeholder:text-gray-500 dark:placeholder:text-gray-400",
                     "focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
                     "focus-visible:border-0 focus-visible:shadow-none",
