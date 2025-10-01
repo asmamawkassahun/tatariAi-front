@@ -48,7 +48,7 @@ export const ActionButtons = ({
     const isListening = listening;
     return (
         <div className="flex items-center justify-between px-3 py-2">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
                 {/* Add button */}
                 <Button
                     variant="ghost"
