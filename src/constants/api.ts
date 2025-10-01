@@ -1,7 +1,7 @@
 // API Base Configuration
 export const API_CONFIG = {
   BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
-  TIMEOUT: 10000, // 10 seconds
+  TIMEOUT: 300000, // 5 minutes
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000, // 1 second
 } as const;
