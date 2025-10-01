@@ -51,7 +51,7 @@ export default function ProjectPage() {
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         owner: {
-                            name: user?.displayName || "User",
+                            name: user?.firstName || "User",
                             email: user?.email || "user@example.com"
                         }
                     };

@@ -53,6 +53,16 @@ export const API_ENDPOINTS = {
     DELETE_BY_ID: (id: string) => `/users/${id}`,
   },
 
+  //chat
+  CHAT: {
+    BASE: '/chat',
+    CREATE: '/chat',
+    GET_ALL: '/chat',
+    GET_BY_ID: (id: string) => `/chat/${id}`,
+    UPDATE_BY_ID: (id: string) => `/chat/${id}`,
+    DELETE_BY_ID: (id: string) => `/chat/${id}`,
+  },
+
   // Projects
   PROJECTS: {
     BASE: '/projects',
@@ -102,6 +112,7 @@ export const API_ENDPOINTS = {
     BASE: '/search',
     PROJECTS: '/search/projects',
     USERS: '/search/users',
+    CHAT: '/search/chat',
     GLOBAL: '/search/global',
     SUGGESTIONS: '/search/suggestions',
     HISTORY: '/search/history',
