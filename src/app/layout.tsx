@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/provider/ThemeProvider";
 import { ReduxProvider } from "@/provider/ReduxProvider";
 import { Toaster } from "@/components/ui/sonner";
+import "regenerator-runtime/runtime";
 
 const inter = Inter({
   variable: "--font-inter", // Updated variable name to reflect Inter
