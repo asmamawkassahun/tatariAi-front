@@ -63,6 +63,7 @@ interface MultimodalInputProps {
   selectedVisibilityType: VisibilityType;
   selectedModelId: string;
   onVisibilityChange: (value: VisibilityType) => void; // Added prop
+  onSubmitted?: () => void; // notify parent when a message is submitted
 }
 
 function PureMultimodalInput({
@@ -154,6 +155,12 @@ function PureMultimodalInput({
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
+    // notify parent to show preview
+    onVisibilityChange && onVisibilityChange(selectedVisibilityType);
+    // fire onSubmitted if provided
+    if (typeof onSubmitted === 'function') {
+      onSubmitted();
+    }
   }, [
     input,
     setInput,
@@ -163,6 +170,9 @@ function PureMultimodalInput({
     setLocalStorageInput,
     width,
     chatId,
+    onSubmitted,
+    onVisibilityChange,
+    selectedVisibilityType,
   ]);
 
   const uploadFile = async (file: File) => {
@@ -521,7 +531,7 @@ function PureVisibilityButton({ selectedVisibilityType, onVisibilityChange }: Vi
           className="rounded-full border border-footer-border hover:text-none text-secondary dark:text-muted dark:hover:bg-primary hover:text-secondary/50 cursor-pointer"
           variant="ghost"
         >
-          <WorldIcon className=' text-secondary dark:text-muted' size={14} />
+          <WorldIcon className=' text-secondary dark:text-muted' />
           <span className="hidden md:flex ml-1 text-xs">{currentOption.title}</span>
         </Button>
       </DropdownMenuTrigger>
