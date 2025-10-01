@@ -48,24 +48,45 @@ export function useProject(projectId: string) {
     ) => {
         if (!input.trim()) return;
 
+        // Add user message to chat immediately
+        const userMessage: ChatMessage = {
+            id: `user-${Date.now()}`,
+            content: input,
+            role: "user",
+            timestamp: new Date().toISOString(),
+        };
+
+        setChatMessages(prev => [...prev, userMessage]);
+
         setIsLoading(true);
         try {
             console.log("Sending message:", { input, attachments, visibility });
 
             const response = await chatService.sendAIChat({
                 message: input,
+                projectId: projectId,
             });
 
             console.log("AI Chat Response:", response);
 
             if (response.success && response.data.success) {
+                // Add AI response to chat
+                const aiMessage: ChatMessage = {
+                    id: response.data.messageId || `ai-${Date.now()}`,
+                    content: response.data.aiResponse || response.message,
+                    role: "assistant",
+                    timestamp: new Date().toISOString(),
+                };
+
+                setChatMessages(prev => [...prev, aiMessage]);
+
                 // If this is a new project creation, redirect to project page
                 if (response.data.projectId && !response.data.messageId) {
                     console.log("Redirecting to new project:", response.data.projectId);
                     router.push(`/projects/${response.data.projectId}`);
                 } else {
                     // If this is a continuation of existing project, redirect to project page
-                    if (response.data.projectId) {
+                    if (response.data.projectId && response.data.projectId !== projectId) {
                         console.log(
                             "Redirecting to existing project:",
                             response.data.projectId
@@ -119,7 +140,7 @@ export function useProject(projectId: string) {
         setSidebarVisible(!sidebarVisible);
     };
 
-    // Fetch project data
+    // Fetch project data and chat messages
     useEffect(() => {
         if (!loading && !isAuthenticated) {
             window.location.href = "/login";
@@ -127,9 +148,11 @@ export function useProject(projectId: string) {
         }
 
         if (isAuthenticated && projectId) {
-            const fetchProject = async () => {
+            const fetchProjectAndChat = async () => {
                 try {
                     setProjectLoading(true);
+                    setChatMessages([]); // Clear existing messages
+
                     // Replace with actual API call
                     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -150,6 +173,16 @@ export function useProject(projectId: string) {
 
                     setProject(mockProject);
 
+                    // Fetch chat messages for this project
+                    try {
+                        const messages = await chatService.getChatMessagesByProject(projectId);
+                        setChatMessages(messages);
+                        console.log("Loaded chat messages:", messages);
+                    } catch (chatError) {
+                        console.error("Failed to fetch chat messages:", chatError);
+                        // Keep empty array if chat fetch fails
+                    }
+
                     // Simulate preview loading
                     setTimeout(() => {
                         setPreviewLoading(false);
@@ -161,7 +194,7 @@ export function useProject(projectId: string) {
                 }
             };
 
-            fetchProject();
+            fetchProjectAndChat();
         }
     }, [isAuthenticated, loading, projectId, user]);
 

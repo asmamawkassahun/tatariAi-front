@@ -22,6 +22,7 @@ interface ProjectSidebarProps {
     visible: boolean;
     chatMessages: ChatMessage[];
     isLoading: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSend: (input: string, attachments: any[], visibility: string) => Promise<void>;
     onVoice: () => void;
     onSupabase: () => void;
@@ -37,8 +38,8 @@ export function ProjectSidebar({
 }: ProjectSidebarProps) {
     return (
         <div
-            className={`${visible ? "w-1/3" : "w-0"
-                } border-r border-gray-200 flex flex-col transition-all duration-300 overflow-hidden`}
+            className={`${visible ? "w-full" : "w-0"
+                } border-r border-gray-200 flex flex-col transition-all duration-300 overflow-hidden h-full`}
         >
             {visible && (
                 <>
@@ -77,10 +78,10 @@ export function ProjectSidebar({
                                                 </span>
                                             </div>
                                             <div>  <p className="mb-3">
-                                                Hi there! 👋 Welcome to Lovable! I'm here to help you build your web application.
+                                                Hi there! 👋 Welcome to Lovable! I&apos;m here to help you build your web application.
                                             </p>
                                                 <p>
-                                                    What would you like to create today? Whether it's a landing page, a dashboard, a portfolio, an e-commerce site, or something else entirely - just describe your vision and I'll bring it to life!
+                                                    What would you like to create today? Whether it&apos;s a landing page, a dashboard, a portfolio, an e-commerce site, or something else entirely - just describe your vision and I&apos;ll bring it to life!
                                                 </p></div>
                                         </div>
                                         <div className="flex items-center gap-3 justify-end  pt-3">
