@@ -12,7 +12,9 @@ import {
     Database,
     Github,
     ChevronRight,
-    Settings2
+    Settings2,
+    Globe,
+    BookOpen
 } from "lucide-react";
 import { it } from "zod/v4/locales";
 
@@ -25,20 +27,49 @@ interface SettingsSidebarProps {
         firstName: string;
         email: string;
     };
+    showProjectGroup?: boolean;
 }
 
 export function SettingsSidebar({
     activeSection,
     onSectionChange,
     workspaceName,
-    user
+    user,
+    showProjectGroup = false
 }: SettingsSidebarProps) {
 
     const firstName = user?.firstName || "User";
     const firstChar = user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'U';
     const menuSections = [
+        ...(showProjectGroup
+            ? [
+                {
+                    title: "Project",
+                    items: [
+                        {
+                            id: "project",
+                            label: "Project Settings",
+                            icon: Settings2,
+                            hasArrow: true
+                        },
+                        {
+                            id: "domains",
+                            label: "Domains",
+                            icon: Globe,
+                            hasArrow: true
+                        },
+                        {
+                            id: "knowledge",
+                            label: "Knowledge",
+                            icon: BookOpen,
+                            hasArrow: true
+                        }
+                    ]
+                }
+            ]
+            : []),
         {
-            title: "",
+            title: "Workspace",
             items: [
                 {
                     id: "workspace",
@@ -98,9 +129,9 @@ export function SettingsSidebar({
 
     return (
         <div className="w-60 bg-background dark:bg-primary pt-9  border-r border-gray-200 dark:border-gray-800 h-full">
-            <div className="ml-4">
+            {/* <div className="ml-4">
                 <h1 className="text-lg font-medium text-secondary dark:text-muted">Workspace</h1>
-            </div>
+            </div> */}
 
             <div className="space-y-8 px-4">
 
