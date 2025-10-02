@@ -40,3 +40,6 @@ export interface Attachment {
   url: string;
   contentType: string;
 }
+
+// Visibility type used across chat UI controls
+export type VisibilityType = 'public' | 'workspace' | 'personal';
