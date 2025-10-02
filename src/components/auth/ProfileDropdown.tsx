@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTypedDispatch } from "@/hooks/useTypedDispatch";
 import { logout } from "@/store/feature/auth/authThunks";
 import { toast } from "sonner";
@@ -44,6 +44,8 @@ interface ProfileDropdownProps {
 export function ProfileDropdown({ user }: ProfileDropdownProps) {
     const { theme, setTheme } = useTheme();
     const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const dispatch = useTypedDispatch();
     const [mounted, setMounted] = React.useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
@@ -81,19 +83,35 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
         }
     };
 
+    const pushSettingsParam = (section: string) => {
+        try {
+            const params = new URLSearchParams(searchParams?.toString());
+            params.set("settings", section);
+            router.push(`${pathname}?${params.toString()}`);
+        } catch {
+            // noop
+        }
+    };
+
     const handleOpenSettings = () => {
-        setInitialSection("workspace");
+        const section = "workspace";
+        setInitialSection(section);
         setIsSettingsOpen(true);
+        pushSettingsParam(section);
     };
 
     const handleOpenInvite = () => {
-        setInitialSection("people");
+        const section = "people";
+        setInitialSection(section);
         setIsSettingsOpen(true);
+        pushSettingsParam(section);
     };
 
     const handleUpgrade = () => {
-        setInitialSection("plans-billing");
+        const section = "plans-billing";
+        setInitialSection(section);
         setIsSettingsOpen(true);
+        pushSettingsParam(section);
     };
 
     const handleHelpCenterClick = () => {

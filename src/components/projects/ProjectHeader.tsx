@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Square, Globe, Code, Cloud, Plus, Users, Github, Crown, Sun, Moon, MonitorSmartphone, Check, Settings, HelpCircle, Gift, ChevronLeft, ArrowUpRight, Monitor } from "lucide-react"
+import { ChevronDown, Square, Globe, Code, Cloud, Plus, Users, Github, Crown, Sun, Moon, MonitorSmartphone, Check, Settings, HelpCircle, Gift, ChevronLeft, ArrowUpRight, Monitor, ChevronRight } from "lucide-react"
 import SidebarIcon from "../icons/SidebarIcon"
 import History from "../icons/History"
 import { Avatar, AvatarFallback } from "../ui/avatar"
@@ -19,6 +19,10 @@ import {
     DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/hooks/useAuth"
+import Link from "next/link"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { WorkspaceSettingsModal } from "@/components/setting/workspace-settings-modal"
+import ReferralModal from "../ReferralModal"
 
 
 interface ProjectHeaderProps {
@@ -34,10 +38,45 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
     const { theme, setTheme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
     const { user } = useAuth();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+    const [initialSection, setInitialSection] = React.useState("workspace");
+    const [referralModalOpen, setReferralModalOpen] = React.useState(false);
+
 
     React.useEffect(() => {
         setMounted(true)
     }, [])
+
+    const pushSettingsParam = (section: string) => {
+        try {
+            const params = new URLSearchParams(searchParams?.toString());
+            params.set("settings", section);
+            router.push(`${pathname}?${params.toString()}`);
+        } catch {
+            // noop
+        }
+    };
+
+    const handleOpenPlansBilling = () => {
+        const section = "plans-billing";
+        setInitialSection(section);
+        setIsSettingsOpen(true);
+        pushSettingsParam(section);
+    };
+
+    const handleOpenProjectSettings = () => {
+        const section = "project";
+        setInitialSection(section);
+        setIsSettingsOpen(true);
+        pushSettingsParam(section);
+    };
+
+    const handleGiftClick = () => {
+        setReferralModalOpen(true);
+      };
 
     return (
         <div className="w-full bg-white p-2">
@@ -55,8 +94,10 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                             <DropdownMenuContent align="start" sideOffset={8} className="bg-background border-border py-3 px-2.5 shadow-lg w-[320px]">
                                 {/* Top Go to Dashboard */}
                                 <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                                    <ChevronLeft className="h-4 w-4" />
-                                    <span>Go to Dashboard</span>
+                                    <Link href="/" className=" inline-flex items-center">
+                                        <ChevronLeft className="h-4 w-4 inline mr-2" />
+                                        <span>Go to Dashboard</span>
+                                    </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
 
@@ -65,10 +106,13 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                                     {user?.firstName ? `${user.firstName}'s Lovable` : "My Lovable"}
                                 </div>
                                 <div className="mx-2 my-2 rounded-md border bg-muted/20 p-3">
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="font-medium">Credits</span>
-                                        <span className="text-muted">4.5 left</span>
-                                    </div>
+                                    <Button className="flex items-center bg-muted/0 w-full !px-0 hover:bg-muted/0 hover:text-white justify-between text-sm cursor-pointer" onClick={handleOpenPlansBilling}>
+                                        <span className="font-medium text-primary dark:text-accent">Credits</span>
+                                        <div className="flex items-center text-secondary  dark:text-muted gap-2">
+                                            <span className="text-muted">4.5 left</span>
+                                            <ChevronRight className="h-4 w-4 inline " />
+                                        </div>
+                                    </Button>
                                     <div className="mt-2 h-2 w-full rounded-full bg-muted">
                                         <div className="h-2 rounded-full bg-blue-600" style={{ width: "75%" }} />
                                     </div>
@@ -79,17 +123,16 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                                 </div>
 
                                 {/* Actions */}
-                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                                <DropdownMenuItem onClick={handleGiftClick} className="flex items-center gap-2 cursor-pointer">
                                     <Gift className="h-4 w-4" />
                                     <span>Get free credits</span>
                                 </DropdownMenuItem>
 
                                 <DropdownMenuSeparator />
 
-                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer" onClick={handleOpenProjectSettings}>
                                     <Settings className="h-4 w-4" />
                                     <span>Settings</span>
-                                    <span className="ml-auto text-xs text-muted">Ctrl.</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
                                     <Square className="h-4 w-4" />
@@ -217,6 +260,23 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                     </div>
                 </div>
             </div>
+            {/* Settings Modal for Plans & Billing and other sections */}
+            <WorkspaceSettingsModal
+                open={isSettingsOpen}
+                onOpenChange={setIsSettingsOpen}
+                workspace={{
+                    name: `${user?.firstName ? user.firstName : "User"}'s lovable`,
+                    description: "A workspace for building amazing applications",
+                    avatar: undefined,
+                    allowUnprotectedSamples: true,
+                    allowInvites: false,
+                }}
+                user={{ firstName: user?.firstName || "User", email: user?.email || "" }}
+                initialSection={initialSection}
+            />
+
+            {/* Referral Modal */}
+      <ReferralModal open={referralModalOpen} onOpenChange={setReferralModalOpen} />
         </div>
     )
 }
