@@ -26,7 +26,7 @@ const PlansBilling = () => {
                                         <Switch id="pro-annual" />
                                         <Label htmlFor="pro-annual">Annual</Label>
                                     </div>
-                                    <Button className="w-full bg-black text-white hover:bg-black/50">Get Started</Button>
+                                    <Button className="w-full bg-black text-white hover:bg-black/50 cursor-pointer">Get Started</Button>
                                     <Select>
                                         <SelectTrigger className="w-full">
                                             <span>100 credits / month</span>
@@ -64,7 +64,7 @@ const PlansBilling = () => {
                                         <Switch id="business-annual" />
                                         <Label htmlFor="business-annual">Annual</Label>
                                     </div>
-                                    <Button className="w-full bg-accent text-primary hover:bg-accent/80">Get Started</Button>
+                                    <Button className="w-full bg-accent text-primary hover:bg-accent/80 cursor-pointer">Get Started</Button>
                                     <Select>
                                         <SelectTrigger className="w-full">
                                             <span>100 credits / month</span>
