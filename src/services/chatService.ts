@@ -214,8 +214,23 @@ class ChatService {
         try {
             const response = await api.get(`${API_ENDPOINTS.PROJECTS.BASE}/${projectId}/chat/messages`);
             return response.data.messages || [];
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching chat messages by project:', error);
+
+            // Handle rate limiting specifically
+            if (error.response?.status === 429) {
+                console.warn('Rate limited while fetching chat messages, retrying...');
+                // Wait and retry once
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                try {
+                    const retryResponse = await api.get(`${API_ENDPOINTS.PROJECTS.BASE}/${projectId}/chat/messages`);
+                    return retryResponse.data.messages || [];
+                } catch (retryError) {
+                    console.error('Retry failed for chat messages:', retryError);
+                    return [];
+                }
+            }
+
             // Return empty array if no messages found or error occurs
             return [];
         }
@@ -240,6 +255,22 @@ class ChatService {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error('Error sending AI chat:', error);
+
+            // Handle rate limiting specifically
+            if (error.response?.status === 429) {
+                console.warn('Rate limited while sending AI chat, retrying...');
+                // Wait and retry once
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                try {
+                    const retryResponse = await api.post(API_ENDPOINTS.CHAT.CREATE, data, {
+                        timeout: 300000, // 5 minutes timeout
+                    });
+                    return retryResponse.data;
+                } catch (retryError) {
+                    console.error('Retry failed for AI chat:', retryError);
+                    throw new Error('Rate limit exceeded. Please wait a moment before trying again.');
+                }
+            }
 
             // Handle timeout specifically
             if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {

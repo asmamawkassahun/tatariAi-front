@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
-import { ChevronDown, Clock, Square, Globe, Code, Cloud, Plus, Users, Github, Crown, Sun, Moon, MonitorSmartphone, Check, Settings, HelpCircle, Gift, ChevronLeft, ArrowUpRight, Monitor } from "lucide-react"
+import { ChevronDown, Square, Globe, Code, Cloud, Plus, Users, Github, Crown, Sun, Moon, MonitorSmartphone, Check, Settings, HelpCircle, Gift, ChevronLeft, ArrowUpRight, Monitor } from "lucide-react"
 import SidebarIcon from "../icons/SidebarIcon"
 import History from "../icons/History"
 import { Avatar, AvatarFallback } from "../ui/avatar"
@@ -33,7 +33,7 @@ interface ProjectHeaderProps {
 export function ProjectHeader({ projectName, previewStatus, sidebarVisible, activeView, onToggleSidebar, onToggleView }: ProjectHeaderProps) {
     const { theme, setTheme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
-    const { user, isAuthenticated } = useAuth();
+    const { user } = useAuth();
 
     React.useEffect(() => {
         setMounted(true)
@@ -61,7 +61,9 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                                 <DropdownMenuSeparator />
 
                                 {/* Workspace header and credits */}
-                                <div className="px-2 text-[13px] text-muted">{user?.firstName + "'s Lovable"}</div>
+                                <div className="px-2 text-[13px] text-muted">
+                                    {user?.firstName ? `${user.firstName}'s Lovable` : "My Lovable"}
+                                </div>
                                 <div className="mx-2 my-2 rounded-md border bg-muted/20 p-3">
                                     <div className="flex items-center justify-between text-sm">
                                         <span className="font-medium">Credits</span>
@@ -180,27 +182,36 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                         <div className="flex items-center ">
 
                             <Avatar className="h-10 w-10">
-                                <AvatarFallback className="text-xl bg-primary dark:bg-accent text-accent dark:text-primary">
-                                    A
-                                </AvatarFallback>
+                                {user?.photoUrl ? (
+                                    <img
+                                        src={user.photoUrl}
+                                        alt={`${user.firstName} ${user.lastName}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <AvatarFallback className="text-xl bg-primary dark:bg-accent text-accent dark:text-primary">
+                                        {user?.firstName ? user.firstName.charAt(0).toUpperCase() :
+                                            user?.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                                    </AvatarFallback>
+                                )}
                             </Avatar>
 
-                            <Button  className="  h-10 bg-accent hover:bg-muted text-primary rounded-full border border-accent -ml-3 z-1 cursor-pointer ">
+                            <Button className="  h-10 bg-accent hover:bg-muted text-primary rounded-full border border-accent -ml-3 z-1 cursor-pointer ">
                                 <Users className="w-4 h-4 mr-2" />
                                 Invite
                             </Button>
                         </div>
                         <Button variant="ghost" size="sm" className=" bg-accent h-9 w-9 p-0 border-footer-border cursor-pointer">
-                            <SupabaseIcon  />
+                            <SupabaseIcon />
                         </Button>
-                        <Button variant="outline"  size="sm" className=" bg-accent hover:bg-accent/50 text-primary hover:text-primary h-9 w-9 p-0 border-footer-border cursor-pointer">
+                        <Button variant="outline" size="sm" className=" bg-accent hover:bg-accent/50 text-primary hover:text-primary h-9 w-9 p-0 border-footer-border cursor-pointer">
                             <Github className="w-4 h-4" />
                         </Button>
                         <Button variant="outline" size="sm" className="bg-accent text-primary border-footer-border hover:bg-accent/50 hover:text-primary cursor-pointer">
                             <Crown className="w-4 h-4 mr-2" />
                             Upgrade
                         </Button>
-                        <Button  size="sm" className="bg-primary text-accent cursor-pointer">
+                        <Button size="sm" className="bg-primary text-accent cursor-pointer">
                             Publish
                         </Button>
                     </div>

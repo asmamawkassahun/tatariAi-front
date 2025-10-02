@@ -129,6 +129,23 @@ axiosInstance.interceptors.response.use(
 
         case HTTP_STATUS.TOO_MANY_REQUESTS:
           console.error('⏰ Rate limit exceeded');
+          // Add retry logic for rate limited requests
+          if (config && !config.url?.includes('/auth/refresh')) {
+            const retryAfter = error.response?.headers['retry-after'];
+            const delay = retryAfter ? parseInt(retryAfter) * 1000 : 5000; // Default 5 seconds
+
+            console.log(`⏳ Retrying request after ${delay}ms due to rate limit`);
+
+            // Retry the request after delay
+            setTimeout(async () => {
+              try {
+                return await axiosInstance(config);
+              } catch (retryError) {
+                console.error('❌ Retry failed after rate limit:', retryError);
+                return Promise.reject(retryError);
+              }
+            }, delay);
+          }
           break;
 
         case HTTP_STATUS.INTERNAL_SERVER_ERROR:

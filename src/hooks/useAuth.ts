@@ -1,42 +1,27 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../config/firebaseConfig';
-import { setUser } from '../store/feature/auth/authSlice';
 import { restoreAuthState } from '../store/feature/auth/authThunks';
 import { useTypedSelector } from './useTypedSelector';
 import { getUserToken, isAuthenticatedSync } from '../lib/authToken';
-import { User } from '@/types/api';
+
+// Global flag to prevent multiple auth checks
+let authInitialized = false;
 
 export const useAuth = () => {
   const dispatch = useDispatch();
   const { user, loading, error, isAuthenticated } = useTypedSelector((state) => state.auth);
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    // Listen to Firebase auth state changes
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      console.log('🔐 Firebase auth state changed:', firebaseUser ? 'User logged in' : 'User logged out');
+    // Only run auth check once globally, not per component
+    if (authInitialized || hasInitialized.current) {
+      return;
+    }
 
-      // Only update Firebase auth if we don't have an API auth session
-      const hasApiToken = isAuthenticatedSync();
-      if (!hasApiToken && firebaseUser) {
-        // Map Firebase user to our User type
-        const mappedUser: User = {
-          id: firebaseUser.uid,
-          email: firebaseUser.email || '',
-          firstName: firebaseUser.displayName?.split(' ')[0] || '',
-          lastName: firebaseUser.displayName?.split(' ').slice(1).join(' ') || '',
-          photoUrl: firebaseUser.photoURL || undefined,
-          createdAt: firebaseUser.metadata?.creationTime || new Date().toISOString(),
-          updatedAt: firebaseUser.metadata?.lastSignInTime || new Date().toISOString(),
-        };
-        dispatch(setUser(mappedUser));
-      } else {
-        console.log('🔐 API auth session detected, not overriding with Firebase state');
-      }
-    });
+    hasInitialized.current = true;
+    authInitialized = true;
 
-    // Also check for API authentication on mount
+    // Check for API authentication on mount
     const checkApiAuth = async () => {
       try {
         const hasApiToken = isAuthenticatedSync();
@@ -44,11 +29,8 @@ export const useAuth = () => {
 
         console.log('🔐 Checking API auth on mount:', { hasApiToken, hasToken: !!apiToken });
 
-        // If we have an API token but no Firebase user, we need to restore the auth state
         if (hasApiToken && apiToken) {
-          console.log('🔐 API token found. This might be an API login session.');
-          // Don't dispatch setUser here as it would clear the API auth state
-          // The auth state should already be set by the login thunk
+          console.log('🔐 API token found. This is an API login session.');
         }
       } catch (error) {
         console.warn('Error checking API auth:', error);
@@ -59,8 +41,6 @@ export const useAuth = () => {
 
     // Restore auth state from stored tokens
     dispatch(restoreAuthState() as any);
-
-    return () => unsubscribe();
   }, [dispatch]);
 
   return {
