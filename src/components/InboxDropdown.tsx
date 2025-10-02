@@ -91,14 +91,14 @@ export const InboxDropdown: React.FC<InboxDropdownProps> = ({
                 onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
             >
                 {/* Tabs */}
-                <div className="flex bg-accent rounded-t-lg p-2">
+                <div className="flex bg-accent dark:bg-accent/5 rounded-t-lg p-2">
                     <Button
                         variant="ghost"
                         className={cn(
                             "flex-1 rounded-none py-3 text-sm font-medium transition-colors cursor-pointer",
                             activeTab === "inbox"
-                                ? "text-primary bg-background rounded-md hover:bg-background/80 hover:text-primary"
-                                : "text-secondary hover:text-secondary"
+                                ? "text-primary bg-background dark:bg-accent rounded-md hover:bg-background/80 dark:hover:bg-accent/90 hover:text-primary"
+                                : "text-secondary dark:text-accent dark:hover:bg-accent/0  hover:text-secondary"
                         )}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -112,8 +112,8 @@ export const InboxDropdown: React.FC<InboxDropdownProps> = ({
                         className={cn(
                             "flex-1 rounded-none py-3 text-sm font-medium transition-colors cursor-pointer",
                             activeTab === "whats-new"
-                                ? "text-primary bg-background rounded-md hover:bg-background/80 hover:text-primary"
-                                : "text-secondary hover:text-secondary"
+                                ? "text-primary bg-background dark:bg-accent rounded-md hover:bg-background/80 dark:hover:bg-accent/90 hover:text-primary"
+                                : "text-secondary  dark:text-accent dark:hover:bg-accent/0 hover:text-secondary"
                         )}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -135,28 +135,28 @@ export const InboxDropdown: React.FC<InboxDropdownProps> = ({
                                 >
                                     <MessageIcon />
                                     <div>
-                                        <p className="text-base font-semibold text-primary">No invites pending</p>
-                                        <p className="text-base font-light text-secondary">Workspace and project invitations will appear here</p>
+                                        <p className="text-base font-semibold text-primary dark:text-accent">No invites pending</p>
+                                        <p className="text-base font-light text-secondary dark:text-muted">Workspace and project invitations will appear here</p>
                                     </div>
                                 </div>
                             ) : (
                                 mockNotifications.map((notification) => (
                                     <div
                                         key={notification.id}
-                                        className="flex items-start gap-3 px-2 py-3 hover:bg-accent/50 transition-colors border-t border-border"
+                                        className="flex items-start gap-3 px-2 py-3 hover:bg-accent/50 dark:hover:bg-accent/5 transition-colors border-t border-border"
                                         onClick={(e) => e.stopPropagation()}
                                     >
                                         <div className="flex-shrink-0 mt-1">
                                             <div
-                                                className={`w-2 h-2 rounded-full mt-2 ${notification.isNew ? "bg-primary" : "bg-secondary"
+                                                className={`w-2 h-2 rounded-full dark:bg-accent mt-2 ${notification.isNew ? "bg-primary" : "bg-secondary"
                                                     }`}
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-xl font-semibold text-primary mb-1">
+                                            <h4 className="text-xl font-semibold text-primary dark:text-accent mb-1">
                                                 {notification.title}
                                             </h4>
-                                            <p className="text-sm text-secondary leading-relaxed">
+                                            <p className="text-sm text-secondary dark:text-muted leading-relaxed">
                                                 {notification.description}
                                             </p>
                                         </div>
@@ -177,15 +177,15 @@ export const InboxDropdown: React.FC<InboxDropdownProps> = ({
                                     >
                                         <div className="flex-shrink-0 mt-1">
                                             <div
-                                                className={`w-2 h-2 rounded-full mt-2 ${update.isNew ? "bg-primary" : "bg-secondary"
+                                                className={`w-2 h-2 rounded-full dark:bg-accent mt-2 ${update.isNew ? "bg-primary" : "bg-secondary"
                                                     }`}
                                             />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-xl font-semibold text-primary mb-1">
+                                            <h4 className="text-xl font-semibold text-primary dark:text-accent mb-1">
                                                 {update.title}
                                             </h4>
-                                            <p className="text-sm text-secondary leading-relaxed">
+                                            <p className="text-sm text-secondary dark:text-muted leading-relaxed">
                                                 {update.description}
                                             </p>
                                         </div>
