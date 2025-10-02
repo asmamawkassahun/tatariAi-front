@@ -133,9 +133,9 @@ axiosInstance.interceptors.response.use(
           if (config && !config.url?.includes('/auth/refresh')) {
             const retryAfter = error.response?.headers['retry-after'];
             const delay = retryAfter ? parseInt(retryAfter) * 1000 : 5000; // Default 5 seconds
-            
+
             console.log(`⏳ Retrying request after ${delay}ms due to rate limit`);
-            
+
             // Retry the request after delay
             setTimeout(async () => {
               try {
