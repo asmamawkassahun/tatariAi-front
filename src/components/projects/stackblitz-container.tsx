@@ -91,13 +91,16 @@ export function StackBlitzContainer({ files, activeFile, onFileChange }: StackBl
             // Set a timeout for the embed operation
             const embedPromise = sdk.embedProject(containerRef.current, project, {
                 openFile: activeFile,
-                view: "preview",
+                view: "editor",
                 theme: "dark",
                 height: "100%",
                 width: "100%",
                 hideNavigation: true,
                 hideDevTools: true,
                 forceEmbedLayout: true,
+                showSidebar: false,
+                clickToLoad: false,
+                terminalHeight: 0,
             })
 
             // Add timeout wrapper
@@ -214,7 +217,7 @@ export function StackBlitzContainer({ files, activeFile, onFileChange }: StackBl
     }
 
     return (
-        <div className="h-full w-full relative bg-[#1e1e1e]">
+        <div className="h-full w-full relative bg-[#1e1e1e] overflow-hidden">
             {(isLoading || isRetrying) && (
                 <div className="absolute inset-0 flex items-center justify-center bg-[#1e1e1e] z-10">
                     <div className="flex flex-col items-center gap-3">
@@ -225,7 +228,9 @@ export function StackBlitzContainer({ files, activeFile, onFileChange }: StackBl
                     </div>
                 </div>
             )}
-            <div ref={containerRef} className="h-full w-full" />
+            <div ref={containerRef} className="h-full w-full stackblitz-container" style={{ height: 'calc(100% + 50px)', marginBottom: '-50px' }} />
+            {/* Overlay to hide bottom controls */}
+            {/* <div className="absolute bottom-0 left-0 right-0 h-[50px] bg-[#1e1e1e] pointer-events-none z-[5]" /> */}
         </div>
     )
 }

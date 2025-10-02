@@ -11,6 +11,7 @@ import { useState } from "react";
 import { FileItem } from "@/types/fileItem";
 import { initialFiles } from "@/data";
 import { CodeEditor } from "@/components/projects/CodeEditor";
+import { StackBlitzContainer } from "@/components/projects/stackblitz-container";
 
 export default function ProjectPage() {
   const params = useParams();
@@ -118,33 +119,19 @@ export default function ProjectPage() {
               </ResizablePanel>
 
               <ResizableHandle className="w-[1px] bg-[#2d2d30] hover:bg-[#007acc] transition-colors" />
-
-              {/* File Explorer */}
-              <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
-                <FileExplorer files={files} activeFile={activeFile} onFileSelect={handleFileSelect} />
-              </ResizablePanel>
-
-              <ResizableHandle className="w-[1px] bg-[#2d2d30] hover:bg-[#007acc] transition-colors" />
             </>
           )}
 
 
 
           {/* Code Editor or Preview Panel */}
-          <ResizablePanel defaultSize={isLeftPanelCollapsed ? 100 : 55} minSize={30}>
-            {/* <StackBlitzContainer files={fileContents} activeFile={activeFile} onFileChange={handleFileChange} /> */}
+          <ResizablePanel defaultSize={isLeftPanelCollapsed ? 100 : 66.5} minSize={30}>
             {activeView === "code" ? (
-              <CodeEditor
-                file={currentFile}
-                content={fileContents[activeFile] || ""}
-                onContentChange={(content) => handleFileChange(activeFile, content)}
-              />
+              <StackBlitzContainer files={fileContents} activeFile={activeFile} onFileChange={handleFileChange} />
             ) : (
               <PreviewPanel files={fileContents} />
             )}
           </ResizablePanel>
-
-          <ResizableHandle className="w-[1px] bg-[#2d2d30] hover:bg-[#007acc] transition-colors" />
         </ResizablePanelGroup>
       </div>
     </div>
