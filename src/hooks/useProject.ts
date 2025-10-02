@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "./useAuth";
 import { useRouter } from "next/navigation";
 import { chatService } from "@/services/chatService";
@@ -39,9 +39,39 @@ export function useProject(projectId: string) {
     // Chat state
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    
+    // Rate limiting and debouncing
+    const lastRequestTime = useRef<number>(0);
+    const requestTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const RATE_LIMIT_DELAY = 1000; // 1 second between requests
+
+    // Debounced API call function
+    const debouncedApiCall = useCallback((apiCall: () => Promise<void>, delay: number = 500) => {
+        // Clear existing timeout
+        if (requestTimeoutRef.current) {
+            clearTimeout(requestTimeoutRef.current);
+        }
+
+        // Check rate limiting
+        const now = Date.now();
+        const timeSinceLastRequest = now - lastRequestTime.current;
+        
+        if (timeSinceLastRequest < RATE_LIMIT_DELAY) {
+            const remainingDelay = RATE_LIMIT_DELAY - timeSinceLastRequest;
+            console.log(`⏳ Rate limiting: waiting ${remainingDelay}ms before next request`);
+            
+            requestTimeoutRef.current = setTimeout(() => {
+                lastRequestTime.current = Date.now();
+                apiCall();
+            }, remainingDelay);
+        } else {
+            lastRequestTime.current = now;
+            apiCall();
+        }
+    }, [RATE_LIMIT_DELAY]);
 
     // Handlers
-    const handleSend = async (
+    const handleSend = useCallback(async (
         input: string,
         attachments: any[],
         visibility: string
@@ -58,73 +88,78 @@ export function useProject(projectId: string) {
 
         setChatMessages(prev => [...prev, userMessage]);
 
-        setIsLoading(true);
-        try {
-            console.log("Sending message:", { input, attachments, visibility });
+        // Debounce the API call
+        debouncedApiCall(async () => {
+            setIsLoading(true);
+            try {
+                console.log("Sending message:", { input, attachments, visibility });
 
-            const response = await chatService.sendAIChat({
-                message: input,
-                projectId: projectId,
-            });
+                const response = await chatService.sendAIChat({
+                    message: input,
+                    projectId: projectId,
+                });
 
-            console.log("AI Chat Response:", response);
+                console.log("AI Chat Response:", response);
 
-            if (response.success && response.data.success) {
-                // Add AI response to chat
-                const aiMessage: ChatMessage = {
-                    id: response.data.messageId || `ai-${Date.now()}`,
-                    content: response.data.aiResponse || response.message,
-                    role: "assistant",
-                    timestamp: new Date().toISOString(),
-                };
+                if (response.success && response.data.success) {
+                    // Add AI response to chat
+                    const aiMessage: ChatMessage = {
+                        id: response.data.messageId || `ai-${Date.now()}`,
+                        content: response.data.aiResponse || response.message,
+                        role: "assistant",
+                        timestamp: new Date().toISOString(),
+                    };
 
-                setChatMessages(prev => [...prev, aiMessage]);
+                    setChatMessages(prev => [...prev, aiMessage]);
 
-                // If this is a new project creation, redirect to project page
-                if (response.data.projectId && !response.data.messageId) {
-                    console.log("Redirecting to new project:", response.data.projectId);
-                    router.push(`/projects/${response.data.projectId}`);
-                } else {
-                    // If this is a continuation of existing project, redirect to project page
-                    if (response.data.projectId && response.data.projectId !== projectId) {
-                        console.log(
-                            "Redirecting to existing project:",
-                            response.data.projectId
-                        );
+                    // If this is a new project creation, redirect to project page
+                    if (response.data.projectId && !response.data.messageId) {
+                        console.log("Redirecting to new project:", response.data.projectId);
                         router.push(`/projects/${response.data.projectId}`);
+                    } else {
+                        // If this is a continuation of existing project, redirect to project page
+                        if (response.data.projectId && response.data.projectId !== projectId) {
+                            console.log(
+                                "Redirecting to existing project:",
+                                response.data.projectId
+                            );
+                            router.push(`/projects/${response.data.projectId}`);
+                        }
                     }
+                } else {
+                    console.error("API returned unsuccessful response:", response);
+                    // TODO: Show error toast/notification
                 }
-            } else {
-                console.error("API returned unsuccessful response:", response);
+            } catch (error: any) {
+                console.error("Error sending message:", error);
+
+                // Show user-friendly error message based on error type
+                if (error.message?.includes("timeout")) {
+                    console.error(
+                        "Request timed out. The server is taking too long to respond."
+                    );
+                } else if (error.message?.includes("Unable to connect")) {
+                    console.error(
+                        "Unable to connect to the server. Please check your connection."
+                    );
+                } else if (error.response?.status === 404) {
+                    console.error(
+                        "API endpoint not found. Please check if the server is running."
+                    );
+                } else if (error.response?.status >= 500) {
+                    console.error("Server error. Please try again later.");
+                } else if (error.response?.status === 429) {
+                    console.error("Rate limit exceeded. Please wait a moment before trying again.");
+                } else {
+                    console.error("Network error. Please check your connection.");
+                }
+
                 // TODO: Show error toast/notification
+            } finally {
+                setIsLoading(false);
             }
-        } catch (error: any) {
-            console.error("Error sending message:", error);
-
-            // Show user-friendly error message based on error type
-            if (error.message?.includes("timeout")) {
-                console.error(
-                    "Request timed out. The server is taking too long to respond."
-                );
-            } else if (error.message?.includes("Unable to connect")) {
-                console.error(
-                    "Unable to connect to the server. Please check your connection."
-                );
-            } else if (error.response?.status === 404) {
-                console.error(
-                    "API endpoint not found. Please check if the server is running."
-                );
-            } else if (error.response?.status >= 500) {
-                console.error("Server error. Please try again later.");
-            } else {
-                console.error("Network error. Please check your connection.");
-            }
-
-            // TODO: Show error toast/notification
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        });
+    }, [projectId, router, debouncedApiCall]);
 
     const handleVoice = () => {
         console.log("Voice input triggered");
@@ -173,15 +208,17 @@ export function useProject(projectId: string) {
 
                     setProject(mockProject);
 
-                    // Fetch chat messages for this project
-                    try {
-                        const messages = await chatService.getChatMessagesByProject(projectId);
-                        setChatMessages(messages);
-                        console.log("Loaded chat messages:", messages);
-                    } catch (chatError) {
-                        console.error("Failed to fetch chat messages:", chatError);
-                        // Keep empty array if chat fetch fails
-                    }
+                    // Debounce chat messages fetch to prevent rate limiting
+                    debouncedApiCall(async () => {
+                        try {
+                            const messages = await chatService.getChatMessagesByProject(projectId);
+                            setChatMessages(messages);
+                            console.log("Loaded chat messages:", messages);
+                        } catch (chatError) {
+                            console.error("Failed to fetch chat messages:", chatError);
+                            // Keep empty array if chat fetch fails
+                        }
+                    });
 
                     // Simulate preview loading
                     setTimeout(() => {
@@ -196,7 +233,16 @@ export function useProject(projectId: string) {
 
             fetchProjectAndChat();
         }
-    }, [isAuthenticated, loading, projectId, user]);
+    }, [isAuthenticated, loading, projectId, debouncedApiCall]); // Removed 'user' from dependencies to prevent unnecessary re-renders
+
+    // Cleanup timeouts on unmount
+    useEffect(() => {
+        return () => {
+            if (requestTimeoutRef.current) {
+                clearTimeout(requestTimeoutRef.current);
+            }
+        };
+    }, []);
 
     return {
         // State
