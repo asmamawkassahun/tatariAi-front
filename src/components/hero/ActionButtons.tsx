@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '../ui/button';
-import { Plus, Paperclip, Globe, Zap, Mic, MicOff, ArrowUp } from 'lucide-react';
+import { Plus, Paperclip, Globe, Zap, Mic, MicOff, ArrowUp, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSpeechRecognition } from 'react-speech-recognition';
 
@@ -153,7 +153,7 @@ export const ActionButtons = ({
                     onClick={onSend}
                     disabled={!canSend || disabled}
                 >
-                    <ArrowUp className="w-4 h-4" />
+                    {disabled ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-4 h-4" />}
                 </Button>
             </div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Save, X, Menu } from "lucide-react";
 import { SettingsSidebar } from "./settings-sidebar";
@@ -28,15 +28,17 @@ interface WorkspaceSettingsModalProps {
         firstName: string;
         email: string;
     };
+    initialSection?: string;
 }
 
 export function WorkspaceSettingsModal({
     open,
     onOpenChange,
     workspace,
-    user
+    user,
+    initialSection = "workspace"
 }: WorkspaceSettingsModalProps) {
-    const [activeSection, setActiveSection] = React.useState("workspace");
+    const [activeSection, setActiveSection] = React.useState(initialSection);
     const [name, setName] = React.useState(workspace.name);
     const [description, setDescription] = React.useState(workspace.description);
     const [allowUnprotectedSamples, setAllowUnprotectedSamples] = React.useState(
@@ -48,6 +50,13 @@ export function WorkspaceSettingsModal({
 
     const workspaceName = `${user.firstName}'s Lovable`;
 
+
+    // Update active section when initialSection changes
+    React.useEffect(() => {
+        if (open && initialSection) {
+            setActiveSection(initialSection);
+        }
+    }, [open, initialSection]);
 
     // Check if screen is mobile size
     React.useEffect(() => {
@@ -125,6 +134,9 @@ export function WorkspaceSettingsModal({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="!max-w-[90rem] h-max overflow-hidden p-0">
+                <DialogHeader>
+                    <DialogTitle className="sr-only">Workspace Settings</DialogTitle>
+                </DialogHeader>
                 <div className="flex h-[80vh] relative">
                     {/* Mobile Header with Hamburger Menu */}
                     {isMobile && (

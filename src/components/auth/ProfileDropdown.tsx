@@ -20,8 +20,6 @@ import {
 import { Button } from "@/components/ui/button";
 import {
     Gift,
-    Crown,
-    ArrowUpRight,
     Settings,
     UserPlus,
     HelpCircle,
@@ -35,8 +33,9 @@ import {
 } from "lucide-react";
 import { User } from "@/types/api";
 import { WorkspaceSettingsModal } from "@/components/setting/workspace-settings-modal";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CreateWorkspaceModal } from "@/components/CreateWorkspaceModal";
+import ReferralModal from "../ReferralModal";
 
 interface ProfileDropdownProps {
     user: User;
@@ -49,6 +48,9 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
     const [mounted, setMounted] = React.useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
     const [isCreateWorkspaceOpen, setIsCreateWorkspaceOpen] = React.useState(false);
+    const [initialSection, setInitialSection] = React.useState("workspace");
+    const [referralModalOpen, setReferralModalOpen] = React.useState(false);
+
 
     React.useEffect(() => {
         setMounted(true);
@@ -79,8 +81,27 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
         }
     };
 
+    const handleOpenSettings = () => {
+        setInitialSection("workspace");
+        setIsSettingsOpen(true);
+    };
+
+    const handleOpenInvite = () => {
+        setInitialSection("people");
+        setIsSettingsOpen(true);
+    };
+
+    const handleUpgrade = () => {
+        setInitialSection("plans-billing");
+        setIsSettingsOpen(true);
+    };
+
     const handleHelpCenterClick = () => {
         router.push("/support");
+    };
+
+    const handleGiftClick = () => {
+        setReferralModalOpen(true);
     };
 
     if (!mounted) {
@@ -129,7 +150,9 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
                                 <p className="font-semibold text-accent dark:text-primary text-base">You're using free plan</p>
                                 <p className="text-muted dark:text-secondary text-base">You can add components to your app by upgrading to the next plan.</p>
                             </div>
-                            <Button className="bg-accent dark:bg-primary text-primary dark:text-accent hover:bg-accent/90">
+                            <Button
+                                onClick={handleUpgrade}
+                                className="bg-accent dark:bg-primary text-primary dark:text-accent hover:bg-accent/90 cursor-pointer">
                                 Upgrade
                             </Button>
                         </div>
@@ -138,12 +161,14 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
                             <Button
                                 variant="outline"
                                 className="w-fit justify-start text-primary dark:text-accent hover:text-primary gap-2 cursor-pointer px-2"
-                                onClick={() => setIsSettingsOpen(true)}
+                                onClick={handleOpenSettings}
                             >
                                 <Settings className="h-4 w-4" />
                                 Settings
                             </Button>
-                            <Button variant="outline" className="w-fit justify-start text-primary dark:text-accent hover:text-primary gap-2 cursor-pointer px-2">
+                            <Button variant="outline"
+                                onClick={handleOpenInvite}
+                                className="w-fit justify-start text-primary dark:text-accent hover:text-primary gap-2 cursor-pointer px-2">
                                 <UserPlus className="h-4 w-4" />
                                 Invite
                             </Button>
@@ -175,7 +200,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
 
                         <DropdownMenuSeparator />
 
-                        <DropdownMenuItem className="flex items-center gap-3 cursor-pointer">
+                        <DropdownMenuItem onClick={handleGiftClick} className="flex items-center gap-3 cursor-pointer">
                             <Gift className="h-4 w-4" />
                             <span>Get free credits</span>
                         </DropdownMenuItem>
@@ -236,12 +261,19 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
                 onOpenChange={setIsSettingsOpen}
                 workspace={workspaceData}
                 user={{ firstName: displayName, email }}
+                initialSection={initialSection}
             />
             <Dialog open={isCreateWorkspaceOpen} onOpenChange={setIsCreateWorkspaceOpen}>
                 <DialogContent className="max-w-md p-6">
+                    <DialogHeader>
+                        <DialogTitle className="sr-only">Create Workspace</DialogTitle>
+                    </DialogHeader>
                     <CreateWorkspaceModal user={user} onWorkspaceCreated={() => setIsCreateWorkspaceOpen(false)} />
                 </DialogContent>
             </Dialog>
+
+            <ReferralModal open={referralModalOpen} onOpenChange={setReferralModalOpen} />
+
         </>
     );
 }

@@ -89,14 +89,6 @@ const Hero = () => {
           onSupabase={handleSupabase}
           disabled={isLoading}
         />
-        {isLoading && (
-          <div className="mt-4 text-center">
-            <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-              Processing your request... (This may take up to 5 minutes)
-            </div>
-          </div>
-        )}
       </div>
       
       

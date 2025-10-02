@@ -30,6 +30,9 @@ const ReferralModal = ({ open, onOpenChange }: ReferralModalProps) => {
             <DialogContent
                 className="w-full  !max-w-[48.75rem] border-none max-h-[90vh] rounded-[2.5rem] overflow-y-auto  bg-background shadow-[inset_2px_2px_16px_0px_#FFFFFF14] backdrop-blur-[84px]"
             >
+                <DialogHeader>
+                    <DialogTitle className="sr-only">Referral Program</DialogTitle>
+                </DialogHeader>
                 <div className="space-y-6">
                     {/* Earn Credits Section */}
                     <div className="bg-accent px-10 py-5 rounded-2xl">
