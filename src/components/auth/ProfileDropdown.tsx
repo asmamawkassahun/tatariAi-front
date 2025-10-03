@@ -115,7 +115,9 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
     };
 
     const handleHelpCenterClick = () => {
-        router.push("/support");
+        if (typeof window !== "undefined") {
+            window.open("/support", "_blank", "noopener,noreferrer");
+        }
     };
 
     const handleGiftClick = () => {

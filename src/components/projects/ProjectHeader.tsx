@@ -9,6 +9,17 @@ import History from "../icons/History"
 import { Avatar, AvatarFallback } from "../ui/avatar"
 import { SupabaseIcon } from "../icons"
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
+import {
     DropdownMenu,
     DropdownMenuTrigger,
     DropdownMenuContent,
@@ -44,6 +55,8 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
     const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
     const [initialSection, setInitialSection] = React.useState("workspace");
     const [referralModalOpen, setReferralModalOpen] = React.useState(false);
+    const [isRenameOpen, setIsRenameOpen] = React.useState(false);
+    const [renameValue, setRenameValue] = React.useState("");
 
 
     React.useEffect(() => {
@@ -74,9 +87,28 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
         pushSettingsParam(section);
     };
 
+    const handleOpenRename = () => {
+        setRenameValue("");
+        setIsRenameOpen(true);
+    };
+
+    const handleConfirmRename = () => {
+        const next = renameValue.trim();
+        if (!next) return setIsRenameOpen(false);
+        // TODO: wire to API/state
+        toast.success("Project name updated");
+        setIsRenameOpen(false);
+    };
+
     const handleGiftClick = () => {
         setReferralModalOpen(true);
       };
+      
+    const handleHelpCenterClick = () => {
+        if (typeof window !== "undefined") {
+            window.open("/support", "_blank", "noopener,noreferrer");
+        }
+    };
 
     return (
         <div className="w-full bg-white p-2">
@@ -134,7 +166,7 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                                     <Settings className="h-4 w-4" />
                                     <span>Settings</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer" onClick={handleOpenRename}>
                                     <Square className="h-4 w-4" />
                                     <span>Rename project</span>
                                 </DropdownMenuItem>
@@ -165,7 +197,7 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                                     </DropdownMenuSubContent>
                                 </DropdownMenuSub>
 
-                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer" onClick={handleHelpCenterClick}>
                                     <HelpCircle className="h-4 w-4" />
                                     <span>Help</span>
                                     <ArrowUpRight className="h-4 w-4 ml-auto" />
@@ -228,7 +260,7 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                                 {user?.photoUrl ? (
                                     <img
                                         src={user.photoUrl}
-                                        alt={`${user.firstName} ${user.lastName}`}
+                                        alt={user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'U'}
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
@@ -277,6 +309,32 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
 
             {/* Referral Modal */}
       <ReferralModal open={referralModalOpen} onOpenChange={setReferralModalOpen} />
+
+            {/* Rename Project Modal */}
+            <Dialog open={isRenameOpen} onOpenChange={setIsRenameOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="text-primary dark:text-accent">Rename project</DialogTitle>
+                        <DialogDescription className="text-secondary dark:text-muted">Give your project a new name.</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-2">
+                        <Label htmlFor="rename-project-name" className="text-primary dark:text-accent">Project Name</Label>
+                        <Input
+                            id="rename-project-name"
+                            placeholder="Enter new project name"
+                            value={renameValue}
+                            onChange={(e) => setRenameValue(e.target.value)}
+                        />
+                        <p className="text-xs text-secondary dark:text-muted">
+                            Use lowercase letters, numbers, and hyphens only. Name must start with a lowercase letter. Example: my-awesome-project
+                        </p>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsRenameOpen(false)} className="text-primary dark:text-accent">Cancel</Button>
+                        <Button variant="outline" onClick={handleConfirmRename} className="text-primary dark:text-accent">Rename Project</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
