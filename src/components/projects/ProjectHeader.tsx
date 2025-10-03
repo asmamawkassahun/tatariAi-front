@@ -40,9 +40,9 @@ interface ProjectHeaderProps {
     projectName: string
     previewStatus: string
     sidebarVisible: boolean
-    activeView: "code" | "preview"
+    activeView: "code" | "preview" | "cloud"
     onToggleSidebar: () => void
-    onToggleView: (view: "code" | "preview") => void
+    onToggleView: (view: "code" | "preview" | "cloud") => void
 }
 
 export function ProjectHeader({ projectName, previewStatus, sidebarVisible, activeView, onToggleSidebar, onToggleView }: ProjectHeaderProps) {
@@ -102,8 +102,8 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
 
     const handleGiftClick = () => {
         setReferralModalOpen(true);
-      };
-      
+    };
+
     const handleHelpCenterClick = () => {
         if (typeof window !== "undefined") {
             window.open("/support", "_blank", "noopener,noreferrer");
@@ -244,8 +244,14 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                             <Code className="w-4 h-4 mr-2" />
                             <span className={`${activeView === "code" ? "block" : "hidden"}`}>Code</span>
                         </Button>
-                        <Button variant="outline" size="sm" className="h-8 w-8 p-0 hover:text-primary">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className={`${activeView === "cloud" ? "bg-blue-100 hover:bg-blue-100/50 border-blue-600 " : " text-black border-footer-border"}  hover:text-primary`}
+                            onClick={() => onToggleView("cloud")}
+                        >
                             <Cloud className="w-4 h-4" />
+                            <span className={`${activeView === "cloud" ? "block" : "hidden"}`}>Cloud</span>
                         </Button>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:text-primary">
                             <Plus className="w-4 h-4" />
@@ -279,10 +285,10 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
                         <Button variant="ghost" size="sm" className=" bg-accent h-9 w-9 p-0 border-footer-border cursor-pointer">
                             <SupabaseIcon />
                         </Button>
-                        <Button variant="outline" size="sm" className=" bg-accent hover:bg-accent/50 text-primary hover:text-primary h-9 w-9 p-0 border-footer-border cursor-pointer">
+                        <Button variant="outline" size="sm" className=" !bg-accent  text-primary hover:text-primary h-9 w-9 p-0 border-footer-border cursor-pointer">
                             <Github className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="sm" className="bg-accent text-primary border-footer-border hover:bg-accent/50 hover:text-primary cursor-pointer">
+                        <Button variant="outline" size="sm" className="!bg-accent text-primary border-footer-border hover:bg-accent/50 hover:text-primary cursor-pointer">
                             <Crown className="w-4 h-4 mr-2" />
                             Upgrade
                         </Button>
@@ -308,7 +314,7 @@ export function ProjectHeader({ projectName, previewStatus, sidebarVisible, acti
             />
 
             {/* Referral Modal */}
-      <ReferralModal open={referralModalOpen} onOpenChange={setReferralModalOpen} />
+            <ReferralModal open={referralModalOpen} onOpenChange={setReferralModalOpen} />
 
             {/* Rename Project Modal */}
             <Dialog open={isRenameOpen} onOpenChange={setIsRenameOpen}>
