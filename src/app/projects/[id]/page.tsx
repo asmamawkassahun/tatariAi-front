@@ -6,19 +6,17 @@ import { ProjectHeader } from "@/components/projects/ProjectHeader";
 import { ProjectSidebar } from "@/components/projects/ProjectSidebar";
 import { PreviewPanel } from "@/components/projects/PreviewPanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
-import { FileExplorer } from "@/components/projects/FileExplorer";
 import { useState } from "react";
 import { FileItem } from "@/types/fileItem";
 import { initialFiles } from "@/data";
-import { CodeEditor } from "@/components/projects/CodeEditor";
-import { StackBlitzContainer } from "@/components/projects/stackblitz-container";
+import { CodeView } from "@/components/projects/CodeView";
 
 export default function ProjectPage() {
   const params = useParams();
   const projectId = params.id as string;
   const [files] = useState<FileItem[]>(initialFiles)
-  const [activeFile, setActiveFile] = useState<string>("src/pages/index.tsx")
-  const [activeView, setActiveView] = useState<"code" | "preview">("code")
+  const [activeFile] = useState<string>("src/pages/index.tsx")
+  const [activeView, setActiveView] = useState<"code" | "preview" | "cloud">("code")
   const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false)
   const [fileContents, setFileContents] = useState<Record<string, string>>(() => {
     const contents: Record<string, string> = {}
@@ -36,32 +34,12 @@ export default function ProjectPage() {
     return contents
   })
 
-  const handleFileSelect = (path: string) => {
-    setActiveFile(path)
-  }
-
   const handleFileChange = (path: string, content: string) => {
     setFileContents((prev) => ({
       ...prev,
       [path]: content,
     }))
   }
-
-  const getFileByPath = (path: string): FileItem | null => {
-    const findFile = (items: FileItem[]): FileItem | null => {
-      for (const item of items) {
-        if (item.path === path) return item
-        if (item.children) {
-          const found = findFile(item.children)
-          if (found) return found
-        }
-      }
-      return null
-    }
-    return findFile(files)
-  }
-
-  const currentFile = getFileByPath(activeFile)
 
   const {
     project,
@@ -127,7 +105,7 @@ export default function ProjectPage() {
           {/* Code Editor or Preview Panel */}
           <ResizablePanel defaultSize={isLeftPanelCollapsed ? 100 : 66.5} minSize={30}>
             {activeView === "code" ? (
-              <StackBlitzContainer files={fileContents} activeFile={activeFile} onFileChange={handleFileChange} />
+              <CodeView files={fileContents} activeFile={activeFile} onFileChange={handleFileChange} fileTree={files} />
             ) : (
               <PreviewPanel files={fileContents} />
             )}

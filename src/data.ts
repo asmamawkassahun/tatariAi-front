@@ -1,24 +1,24 @@
 import { FileItem } from "./types/fileItem";
 
 export const initialFiles: FileItem[] = [
-    {
-        name: "src",
-        path: "src",
+  {
+    name: "src",
+    path: "src",
+    content: "",
+    language: "",
+    type: "folder",
+    children: [
+      {
+        name: "pages",
+        path: "src/pages",
         content: "",
         language: "",
         type: "folder",
         children: [
-            {
-                name: "pages",
-                path: "src/pages",
-                content: "",
-                language: "",
-                type: "folder",
-                children: [
-                    {
-                        name: "index.tsx",
-                        path: "src/pages/index.tsx",
-                        content: `import Hero from "@/components/Hero";
+          {
+            name: "index.tsx",
+            path: "src/pages/index.tsx",
+            content: `import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import HowItWorks from "@/components/HowItWorks";
 import Benefits from "@/components/Benefits";
@@ -39,22 +39,22 @@ const Index = () => {
 };
 
 export default Index;`,
-                        language: "typescript",
-                        type: "file",
-                    },
-                ],
-            },
-            {
-                name: "components",
-                path: "src/components",
-                content: "",
-                language: "",
-                type: "folder",
-                children: [
-                    {
-                        name: "Hero.tsx",
-                        path: "src/components/Hero.tsx",
-                        content: `export default function Hero() {
+            language: "typescript",
+            type: "file",
+          },
+        ],
+      },
+      {
+        name: "components",
+        path: "src/components",
+        content: "",
+        language: "",
+        type: "folder",
+        children: [
+          {
+            name: "Hero.tsx",
+            path: "src/components/Hero.tsx",
+            content: `export default function Hero() {
   return (
     <section className="pt-20 pb-16 px-4">
       <div className="max-w-6xl mx-auto text-center">
@@ -71,13 +71,13 @@ export default Index;`,
     </section>
   );
 }`,
-                        language: "typescript",
-                        type: "file",
-                    },
-                    {
-                        name: "Features.tsx",
-                        path: "src/components/Features.tsx",
-                        content: `export default function Features() {
+            language: "typescript",
+            type: "file",
+          },
+          {
+            name: "Features.tsx",
+            path: "src/components/Features.tsx",
+            content: `export default function Features() {
   return (
     <section className="py-16 px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
@@ -102,25 +102,25 @@ export default Index;`,
     </section>
   );
 }`,
-                        language: "typescript",
-                        type: "file",
-                    },
-                ],
-            },
+            language: "typescript",
+            type: "file",
+          },
         ],
-    },
-    {
-        name: "public",
-        path: "public",
-        content: "",
-        language: "",
-        type: "folder",
-        children: [],
-    },
-    {
-        name: "package.json",
-        path: "package.json",
-        content: `{
+      },
+    ],
+  },
+  {
+    name: "public",
+    path: "public",
+    content: "",
+    language: "",
+    type: "folder",
+    children: [],
+  },
+  {
+    name: "package.json",
+    path: "package.json",
+    content: `{
   "name": "my-app",
   "version": "1.0.0",
   "dependencies": {
@@ -128,13 +128,13 @@ export default Index;`,
     "react-dom": "^18.2.0"
   }
 }`,
-        language: "json",
-        type: "file",
-    },
-    {
-        name: "tsconfig.json",
-        path: "tsconfig.json",
-        content: `{
+    language: "json",
+    type: "file",
+  },
+  {
+    name: "tsconfig.json",
+    path: "tsconfig.json",
+    content: `{
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
@@ -142,7 +142,7 @@ export default Index;`,
     "strict": true
   }
 }`,
-        language: "json",
-        type: "file",
-    },
+    language: "json",
+    type: "file",
+  },
 ]
