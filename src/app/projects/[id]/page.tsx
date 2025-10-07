@@ -18,7 +18,7 @@ export default function ProjectPage() {
   const projectId = params.id as string;
   const [files] = useState<FileItem[]>(initialFiles)
   const [activeFile, setActiveFile] = useState<string>("src/pages/index.tsx")
-  const [activeView, setActiveView] = useState<"code" | "preview">("code")
+  const [activeView, setActiveView] = useState<"code" | "preview" | "cloud">("code")
   const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false)
   const [fileContents, setFileContents] = useState<Record<string, string>>(() => {
     const contents: Record<string, string> = {}
