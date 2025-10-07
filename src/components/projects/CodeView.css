@@ -1,0 +1,231 @@
+/* Prism.js VS Code Dark Theme */
+.code-view pre[class*="language-"] {
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  text-shadow: none !important;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  tab-size: 4 !important;
+  hyphens: none !important;
+  word-break: normal !important;
+  word-spacing: normal !important;
+  white-space: pre !important;
+  word-wrap: normal !important;
+  overflow-wrap: normal !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.code-view code[class*="language-"] {
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+/* Syntax highlighting colors matching VS Code Dark theme */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6a9955 !important;
+  font-style: italic !important;
+}
+
+.token.punctuation {
+  color: #d4d4d4 !important;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #b5cea8 !important;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #ce9178 !important;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #d4d4d4 !important;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #569cd6 !important;
+}
+
+.token.function,
+.token.class-name {
+  color: #dcdcaa !important;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #d16969 !important;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold !important;
+}
+
+.token.italic {
+  font-style: italic !important;
+}
+
+.token.entity {
+  cursor: help !important;
+}
+
+/* JSX specific styling */
+.token.tag .token.tag {
+  color: #569cd6 !important;
+}
+
+.token.tag .token.attr-name {
+  color: #92c5f8 !important;
+}
+
+.token.tag .token.attr-value {
+  color: #ce9178 !important;
+}
+
+/* TypeScript specific styling */
+.token.interface .token.class-name {
+  color: #4ec9b0 !important;
+}
+
+.token.type-annotation {
+  color: #4ec9b0 !important;
+}
+
+/* CSS specific styling */
+.token.selector .token.class {
+  color: #d7ba7d !important;
+}
+
+.token.selector .token.id {
+  color: #d7ba7d !important;
+}
+
+.token.selector .token.attribute {
+  color: #92c5f8 !important;
+}
+
+.token.property {
+  color: #9cdcfe !important;
+}
+
+.token.value {
+  color: #ce9178 !important;
+}
+
+/* JSON specific styling */
+.token.json .token.property {
+  color: #9cdcfe !important;
+}
+
+.token.json .token.string {
+  color: #ce9178 !important;
+}
+
+.token.json .token.number {
+  color: #b5cea8 !important;
+}
+
+.token.json .token.boolean {
+  color: #569cd6 !important;
+}
+
+.token.json .token.null {
+  color: #569cd6 !important;
+}
+
+/* HTML specific styling */
+.token.html .token.tag {
+  color: #569cd6 !important;
+}
+
+.token.html .token.attr-name {
+  color: #92c5f8 !important;
+}
+
+.token.html .token.attr-value {
+  color: #ce9178 !important;
+}
+
+/* Python specific styling */
+.token.python .token.keyword {
+  color: #569cd6 !important;
+}
+
+.token.python .token.string {
+  color: #ce9178 !important;
+}
+
+.token.python .token.number {
+  color: #b5cea8 !important;
+}
+
+.token.python .token.function {
+  color: #dcdcaa !important;
+}
+
+/* Line numbers (if needed) */
+.line-numbers .line-numbers-rows {
+  border-right: 1px solid #3e3e42 !important;
+}
+
+.line-numbers-rows > span:before {
+  color: #858585 !important;
+}
+
+/* Selection styling */
+::selection {
+  background: #264f78 !important;
+}
+
+::-moz-selection {
+  background: #264f78 !important;
+}
+
+/* Scrollbar styling */
+.code-view pre::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.code-view pre::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.code-view pre::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 4px;
+}
+
+.code-view pre::-webkit-scrollbar-thumb:hover {
+  background: #4f4f4f;
+}
+
+.code-view pre::-webkit-scrollbar-corner {
+  background: #1e1e1e;
+}
